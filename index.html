@@ -1,0 +1,1218 @@
+import { useState, useEffect, useRef } from "react";
+
+// ---------- Constants ----------
+const SUBJECTS = ["English", "Maths", "Science"];
+const SUBJECT_COLORS = {
+  English: { bg: "#FFE3EC", text: "#D6336C", border: "#FFB3CB" },
+  Maths: { bg: "#E3F0FF", text: "#1971C2", border: "#A5D8FF" },
+  Science: { bg: "#E6FCF5", text: "#0CA678", border: "#96F2D7" },
+};
+
+const PSLE_DATE = new Date("2026-09-24T00:00:00");
+
+const TIMERS = [
+  {
+    id: "eng1",
+    label: "English Paper 1 (Writing)",
+    mins: 70,
+    tips: [
+      "Spend 5-10 min planning your composition before writing.",
+      "Check you've used at least 2-3 'wow' vocabulary words.",
+      "Leave 5 min at the end to check spelling, punctuation & tenses.",
+      "Make sure your story has a clear beginning, middle and end.",
+    ],
+  },
+  {
+    id: "eng2",
+    label: "English Paper 2 (Comprehension)",
+    mins: 110,
+    tips: [
+      "Read the whole passage once before answering questions.",
+      "For 'in your own words' questions, don't copy phrases directly.",
+      "Check the number of marks — give that many points in your answer.",
+      "Leave time to recheck grammar (subject-verb agreement, tenses).",
+      "For cloze/grammar sections, read the full sentence before choosing.",
+    ],
+  },
+  {
+    id: "math1",
+    label: "Maths Paper 1 (No Calculator)",
+    mins: 60,
+    tips: [
+      "Check units (cm vs m, g vs kg) before finalising answers.",
+      "For MCQ, eliminate obviously wrong options first.",
+      "Re-read the question — did it ask for the difference, total, or remainder?",
+      "Double check your calculations using estimation.",
+    ],
+  },
+  {
+    id: "math2",
+    label: "Maths Paper 2 (With Calculator)",
+    mins: 90,
+    tips: [
+      "Show your working clearly for method marks, even with a calculator.",
+      "Label your answers with correct units.",
+      "For word problems, draw a model or diagram if it helps.",
+      "Check if the answer makes sense (e.g. not negative for a length).",
+      "Leave 5-10 min to check all your answers at the end.",
+    ],
+  },
+  {
+    id: "sci",
+    label: "Science Paper",
+    mins: 105,
+    tips: [
+      "Underline key terms in the question (e.g. 'explain', 'compare').",
+      "Use correct scientific vocabulary in your answers.",
+      "For open-ended questions, link cause and effect clearly.",
+      "Check diagrams are labelled if the question asks for one.",
+      "Review answers for completeness — did you answer ALL parts of the question?",
+    ],
+  },
+];
+
+const STAGES = [
+  { min: 0, name: "Sleepy Seedling", emoji: "🌱" },
+  { min: 60, name: "Waking Sprout", emoji: "🐣" },
+  { min: 150, name: "Focused Bud", emoji: "🌷" },
+  { min: 300, name: "Bright Blossom", emoji: "🌸" },
+  { min: 520, name: "Glowing Scholar", emoji: "✨" },
+  { min: 800, name: "Star Sage", emoji: "🌟" },
+];
+
+const ACCESSORIES = [
+  { id: "bow", name: "Pink Bow", emoji: "🎀", cost: 40 },
+  { id: "star", name: "Star Sticker", emoji: "⭐", cost: 35 },
+  { id: "glasses", name: "Smart Glasses", emoji: "🤓", cost: 60 },
+  { id: "flower", name: "Flower Crown", emoji: "💐", cost: 70 },
+  { id: "ribbon", name: "Rainbow Ribbon", emoji: "🌈", cost: 80 },
+  { id: "bag", name: "Mini Backpack", emoji: "🎒", cost: 90 },
+  { id: "crown", name: "Tiny Crown", emoji: "👑", cost: 130 },
+  { id: "wand", name: "Magic Wand", emoji: "🪄", cost: 150 },
+  { id: "cape", name: "Hero Cape", emoji: "🦸", cost: 170 },
+  { id: "gem", name: "Sparkle Gem", emoji: "💎", cost: 220 },
+];
+
+const uid = () => Math.random().toString(36).slice(2, 10);
+
+function getStage(stars) {
+  let stage = STAGES[0];
+  for (const s of STAGES) if (stars >= s.min) stage = s;
+  return stage;
+}
+function nextStage(stars) {
+  return STAGES.find((s) => s.min > stars) || null;
+}
+function daysWeeksUntil(target) {
+  const now = new Date();
+  const diffMs = target.getTime() - now.getTime();
+  const days = Math.max(0, Math.ceil(diffMs / 86400000));
+  const weeks = Math.floor(days / 7);
+  const remDays = days % 7;
+  return { days, weeks, remDays };
+}
+function startOfWeek(d) {
+  const date = new Date(d);
+  const day = date.getDay();
+  const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+  date.setDate(diff);
+  date.setHours(0, 0, 0, 0);
+  return date;
+}
+function weekKey(ts) {
+  return startOfWeek(new Date(ts)).toISOString().slice(0, 10);
+}
+
+// ---------- Storage helpers ----------
+async function loadState() {
+  try {
+    const res = await window.storage.get("eva-study-garden-state");
+    if (res && res.value) return JSON.parse(res.value);
+  } catch (e) {
+    // not found - use default
+  }
+  return null;
+}
+async function saveState(state) {
+  try {
+    await window.storage.set("eva-study-garden-state", JSON.stringify(state));
+  } catch (e) {
+    console.error("Save failed", e);
+  }
+}
+
+const DEFAULT_STATE = {
+  avatarName: "",
+  stars: 0,
+  carrots: 0,
+  streak: 0,
+  lastCompletionDate: null,
+  freezeAvailable: true,
+  ownedAccessories: [],
+  equippedAccessories: [],
+  tasks: [],
+  errorBank: [],
+  vocabBank: [],
+  papers: [],
+};
+
+function readFileAsDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function callClaude(messages, system) {
+  const body = { model: "claude-sonnet-4-6", max_tokens: 1500, messages };
+  if (system) body.system = system;
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json();
+  const textBlocks = (data.content || []).filter((c) => c.type === "text").map((c) => c.text);
+  return { text: textBlocks.join("\n"), raw: data };
+}
+
+function extractJson(text) {
+  let clean = text.trim().replace(/```json/g, "").replace(/```/g, "").trim();
+  try {
+    return JSON.parse(clean);
+  } catch (e) {
+    const firstObj = clean.indexOf("{");
+    const firstArr = clean.indexOf("[");
+    let first = -1;
+    if (firstObj === -1) first = firstArr;
+    else if (firstArr === -1) first = firstObj;
+    else first = Math.min(firstObj, firstArr);
+    const last = Math.max(clean.lastIndexOf("}"), clean.lastIndexOf("]"));
+    if (first !== -1 && last !== -1) {
+      try {
+        return JSON.parse(clean.slice(first, last + 1));
+      } catch (e2) {
+        return null;
+      }
+    }
+    return null;
+  }
+}
+
+// ---------- Confetti ----------
+function Confetti({ show }) {
+  if (!show) return null;
+  const pieces = Array.from({ length: 24 });
+  return (
+    <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden">
+      {pieces.map((_, i) => {
+        const left = Math.random() * 100;
+        const delay = Math.random() * 0.4;
+        const dur = 1.2 + Math.random() * 0.8;
+        const colors = ["#FFB3CB", "#A5D8FF", "#96F2D7", "#FFE066", "#D0BFFF"];
+        const color = colors[i % colors.length];
+        return (
+          <div
+            key={i}
+            style={{
+              position: "absolute",
+              left: `${left}%`,
+              top: "-10px",
+              width: 8,
+              height: 8,
+              background: color,
+              borderRadius: i % 2 === 0 ? "50%" : "2px",
+              animation: `fall ${dur}s ${delay}s ease-in forwards`,
+            }}
+          />
+        );
+      })}
+      <style>{`@keyframes fall { to { transform: translateY(110vh) rotate(360deg); opacity: 0.3; } }`}</style>
+    </div>
+  );
+}
+
+// ---------- Avatar ----------
+function Avatar({ stage, equipped, size = 120 }) {
+  return (
+    <div
+      style={{
+        width: size,
+        height: size,
+        borderRadius: "50%",
+        background: "linear-gradient(135deg, #FFE3EC, #E3F0FF)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: size * 0.5,
+        position: "relative",
+        boxShadow: "0 6px 20px rgba(255,179,203,0.4)",
+        border: "4px solid white",
+      }}
+    >
+      <span>{stage.emoji}</span>
+      {equipped.includes("bow") && <span style={{ position: "absolute", top: -6, left: "50%", transform: "translateX(-50%)", fontSize: size * 0.22 }}>🎀</span>}
+      {equipped.includes("glasses") && <span style={{ position: "absolute", top: "32%", left: "50%", transform: "translateX(-50%)", fontSize: size * 0.26 }}>🤓</span>}
+      {equipped.includes("crown") && <span style={{ position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)", fontSize: size * 0.24 }}>👑</span>}
+      {equipped.includes("star") && <span style={{ position: "absolute", bottom: -2, right: -2, fontSize: size * 0.2 }}>⭐</span>}
+      {equipped.includes("flower") && <span style={{ position: "absolute", top: -10, left: "50%", transform: "translateX(-50%)", fontSize: size * 0.24 }}>💐</span>}
+      {equipped.includes("ribbon") && <span style={{ position: "absolute", bottom: -6, left: "50%", transform: "translateX(-50%)", fontSize: size * 0.22 }}>🌈</span>}
+      {equipped.includes("bag") && <span style={{ position: "absolute", bottom: -4, left: -4, fontSize: size * 0.2 }}>🎒</span>}
+      {equipped.includes("wand") && <span style={{ position: "absolute", bottom: 0, right: -8, fontSize: size * 0.22 }}>🪄</span>}
+      {equipped.includes("cape") && <span style={{ position: "absolute", bottom: -6, left: "50%", transform: "translateX(-50%)", fontSize: size * 0.3 }}>🦸</span>}
+      {equipped.includes("gem") && <span style={{ position: "absolute", top: "50%", right: -10, fontSize: size * 0.2 }}>💎</span>}
+    </div>
+  );
+}
+
+// ---------- Main App ----------
+export default function StudyGarden() {
+  const [state, setState] = useState(DEFAULT_STATE);
+  const [loaded, setLoaded] = useState(false);
+  const [tab, setTab] = useState("home");
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [toast, setToast] = useState(null);
+  const [showNamePrompt, setShowNamePrompt] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const saved = await loadState();
+      if (saved) {
+        setState({ ...DEFAULT_STATE, ...saved });
+        if (!saved.avatarName) setShowNamePrompt(true);
+      } else {
+        setShowNamePrompt(true);
+      }
+      setLoaded(true);
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (loaded) saveState(state);
+  }, [state, loaded]);
+
+  const flashToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 2200);
+  };
+  const burst = () => {
+    setShowConfetti(true);
+    setTimeout(() => setShowConfetti(false), 1500);
+  };
+
+  const stage = getStage(state.stars);
+  const upcoming = nextStage(state.stars);
+
+  if (!loaded) {
+    return (
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 400, fontFamily: "system-ui" }}>
+        <div style={{ fontSize: 40 }}>🌸</div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      style={{
+        fontFamily: "'Segoe UI', system-ui, sans-serif",
+        background: "linear-gradient(180deg, #FFF7FB 0%, #F3F8FF 100%)",
+        minHeight: 600,
+        borderRadius: 20,
+        padding: 16,
+        maxWidth: 480,
+        margin: "0 auto",
+        position: "relative",
+        boxShadow: "0 4px 30px rgba(0,0,0,0.06)",
+      }}
+    >
+      <Confetti show={showConfetti} />
+      {toast && (
+        <div
+          style={{
+            position: "fixed",
+            top: 16,
+            left: "50%",
+            transform: "translateX(-50%)",
+            background: "#fff",
+            border: "2px solid #FFB3CB",
+            borderRadius: 14,
+            padding: "8px 16px",
+            fontSize: 14,
+            fontWeight: 600,
+            color: "#D6336C",
+            zIndex: 60,
+            boxShadow: "0 4px 14px rgba(0,0,0,0.1)",
+          }}
+        >
+          {toast}
+        </div>
+      )}
+
+      {showNamePrompt && (
+        <NamePromptModal
+          onSave={(name) => {
+            setState((s) => ({ ...s, avatarName: name }));
+            setShowNamePrompt(false);
+          }}
+        />
+      )}
+
+      <Header state={state} />
+      <NavBar tab={tab} setTab={setTab} />
+
+      <div style={{ marginTop: 14 }}>
+        {tab === "home" && (
+          <HomeTab state={state} setState={setState} stage={stage} upcoming={upcoming} flashToast={flashToast} setShowNamePrompt={setShowNamePrompt} />
+        )}
+        {tab === "tasks" && <TasksTab state={state} setState={setState} flashToast={flashToast} burst={burst} />}
+        {tab === "errors" && <ErrorBankTab state={state} setState={setState} flashToast={flashToast} />}
+        {tab === "vocab" && <VocabTab state={state} setState={setState} flashToast={flashToast} />}
+        {tab === "papers" && <PapersTab state={state} setState={setState} flashToast={flashToast} />}
+        {tab === "timer" && <TimerTab />}
+        {tab === "shop" && <ShopTab state={state} setState={setState} flashToast={flashToast} />}
+      </div>
+    </div>
+  );
+}
+
+// ---------- Name Prompt ----------
+function NamePromptModal({ onSave }) {
+  const [name, setName] = useState("");
+  return (
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,0.35)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 70,
+        padding: 20,
+      }}
+    >
+      <div style={{ background: "white", borderRadius: 20, padding: 24, maxWidth: 320, textAlign: "center", boxShadow: "0 10px 40px rgba(0,0,0,0.2)" }}>
+        <div style={{ fontSize: 40 }}>🌱</div>
+        <div style={{ fontWeight: 800, fontSize: 16, color: "#D6336C", marginTop: 8 }}>Name your Study Buddy!</div>
+        <div style={{ fontSize: 12, color: "#868e96", marginTop: 4 }}>Give your little companion a cute name</div>
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="e.g. Mochi, Pip, Sunny..."
+          autoFocus
+          style={{ width: "100%", borderRadius: 12, border: "2px solid #FFE3EC", padding: "10px 12px", fontSize: 14, marginTop: 14, boxSizing: "border-box", textAlign: "center" }}
+        />
+        <button
+          onClick={() => onSave(name.trim() || "Buddy")}
+          style={{ marginTop: 14, width: "100%", background: "#FFB3CB", color: "white", border: "none", borderRadius: 12, padding: "10px", fontWeight: 700, fontSize: 14, cursor: "pointer" }}
+        >
+          Let's go! ✨
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ---------- Header ----------
+function Header({ state }) {
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+      <div style={{ fontSize: 18, fontWeight: 800, color: "#D6336C" }}>🌸 Eva's Study Garden</div>
+      <div style={{ display: "flex", gap: 8 }}>
+        <Pill icon="⭐" label={state.stars} color="#FFD43B" />
+        <Pill icon="🥕" label={state.carrots} color="#FF922B" />
+      </div>
+    </div>
+  );
+}
+function Pill({ icon, label, color }) {
+  return (
+    <div
+      style={{
+        background: "white",
+        borderRadius: 20,
+        padding: "4px 10px",
+        fontSize: 13,
+        fontWeight: 700,
+        display: "flex",
+        alignItems: "center",
+        gap: 4,
+        border: `2px solid ${color}`,
+        color: "#495057",
+      }}
+    >
+      <span>{icon}</span>
+      <span>{label}</span>
+    </div>
+  );
+}
+
+// ---------- Nav ----------
+function NavBar({ tab, setTab }) {
+  const items = [
+    { id: "home", label: "Home", emoji: "🏠" },
+    { id: "tasks", label: "Tasks", emoji: "📋" },
+    { id: "errors", label: "Errors", emoji: "📸" },
+    { id: "vocab", label: "Vocab", emoji: "📖" },
+    { id: "papers", label: "Papers", emoji: "📄" },
+    { id: "timer", label: "Timer", emoji: "⏱" },
+    { id: "shop", label: "Shop", emoji: "🛍" },
+  ];
+  return (
+    <div style={{ display: "flex", overflowX: "auto", gap: 6, paddingBottom: 4 }}>
+      {items.map((it) => (
+        <button
+          key={it.id}
+          onClick={() => setTab(it.id)}
+          style={{
+            flexShrink: 0,
+            border: "none",
+            background: tab === it.id ? "#FFB3CB" : "white",
+            color: tab === it.id ? "white" : "#868e96",
+            borderRadius: 14,
+            padding: "8px 12px",
+            fontSize: 12,
+            fontWeight: 700,
+            cursor: "pointer",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 2,
+            minWidth: 56,
+          }}
+        >
+          <span style={{ fontSize: 16 }}>{it.emoji}</span>
+          <span>{it.label}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ---------- Home Tab ----------
+function HomeTab({ state, stage, upcoming, flashToast, setShowNamePrompt }) {
+  const progressToNext = upcoming ? Math.min(100, ((state.stars - stage.min) / (upcoming.min - stage.min)) * 100) : 100;
+  const { days, weeks, remDays } = daysWeeksUntil(PSLE_DATE);
+
+  // weekly improvement stats
+  const now = Date.now();
+  const thisWeekKey = weekKey(now);
+  const lastWeekKey = weekKey(now - 7 * 86400000);
+  const tasksThisWeek = state.tasks.filter((t) => t.done && t.completedAt && weekKey(t.completedAt) === thisWeekKey).length;
+  const tasksLastWeek = state.tasks.filter((t) => t.done && t.completedAt && weekKey(t.completedAt) === lastWeekKey).length;
+  const errorsThisWeek = state.errorBank.filter((e) => weekKey(e.createdAt) === thisWeekKey).length;
+  const masteredThisWeek = state.errorBank.filter((e) => e.mastered && weekKey(e.createdAt) === thisWeekKey).length;
+  const vocabThisWeek = state.vocabBank.filter((v) => weekKey(v.createdAt) === thisWeekKey).length;
+
+  const taskDelta = tasksThisWeek - tasksLastWeek;
+
+  const motivationalMsgs = [
+    `${state.avatarName || "Your buddy"} believes in you! 💪`,
+    "Every task done is a step closer to PSLE success! 🌟",
+    "Small steps every day lead to big results! 🌱",
+    "You've got this, keep the streak alive! 🔥",
+  ];
+  const msg = motivationalMsgs[new Date().getDate() % motivationalMsgs.length];
+
+  return (
+    <div>
+      <div style={{ background: "white", borderRadius: 18, padding: 20, textAlign: "center", boxShadow: "0 4px 14px rgba(0,0,0,0.05)" }}>
+        <div
+          onClick={() => setShowNamePrompt(true)}
+          style={{ fontSize: 13, fontWeight: 700, color: "#D6336C", marginBottom: 8, cursor: "pointer" }}
+          title="Click to rename"
+        >
+          {state.avatarName || "Your Buddy"} ✏️
+        </div>
+        <Avatar stage={stage} equipped={state.equippedAccessories} size={120} />
+        <div style={{ marginTop: 10, fontWeight: 800, fontSize: 17, color: "#495057" }}>{stage.name}</div>
+        <div style={{ fontSize: 12, color: "#adb5bd", marginTop: 2 }}>
+          {upcoming ? `${upcoming.min - state.stars} ⭐ to evolve into ${upcoming.name} ${upcoming.emoji}` : "Max evolution reached! 🎉"}
+        </div>
+        <div style={{ background: "#f1f3f5", borderRadius: 10, height: 10, marginTop: 10, overflow: "hidden" }}>
+          <div style={{ width: `${progressToNext}%`, height: "100%", background: "linear-gradient(90deg,#FFB3CB,#A5D8FF)", borderRadius: 10, transition: "width 0.4s" }} />
+        </div>
+        <button
+          onClick={() => flashToast("📸 Screenshot this card to share with friends!")}
+          style={{ marginTop: 16, background: "#FFE3EC", color: "#D6336C", border: "none", borderRadius: 12, padding: "10px 18px", fontWeight: 700, fontSize: 13, cursor: "pointer" }}
+        >
+          📤 Share Avatar Card
+        </button>
+      </div>
+
+      {/* PSLE Countdown */}
+      <div style={{ marginTop: 12, background: "linear-gradient(135deg,#FFD8A8,#FFEC99)", borderRadius: 16, padding: 14, textAlign: "center" }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: "#9C6B00" }}>📅 PSLE Countdown</div>
+        <div style={{ fontSize: 24, fontWeight: 800, color: "#9C6B00" }}>{days} days</div>
+        <div style={{ fontSize: 11, color: "#9C6B00" }}>
+          ({weeks} weeks {remDays} days · 24 Sep 2026)
+        </div>
+      </div>
+
+      {/* Streak */}
+      <div style={{ marginTop: 12, background: "white", borderRadius: 16, padding: 14, display: "flex", alignItems: "center", gap: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+        <div style={{ fontSize: 30 }}>🔥</div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontWeight: 800, fontSize: 16, color: "#495057" }}>{state.streak} day streak</div>
+          <div style={{ fontSize: 11, color: "#adb5bd" }}>
+            {state.freezeAvailable ? "🧊 1 streak freeze available — miss a day without losing your streak!" : "No freeze available — complete tasks to earn one back."}
+          </div>
+        </div>
+      </div>
+
+      {/* Motivation card */}
+      <div style={{ marginTop: 12, background: "#FFF0F6", borderRadius: 14, padding: 14, fontSize: 13, color: "#A61E4D", textAlign: "center", fontWeight: 600 }}>
+        {msg}
+      </div>
+
+      {/* Weekly progress */}
+      <div style={{ marginTop: 14 }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: "#495057", marginBottom: 8 }}>📈 This week's progress</div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+          <StatBox label="Tasks done" value={tasksThisWeek} emoji="✅" />
+          <StatBox label="Errors mastered" value={masteredThisWeek} emoji="🎯" />
+          <StatBox label="New vocab" value={vocabThisWeek} emoji="📖" />
+        </div>
+        {tasksLastWeek > 0 && (
+          <div style={{ marginTop: 8, fontSize: 12, textAlign: "center", color: taskDelta >= 0 ? "#2B8A3E" : "#E8590C", fontWeight: 700 }}>
+            {taskDelta >= 0 ? `🎉 ${taskDelta} more tasks than last week!` : `Last week you did ${tasksLastWeek}, let's beat that!`}
+          </div>
+        )}
+      </div>
+
+      <div style={{ marginTop: 14, background: "#FFF9DB", borderRadius: 14, padding: 14, fontSize: 13, color: "#846b00", border: "2px dashed #FFE066" }}>
+        💡 Tip: Complete tasks, log errors, and review vocab to earn Stars (for growth) and Carrots (for the shop)!
+      </div>
+    </div>
+  );
+}
+function StatBox({ label, value, emoji }) {
+  return (
+    <div style={{ background: "white", borderRadius: 12, padding: 10, textAlign: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+      <div style={{ fontSize: 18 }}>{emoji}</div>
+      <div style={{ fontWeight: 800, fontSize: 16, color: "#495057" }}>{value}</div>
+      <div style={{ fontSize: 10, color: "#adb5bd" }}>{label}</div>
+    </div>
+  );
+}
+
+// ---------- Tasks Tab ----------
+function TasksTab({ state, setState, flashToast, burst }) {
+  const [text, setText] = useState("");
+  const [subject, setSubject] = useState("English");
+
+  const addTask = () => {
+    if (!text.trim()) return;
+    setState((s) => ({ ...s, tasks: [{ id: uid(), text: text.trim(), subject, done: false, createdAt: Date.now() }, ...s.tasks] }));
+    setText("");
+  };
+
+  const toggleTask = (id) => {
+    setState((s) => {
+      const task = s.tasks.find((t) => t.id === id);
+      const willBeDone = task && !task.done;
+      const tasks = s.tasks.map((t) => (t.id === id ? { ...t, done: !t.done, completedAt: !t.done ? Date.now() : null } : t));
+      let stars = s.stars;
+      let carrots = s.carrots;
+      let streak = s.streak;
+      let lastCompletionDate = s.lastCompletionDate;
+      let freezeAvailable = s.freezeAvailable;
+      if (willBeDone) {
+        stars += 2;
+        carrots += 1;
+        const today = new Date().toDateString();
+        if (lastCompletionDate !== today) {
+          const yesterday = new Date(Date.now() - 86400000).toDateString();
+          if (lastCompletionDate === yesterday) {
+            streak += 1;
+          } else if (freezeAvailable && lastCompletionDate) {
+            streak += 1;
+            freezeAvailable = false;
+          } else {
+            streak = 1;
+          }
+          lastCompletionDate = today;
+          if (streak > 0 && streak % 7 === 0) freezeAvailable = true;
+        }
+      } else {
+        stars = Math.max(0, stars - 2);
+        carrots = Math.max(0, carrots - 1);
+      }
+      return { ...s, tasks, stars, carrots, streak, lastCompletionDate, freezeAvailable };
+    });
+    burst();
+    flashToast("+2 ⭐ +1 🥕 Task complete!");
+  };
+
+  const deleteTask = (id) => setState((s) => ({ ...s, tasks: s.tasks.filter((t) => t.id !== id) }));
+  const pending = state.tasks.filter((t) => !t.done);
+  const done = state.tasks.filter((t) => t.done);
+
+  return (
+    <div>
+      <div style={{ display: "flex", gap: 6, marginBottom: 10 }}>
+        <select value={subject} onChange={(e) => setSubject(e.target.value)} style={{ borderRadius: 10, border: "2px solid #eee", padding: "8px", fontSize: 13 }}>
+          {SUBJECTS.map((s) => (
+            <option key={s}>{s}</option>
+          ))}
+        </select>
+        <input
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && addTask()}
+          placeholder="e.g. Complete 10 Maths questions"
+          style={{ flex: 1, borderRadius: 10, border: "2px solid #eee", padding: "8px 10px", fontSize: 13 }}
+        />
+        <button onClick={addTask} style={{ background: "#FFB3CB", color: "white", border: "none", borderRadius: 10, padding: "0 14px", fontWeight: 700, cursor: "pointer" }}>
+          +
+        </button>
+      </div>
+
+      {pending.length === 0 && done.length === 0 && <EmptyState emoji="📋" text="No tasks yet. Add your first revision task above!" />}
+      {pending.map((t) => (
+        <TaskRow key={t.id} task={t} onToggle={toggleTask} onDelete={deleteTask} />
+      ))}
+      {done.length > 0 && <div style={{ marginTop: 14, fontSize: 12, color: "#adb5bd", fontWeight: 700 }}>COMPLETED</div>}
+      {done.map((t) => (
+        <TaskRow key={t.id} task={t} onToggle={toggleTask} onDelete={deleteTask} />
+      ))}
+    </div>
+  );
+}
+function TaskRow({ task, onToggle, onDelete }) {
+  const c = SUBJECT_COLORS[task.subject] || SUBJECT_COLORS.English;
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8, background: "white", borderRadius: 12, padding: 10, marginBottom: 6, boxShadow: "0 2px 6px rgba(0,0,0,0.04)", opacity: task.done ? 0.6 : 1 }}>
+      <input type="checkbox" checked={task.done} onChange={() => onToggle(task.id)} style={{ width: 18, height: 18, accentColor: "#FFB3CB" }} />
+      <span style={{ fontSize: 10, fontWeight: 700, color: c.text, background: c.bg, borderRadius: 8, padding: "2px 6px" }}>{task.subject}</span>
+      <span style={{ flex: 1, fontSize: 13, textDecoration: task.done ? "line-through" : "none", color: "#495057" }}>{task.text}</span>
+      <button onClick={() => onDelete(task.id)} style={{ border: "none", background: "none", color: "#dee2e6", cursor: "pointer", fontSize: 14 }}>
+        ✕
+      </button>
+    </div>
+  );
+}
+function EmptyState({ emoji, text }) {
+  return (
+    <div style={{ textAlign: "center", padding: "30px 10px", color: "#adb5bd" }}>
+      <div style={{ fontSize: 32 }}>{emoji}</div>
+      <div style={{ fontSize: 13, marginTop: 6 }}>{text}</div>
+    </div>
+  );
+}
+
+// ---------- Error Bank Tab ----------
+function ErrorBankTab({ state, setState, flashToast }) {
+  const [subject, setSubject] = useState("English");
+  const [filter, setFilter] = useState("All");
+  const [uploading, setUploading] = useState(false);
+  const [note, setNote] = useState("");
+  const [viewing, setViewing] = useState(null);
+
+  const handleFile = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const dataUrl = await readFileAsDataURL(file);
+      setState((s) => ({
+        ...s,
+        errorBank: [{ id: uid(), subject, image: dataUrl, note, mastered: false, createdAt: Date.now() }, ...s.errorBank],
+        carrots: s.carrots + 1,
+      }));
+      flashToast("+1 🥕 Error logged!");
+      setNote("");
+    } catch (err) {
+      flashToast("Could not read image");
+    }
+    setUploading(false);
+    e.target.value = "";
+  };
+
+  const toggleMastered = (id) => {
+    setState((s) => ({
+      ...s,
+      errorBank: s.errorBank.map((er) => (er.id === id ? { ...er, mastered: !er.mastered } : er)),
+      stars: s.stars + (s.errorBank.find((er) => er.id === id)?.mastered ? -3 : 3),
+    }));
+  };
+  const deleteError = (id) => setState((s) => ({ ...s, errorBank: s.errorBank.filter((er) => er.id !== id) }));
+  const filtered = state.errorBank.filter((er) => filter === "All" || er.subject === filter);
+
+  return (
+    <div>
+      {viewing && (
+        <div
+          onClick={() => setViewing(null)}
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 80, padding: 20 }}
+        >
+          <div onClick={(e) => e.stopPropagation()} style={{ background: "white", borderRadius: 16, padding: 14, maxWidth: 360, maxHeight: "85vh", overflowY: "auto" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+              <span style={{ fontSize: 10, fontWeight: 700, color: SUBJECT_COLORS[viewing.subject].text, background: SUBJECT_COLORS[viewing.subject].bg, borderRadius: 8, padding: "2px 6px" }}>
+                {viewing.subject}
+              </span>
+              <button onClick={() => setViewing(null)} style={{ border: "none", background: "none", fontSize: 16, color: "#adb5bd", cursor: "pointer" }}>
+                ✕
+              </button>
+            </div>
+            <img src={viewing.image} alt="error full" style={{ width: "100%", borderRadius: 10 }} />
+            {viewing.note && <div style={{ fontSize: 13, color: "#495057", marginTop: 10, background: "#FFF9DB", borderRadius: 8, padding: 8 }}>📝 {viewing.note}</div>}
+            <div style={{ fontSize: 11, color: "#adb5bd", marginTop: 8 }}>Logged {new Date(viewing.createdAt).toLocaleDateString()}</div>
+          </div>
+        </div>
+      )}
+
+      <div style={{ background: "white", borderRadius: 14, padding: 12, marginBottom: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: "#495057", marginBottom: 8 }}>📸 Log a question you got wrong</div>
+        <select value={subject} onChange={(e) => setSubject(e.target.value)} style={{ borderRadius: 10, border: "2px solid #eee", padding: "8px", fontSize: 13, marginBottom: 8, width: "100%" }}>
+          {SUBJECTS.map((s) => (
+            <option key={s}>{s}</option>
+          ))}
+        </select>
+        <input
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          placeholder="Optional note, e.g. 'Forgot to carry the remainder'"
+          style={{ width: "100%", borderRadius: 10, border: "2px solid #eee", padding: "8px 10px", fontSize: 13, marginBottom: 8, boxSizing: "border-box" }}
+        />
+        <label style={{ display: "block", textAlign: "center", background: uploading ? "#dee2e6" : "#FFB3CB", color: "white", borderRadius: 10, padding: "10px", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+          {uploading ? "Uploading..." : "📷 Upload Photo of Question"}
+          <input type="file" accept="image/*" capture="environment" onChange={handleFile} style={{ display: "none" }} />
+        </label>
+      </div>
+
+      <div style={{ display: "flex", gap: 6, marginBottom: 10, overflowX: "auto" }}>
+        {["All", ...SUBJECTS].map((s) => (
+          <button
+            key={s}
+            onClick={() => setFilter(s)}
+            style={{ flexShrink: 0, border: "none", background: filter === s ? "#495057" : "white", color: filter === s ? "white" : "#868e96", borderRadius: 12, padding: "6px 12px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}
+          >
+            {s}
+          </button>
+        ))}
+      </div>
+
+      {filtered.length === 0 && <EmptyState emoji="📸" text="No errors logged yet for this subject." />}
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+        {filtered.map((er) => {
+          const c = SUBJECT_COLORS[er.subject] || SUBJECT_COLORS.English;
+          return (
+            <div key={er.id} style={{ background: "white", borderRadius: 12, overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.04)", opacity: er.mastered ? 0.55 : 1 }}>
+              <img src={er.image} alt="error" onClick={() => setViewing(er)} style={{ width: "100%", height: 110, objectFit: "cover", cursor: "pointer" }} />
+              <div style={{ padding: 8 }}>
+                <span style={{ fontSize: 9, fontWeight: 700, color: c.text, background: c.bg, borderRadius: 8, padding: "2px 6px" }}>{er.subject}</span>
+                {er.note && <div style={{ fontSize: 11, color: "#868e96", marginTop: 4 }}>{er.note}</div>}
+                <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
+                  <button onClick={() => toggleMastered(er.id)} style={{ border: "none", background: "none", fontSize: 11, color: er.mastered ? "#82c91e" : "#adb5bd", cursor: "pointer", fontWeight: 700 }}>
+                    {er.mastered ? "✓ Mastered" : "Mark mastered"}
+                  </button>
+                  <button onClick={() => deleteError(er.id)} style={{ border: "none", background: "none", color: "#ffc9c9", cursor: "pointer" }}>
+                    ✕
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ---------- Vocab Tab ----------
+function VocabTab({ state, setState, flashToast }) {
+  const [word, setWord] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [expandedId, setExpandedId] = useState(null);
+
+  const addVocab = async () => {
+    if (!word.trim()) return;
+    setLoading(true);
+    try {
+      const system =
+        "You are a helpful PSLE English tutor for a Singapore Primary 6 student. Respond ONLY with valid JSON, no preamble, no markdown fences. The JSON object must have exactly these keys: definition (simple, student-friendly, 1 sentence), compoExample (one example sentence showing how to use the word naturally in a composition, suitable for a 12 year old), paperContext (a short explanation of how/where such a word typically appears in PSLE past year papers, e.g. comprehension or cloze passages, with a brief example phrase).";
+      const { text } = await callClaude([{ role: "user", content: `Word: "${word.trim()}"` }], system);
+      const parsed = extractJson(text);
+      if (!parsed) throw new Error("parse fail");
+      setState((s) => ({
+        ...s,
+        vocabBank: [
+          { id: uid(), word: word.trim(), definition: parsed.definition || "", compoExample: parsed.compoExample || "", paperContext: parsed.paperContext || "", createdAt: Date.now() },
+          ...s.vocabBank,
+        ],
+        carrots: s.carrots + 1,
+      }));
+      flashToast("+1 🥕 Vocab added!");
+      setWord("");
+    } catch (e) {
+      flashToast("Hmm, could not generate. Try again.");
+    }
+    setLoading(false);
+  };
+
+  const deleteVocab = (id) => setState((s) => ({ ...s, vocabBank: s.vocabBank.filter((v) => v.id !== id) }));
+  const sorted = [...state.vocabBank].sort((a, b) => a.word.localeCompare(b.word));
+
+  return (
+    <div>
+      <div style={{ background: "white", borderRadius: 14, padding: 12, marginBottom: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: "#495057", marginBottom: 8 }}>📖 Log new vocabulary</div>
+        <div style={{ display: "flex", gap: 6 }}>
+          <input
+            value={word}
+            onChange={(e) => setWord(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && addVocab()}
+            placeholder="e.g. meticulous"
+            style={{ flex: 1, borderRadius: 10, border: "2px solid #eee", padding: "8px 10px", fontSize: 13 }}
+          />
+          <button onClick={addVocab} disabled={loading} style={{ background: loading ? "#dee2e6" : "#A5D8FF", color: "#1971C2", border: "none", borderRadius: 10, padding: "0 14px", fontWeight: 700, cursor: "pointer" }}>
+            {loading ? "..." : "Add"}
+          </button>
+        </div>
+      </div>
+
+      {sorted.length === 0 && <EmptyState emoji="📖" text="No vocab logged yet. Add a word above!" />}
+
+      {sorted.map((v) => {
+        const expanded = expandedId === v.id;
+        return (
+          <div key={v.id} style={{ background: "white", borderRadius: 12, padding: 12, marginBottom: 8, boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+            <div onClick={() => setExpandedId(expanded ? null : v.id)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }}>
+              <div>
+                <div style={{ fontWeight: 800, fontSize: 14, color: "#D6336C" }}>{v.word}</div>
+                <div style={{ fontSize: 12, color: "#495057", marginTop: 2 }}>{v.definition}</div>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ fontSize: 12, color: "#adb5bd" }}>{expanded ? "▲" : "▼"}</span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteVocab(v.id);
+                  }}
+                  style={{ border: "none", background: "none", color: "#ffc9c9", cursor: "pointer" }}
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+            {expanded && (
+              <div style={{ marginTop: 8 }}>
+                <div style={{ fontSize: 11, color: "#868e96", background: "#FFF9DB", borderRadius: 8, padding: 6 }}>✍️ Compo use: {v.compoExample}</div>
+                <div style={{ fontSize: 11, color: "#868e96", marginTop: 6, background: "#E3F0FF", borderRadius: 8, padding: 6 }}>📄 In papers: {v.paperContext}</div>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ---------- Papers Tab ----------
+function PapersTab({ state, setState, flashToast }) {
+  const [uploading, setUploading] = useState(false);
+  const [subject, setSubject] = useState("English");
+  const [generating, setGenerating] = useState(false);
+  const [questions, setQuestions] = useState(null);
+  const [activePaper, setActivePaper] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+
+  const MAX_PDF_BYTES = 30 * 1024 * 1024; // ~30MB safety cap for base64 payload
+
+  const handlePdfUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.type !== "application/pdf") {
+      flashToast("Please upload a PDF file");
+      return;
+    }
+    if (file.size > MAX_PDF_BYTES) {
+      flashToast("This PDF is quite large — try a smaller scan or fewer pages");
+      e.target.value = "";
+      return;
+    }
+    setUploading(true);
+    try {
+      const dataUrl = await readFileAsDataURL(file);
+      const paper = { id: uid(), name: file.name, subject, dataUrl, sizeKB: Math.round(file.size / 1024), createdAt: Date.now() };
+      setState((s) => ({ ...s, papers: [paper, ...s.papers] }));
+      flashToast("📄 Paper uploaded!");
+    } catch (err) {
+      flashToast("Upload failed, try again");
+    }
+    setUploading(false);
+    e.target.value = "";
+  };
+
+  const deletePaper = (id) => setState((s) => ({ ...s, papers: s.papers.filter((p) => p.id !== id) }));
+
+  const generateFromPaper = async (paper) => {
+    setGenerating(true);
+    setQuestions(null);
+    setErrorMsg(null);
+    setActivePaper(paper);
+    try {
+      const base64 = paper.dataUrl.split(",")[1];
+      const errorNotes = state.errorBank.filter((er) => er.subject === paper.subject).map((er) => er.note).filter(Boolean).slice(0, 10);
+
+      const system =
+        "You are a PSLE tutor. You will be given a PDF of a past year exam paper. It may be a scanned, image-based PDF — read it using your vision/document capability, page by page, exactly as if reading scanned photographs of paper. Even if the PDF has no selectable text layer, look at the visual content of each page. Respond ONLY with valid JSON: an array of 5 objects, each with keys: question, answer, explanation. If you genuinely cannot see any readable content in the PDF at all, respond with exactly: {\"error\": \"unreadable\"} and nothing else. " +
+        (errorNotes.length ? `The student has previously struggled with: ${errorNotes.join("; ")}. Prioritise targeting these weak areas.` : "");
+
+      const messages = [
+        {
+          role: "user",
+          content: [
+            { type: "document", source: { type: "base64", media_type: "application/pdf", data: base64 } },
+            { type: "text", text: `This is a ${paper.subject} PSLE past year paper. Generate 5 fresh practice questions in the same style, targeting the student's weak areas if provided.` },
+          ],
+        },
+      ];
+      const { text, raw } = await callClaude(messages, system);
+      const parsed = extractJson(text);
+
+      if (!parsed) {
+        setErrorMsg("Couldn't understand the response. The scan may be too blurry, rotated, or low contrast. Try rescanning with good lighting and a straight angle.");
+        setQuestions([]);
+      } else if (parsed.error === "unreadable") {
+        setErrorMsg("This PDF couldn't be read — it might be password-protected, corrupted, or the scan quality is too low. Try re-scanning at higher resolution.");
+        setQuestions([]);
+      } else if (Array.isArray(parsed)) {
+        setQuestions(parsed);
+        setState((s) => ({ ...s, carrots: s.carrots + 3 }));
+        flashToast("+3 🥕 Practice questions ready!");
+      } else {
+        setErrorMsg("Unexpected response format. Please try again.");
+        setQuestions([]);
+      }
+    } catch (err) {
+      setErrorMsg("Something went wrong reading this PDF. Check your internet connection and try again, or try a smaller file.");
+      setQuestions([]);
+    }
+    setGenerating(false);
+  };
+
+  return (
+    <div>
+      <div style={{ background: "white", borderRadius: 14, padding: 12, marginBottom: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: "#495057", marginBottom: 8 }}>📄 Upload past year paper (PDF, incl. scanned)</div>
+        <select value={subject} onChange={(e) => setSubject(e.target.value)} style={{ borderRadius: 10, border: "2px solid #eee", padding: "8px", fontSize: 13, marginBottom: 8, width: "100%" }}>
+          {SUBJECTS.map((s) => (
+            <option key={s}>{s}</option>
+          ))}
+        </select>
+        <label style={{ display: "block", textAlign: "center", background: uploading ? "#dee2e6" : "#A5D8FF", color: "#1971C2", borderRadius: 10, padding: "10px", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+          {uploading ? "Uploading..." : "📎 Upload PDF Paper"}
+          <input type="file" accept="application/pdf" onChange={handlePdfUpload} style={{ display: "none" }} />
+        </label>
+        <div style={{ fontSize: 10, color: "#adb5bd", marginTop: 6 }}>
+          Tip: if a scanned PDF fails, try rescanning flat (not at an angle), in good lighting, at a moderate resolution (under ~15MB works best).
+        </div>
+      </div>
+
+      {state.papers.length === 0 && <EmptyState emoji="📄" text="No papers uploaded yet." />}
+
+      {state.papers.map((p) => {
+        const c = SUBJECT_COLORS[p.subject] || SUBJECT_COLORS.English;
+        return (
+          <div key={p.id} style={{ background: "white", borderRadius: 12, padding: 10, marginBottom: 8, boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <span style={{ fontSize: 9, fontWeight: 700, color: c.text, background: c.bg, borderRadius: 8, padding: "2px 6px" }}>{p.subject}</span>
+                <div style={{ fontSize: 12, color: "#495057", marginTop: 4, wordBreak: "break-all" }}>{p.name}</div>
+                <div style={{ fontSize: 10, color: "#ced4da", marginTop: 2 }}>{p.sizeKB ? `${p.sizeKB} KB` : ""}</div>
+              </div>
+              <button onClick={() => deletePaper(p.id)} style={{ border: "none", background: "none", color: "#ffc9c9", cursor: "pointer" }}>
+                ✕
+              </button>
+            </div>
+            <button
+              onClick={() => generateFromPaper(p)}
+              disabled={generating}
+              style={{ marginTop: 8, width: "100%", background: generating && activePaper?.id === p.id ? "#dee2e6" : "#FFE3EC", color: "#D6336C", border: "none", borderRadius: 10, padding: "8px", fontWeight: 700, fontSize: 12, cursor: "pointer" }}
+            >
+              {generating && activePaper?.id === p.id ? "Reading paper..." : "✨ Generate practice questions from errors"}
+            </button>
+          </div>
+        );
+      })}
+
+      {errorMsg && (
+        <div style={{ marginTop: 10, background: "#FFF5F5", border: "2px solid #FFC9C9", borderRadius: 12, padding: 12, fontSize: 12, color: "#C92A2A" }}>
+          ⚠️ {errorMsg}
+        </div>
+      )}
+
+      {questions && questions.length > 0 && activePaper && (
+        <div style={{ marginTop: 14 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "#495057", marginBottom: 8 }}>Practice from "{activePaper.name}"</div>
+          {questions.map((q, i) => (
+            <QuestionCard key={i} q={q} index={i} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+function QuestionCard({ q, index }) {
+  const [show, setShow] = useState(false);
+  return (
+    <div style={{ background: "white", borderRadius: 12, padding: 12, marginBottom: 8, boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+      <div style={{ fontSize: 12, fontWeight: 700, color: "#D6336C", marginBottom: 4 }}>Q{index + 1}</div>
+      <div style={{ fontSize: 13, color: "#495057" }}>{q.question}</div>
+      <button onClick={() => setShow((v) => !v)} style={{ marginTop: 8, border: "none", background: "none", color: "#1971C2", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
+        {show ? "Hide answer" : "Show answer"}
+      </button>
+      {show && (
+        <div style={{ marginTop: 6, background: "#E6FCF5", borderRadius: 8, padding: 8 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: "#0CA678" }}>{q.answer}</div>
+          <div style={{ fontSize: 11, color: "#495057", marginTop: 4 }}>{q.explanation}</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------- Timer Tab ----------
+function TimerTab() {
+  const [activeId, setActiveId] = useState(null);
+  const [secondsLeft, setSecondsLeft] = useState(0);
+  const [running, setRunning] = useState(false);
+  const intervalRef = useRef(null);
+
+  useEffect(() => {
+    if (running) {
+      intervalRef.current = setInterval(() => {
+        setSecondsLeft((s) => {
+          if (s <= 1) {
+            setRunning(false);
+            return 0;
+          }
+          return s - 1;
+        });
+      }, 1000);
+    } else if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+    return () => intervalRef.current && clearInterval(intervalRef.current);
+  }, [running]);
+
+  const start = (timer) => {
+    setActiveId(timer.id);
+    setSecondsLeft(timer.mins * 60);
+    setRunning(true);
+  };
+  const pauseResume = () => setRunning((r) => !r);
+  const reset = () => {
+    setRunning(false);
+    setActiveId(null);
+    setSecondsLeft(0);
+  };
+
+  const fmt = (s) => {
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+  };
+
+  const active = TIMERS.find((t) => t.id === activeId);
+
+  return (
+    <div>
+      {active ? (
+        <div style={{ background: "white", borderRadius: 18, padding: 20, textAlign: "center", boxShadow: "0 4px 14px rgba(0,0,0,0.05)" }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "#868e96" }}>{active.label}</div>
+          <div style={{ fontSize: 40, fontWeight: 800, color: secondsLeft < 60 ? "#FA5252" : "#D6336C", margin: "8px 0", fontFamily: "monospace" }}>{fmt(secondsLeft)}</div>
+          {secondsLeft === 0 && <div style={{ fontSize: 14, fontWeight: 700, color: "#82c91e" }}>⏰ Time's up! Well done!</div>}
+          <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 8 }}>
+            <button onClick={pauseResume} disabled={secondsLeft === 0} style={{ background: "#A5D8FF", color: "#1971C2", border: "none", borderRadius: 10, padding: "8px 16px", fontWeight: 700, cursor: "pointer" }}>
+              {running ? "Pause" : "Resume"}
+            </button>
+            <button onClick={reset} style={{ background: "#FFE3EC", color: "#D6336C", border: "none", borderRadius: 10, padding: "8px 16px", fontWeight: 700, cursor: "pointer" }}>
+              Reset
+            </button>
+          </div>
+
+          <div style={{ marginTop: 14, textAlign: "left", background: "#FFF9DB", borderRadius: 12, padding: 12 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: "#846b00", marginBottom: 6 }}>💡 Tips for this paper</div>
+            {active.tips.map((tip, i) => (
+              <div key={i} style={{ fontSize: 12, color: "#846b00", marginBottom: 4, display: "flex", gap: 6 }}>
+                <span>•</span>
+                <span>{tip}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <EmptyState emoji="⏱" text="Pick a PSLE paper below to start an exam timer." />
+      )}
+
+      <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 8 }}>
+        {TIMERS.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => start(t)}
+            style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "white", border: "none", borderRadius: 12, padding: "12px 14px", boxShadow: "0 2px 8px rgba(0,0,0,0.04)", cursor: "pointer", textAlign: "left" }}
+          >
+            <span style={{ fontSize: 13, fontWeight: 700, color: "#495057" }}>{t.label}</span>
+            <span style={{ fontSize: 12, color: "#adb5bd" }}>{t.mins} min</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ---------- Shop Tab ----------
+function ShopTab({ state, setState, flashToast }) {
+  const buy = (item) => {
+    if (state.carrots < item.cost) {
+      flashToast("Not enough carrots yet! Keep completing tasks 🥕");
+      return;
+    }
+    setState((s) => ({ ...s, carrots: s.carrots - item.cost, ownedAccessories: [...s.ownedAccessories, item.id] }));
+    flashToast(`Bought ${item.name}!`);
+  };
+  const toggleEquip = (id) => {
+    setState((s) => ({
+      ...s,
+      equippedAccessories: s.equippedAccessories.includes(id) ? s.equippedAccessories.filter((a) => a !== id) : [...s.equippedAccessories, id],
+    }));
+  };
+
+  return (
+    <div>
+      <div style={{ textAlign: "center", marginBottom: 12, fontSize: 13, color: "#868e96" }}>
+        Spend your Carrots 🥕 on cute accessories! (Earn carrots from tasks, errors & vocab)
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+        {ACCESSORIES.map((item) => {
+          const owned = state.ownedAccessories.includes(item.id);
+          const equipped = state.equippedAccessories.includes(item.id);
+          return (
+            <div key={item.id} style={{ background: "white", borderRadius: 14, padding: 12, textAlign: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+              <div style={{ fontSize: 30 }}>{item.emoji}</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "#495057", marginTop: 4 }}>{item.name}</div>
+              {!owned ? (
+                <button onClick={() => buy(item)} style={{ marginTop: 8, width: "100%", background: "#FFD8A8", color: "#9C6B00", border: "none", borderRadius: 10, padding: "6px", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
+                  🥕 {item.cost}
+                </button>
+              ) : (
+                <button
+                  onClick={() => toggleEquip(item.id)}
+                  style={{ marginTop: 8, width: "100%", background: equipped ? "#82c91e" : "#E9ECEF", color: equipped ? "white" : "#868e96", border: "none", borderRadius: 10, padding: "6px", fontWeight: 700, fontSize: 12, cursor: "pointer" }}
+                >
+                  {equipped ? "Equipped ✓" : "Equip"}
+                </button>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
