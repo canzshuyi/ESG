@@ -441,7 +441,7 @@ function avatarHtml(stage, equipped, size, bgCss) {
 
 function renderHeader() {
   return '<div class="header">' +
-    '<div class="title">🌸 Eva\\'s Study Garden</div>' +
+    '<div class="title">🌸 Eva\'s Study Garden</div>' +
     '<div class="pills">' +
     '<div class="pill" style="border:2px solid #FFD43B;"><span>⭐</span><span>' + state.stars + '</span></div>' +
     '<div class="pill" style="border:2px solid #FF922B;"><span>🥕</span><span>' + state.carrots + '</span></div>' +
@@ -528,7 +528,7 @@ function renderHome() {
 
   html += '<div class="card" style="background:#FFF0F6;text-align:center;font-size:13px;color:#A61E4D;font-weight:600;">' + msg + '</div>';
 
-  html += '<div style="margin-top:14px;"><div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">📈 This week\\'s progress</div>';
+  html += '<div style="margin-top:14px;"><div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">📈 This week\'s progress</div>';
   html += '<div class="stat-grid">';
   html += '<div class="stat-box"><div class="emoji">✅</div><div class="value">' + tasksThisWeek + '</div><div class="label">Tasks done</div></div>';
   html += '<div class="stat-box"><div class="emoji">🎯</div><div class="value">' + masteredThisWeek + '</div><div class="label">Errors mastered</div></div>';
@@ -536,7 +536,7 @@ function renderHome() {
   html += '</div>';
   if (tasksLastWeek > 0) {
     html += '<div style="margin-top:8px;font-size:12px;text-align:center;font-weight:700;color:' + (taskDelta>=0?'#2B8A3E':'#E8590C') + ';">' +
-      (taskDelta>=0 ? ('🎉 ' + taskDelta + ' more tasks than last week!') : ('Last week you did ' + tasksLastWeek + ', let\\'s beat that!')) + '</div>';
+      (taskDelta>=0 ? ('🎉 ' + taskDelta + ' more tasks than last week!') : ('Last week you did ' + tasksLastWeek + ', let\'s beat that!')) + '</div>';
   }
   html += '</div>';
 
@@ -886,7 +886,7 @@ function generateFromPaper(paperId) {
     if (er.subject === paper.subject && er.note) errorNotes.push(er.note);
   }
   errorNotes = errorNotes.slice(0, 10);
-  var system = "You are a PSLE tutor. You will be given a PDF of a past year exam paper. It may be a scanned, image-based PDF, read it using your vision and document capability, page by page, exactly as if reading scanned photographs of paper. Even if the PDF has no selectable text layer, look at the visual content of each page. Respond ONLY with valid JSON: an array of 5 objects, each with keys: question, answer, explanation. If you genuinely cannot see any readable content in the PDF at all, respond with exactly this and nothing else: {\\"error\\": \\"unreadable\\"}";
+  var system = "You are a PSLE tutor. You will be given a PDF of a past year exam paper. It may be a scanned, image-based PDF, read it using your vision and document capability, page by page, exactly as if reading scanned photographs of paper. Even if the PDF has no selectable text layer, look at the visual content of each page. Respond ONLY with valid JSON: an array of 5 objects, each with keys: question, answer, explanation. If you genuinely cannot see any readable content in the PDF at all, respond with exactly this and nothing else: {\"error\": \"unreadable\"}";
   if (errorNotes.length) system += " The student has previously struggled with: " + errorNotes.join("; ") + ". Prioritise targeting these weak areas.";
 
   var messages = [{ role: "user", content: [
@@ -929,7 +929,7 @@ function renderTimer() {
     html += '<div class="card" style="text-align:center;padding:20px;">';
     html += '<div style="font-size:13px;font-weight:700;color:#868e96;">' + active.label + '</div>';
     html += '<div style="font-size:40px;font-weight:800;color:' + (timerSecondsLeft<60?'#FA5252':'#D6336C') + ';margin:8px 0;font-family:monospace;">' + fmt(timerSecondsLeft) + '</div>';
-    if (timerSecondsLeft === 0) html += '<div style="font-size:14px;font-weight:700;color:#82c91e;">⏰ Time\\'s up! Well done!</div>';
+    if (timerSecondsLeft === 0) html += '<div style="font-size:14px;font-weight:700;color:#82c91e;">⏰ Time\'s up! Well done!</div>';
     html += '<div style="display:flex;gap:8px;justify-content:center;margin-top:8px;">';
     html += '<button id="timerPauseResumeBtn" ' + (timerSecondsLeft===0?'disabled':'') + ' style="background:#A5D8FF;color:#1971C2;border:none;border-radius:10px;padding:8px 16px;font-weight:700;cursor:pointer;">' + (timerRunning?'Pause':'Resume') + '</button>';
     html += '<button id="timerResetBtn" style="background:#FFE3EC;color:#D6336C;border:none;border-radius:10px;padding:8px 16px;font-weight:700;cursor:pointer;">Reset</button></div>';
@@ -1053,13 +1053,13 @@ function renderNamePromptModal() {
   html += '<div style="font-size:40px;">🌱</div><div style="font-weight:800;font-size:16px;color:#D6336C;margin-top:8px;">Name your Study Buddy!</div>';
   html += '<div style="font-size:12px;color:#868e96;margin-top:4px;">Give your little companion a cute name</div>';
   html += '<input id="nameInput" placeholder="e.g. Mochi, Pip, Sunny..." style="width:100%;margin-top:14px;box-sizing:border-box;text-align:center;border:2px solid #FFE3EC;" />';
-  html += '<button class="btn-primary" id="saveNameBtn" style="margin-top:14px;width:100%;">Let\\'s go! ✨</button></div></div>';
+  html += '<button class="btn-primary" id="saveNameBtn" style="margin-top:14px;width:100%;">Let\'s go! ✨</button></div></div>';
   return html;
 }
 function renderApiKeyModal() {
   var html = '<div class="modal-overlay" id="apiKeyOverlay"><div class="modal-box" onclick="event.stopPropagation()">';
   html += '<div style="font-size:36px;">🔑</div><div style="font-weight:800;font-size:15px;color:#D6336C;margin-top:8px;">Connect your Anthropic API key</div>';
-  html += '<div style="font-size:12px;color:#868e96;margin-top:6px;text-align:left;">This standalone site has no server, so AI features (vocab definitions, paper question generation) need your own Anthropic API key. It is saved only in this browser\\'s local storage and sent directly to Anthropic, never anywhere else. Get a key at console.anthropic.com.</div>';
+  html += '<div style="font-size:12px;color:#868e96;margin-top:6px;text-align:left;">This standalone site has no server, so AI features (vocab definitions, paper question generation) need your own Anthropic API key. It is saved only in this browser\'s local storage and sent directly to Anthropic, never anywhere else. Get a key at console.anthropic.com.</div>';
   html += '<input id="apiKeyInput" placeholder="sk-ant-..." style="width:100%;margin-top:14px;box-sizing:border-box;" value="' + escapeHtml(getApiKey()) + '" />';
   html += '<div style="display:flex;gap:8px;margin-top:14px;"><button class="btn-secondary" id="cancelApiKeyBtn" style="flex:1;">Cancel</button><button class="btn-primary" id="saveApiKeyBtn" style="flex:1;">Save</button></div></div></div>';
   return html;
