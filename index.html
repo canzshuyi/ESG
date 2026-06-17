@@ -141,7 +141,7 @@
   .bg-item { border-radius: 14px; padding: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); position: relative; overflow: hidden; }
   .journey-stage { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 12px; margin-bottom: 6px; }
   .vocab-card { background: white; border-radius: 12px; padding: 12px; margin-bottom: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); cursor: pointer; }
-  a.upload-label {
+  .upload-label {
     display: block; text-align: center; color: white; border-radius: 10px;
     padding: 10px; font-weight: 700; font-size: 13px; cursor: pointer;
   }
@@ -152,16 +152,17 @@
 <div id="app"></div>
 
 <script>
-// ====================== CONSTANTS ======================
-const SUBJECTS = ["English", "Maths", "Science"];
-const SUBJECT_COLORS = {
+"use strict";
+
+var SUBJECTS = ["English", "Maths", "Science"];
+var SUBJECT_COLORS = {
   English: { bg: "#FFE3EC", text: "#D6336C" },
   Maths: { bg: "#E3F0FF", text: "#1971C2" },
-  Science: { bg: "#E6FCF5", text: "#0CA678" },
+  Science: { bg: "#E6FCF5", text: "#0CA678" }
 };
-const PSLE_DATE = new Date("2026-09-24T00:00:00");
+var PSLE_DATE = new Date("2026-09-24T00:00:00");
 
-const TIMERS = [
+var TIMERS = [
   { id: "eng1", label: "English Paper 1 (Writing)", mins: 70, tips: [
     "Spend 5-10 min planning your composition before writing.",
     "Check you've used at least 2-3 'wow' vocabulary words.",
@@ -171,14 +172,14 @@ const TIMERS = [
   { id: "eng2", label: "English Paper 2 (Comprehension)", mins: 110, tips: [
     "Read the whole passage once before answering questions.",
     "For 'in your own words' questions, don't copy phrases directly.",
-    "Check the number of marks — give that many points in your answer.",
+    "Check the number of marks, then give that many points in your answer.",
     "Leave time to recheck grammar (subject-verb agreement, tenses).",
-    "For cloze/grammar sections, read the full sentence before choosing."
+    "For cloze and grammar sections, read the full sentence before choosing."
   ]},
   { id: "math1", label: "Maths Paper 1 (No Calculator)", mins: 60, tips: [
     "Check units (cm vs m, g vs kg) before finalising answers.",
     "For MCQ, eliminate obviously wrong options first.",
-    "Re-read the question — did it ask for the difference, total, or remainder?",
+    "Re-read the question: did it ask for the difference, total, or remainder?",
     "Double check your calculations using estimation."
   ]},
   { id: "math2", label: "Maths Paper 2 (With Calculator)", mins: 90, tips: [
@@ -189,24 +190,24 @@ const TIMERS = [
     "Leave 5-10 min to check all your answers at the end."
   ]},
   { id: "sci", label: "Science Paper", mins: 105, tips: [
-    "Underline key terms in the question (e.g. 'explain', 'compare').",
+    "Underline key terms in the question (e.g. explain, compare).",
     "Use correct scientific vocabulary in your answers.",
     "For open-ended questions, link cause and effect clearly.",
     "Check diagrams are labelled if the question asks for one.",
-    "Review answers for completeness — did you answer ALL parts of the question?"
-  ]},
+    "Review answers for completeness: did you answer ALL parts of the question?"
+  ]}
 ];
 
-const STAGES = [
-  { min: 0, name: "Sleepy Seedling", emoji: "🌱", desc: "Just getting started — every garden begins with a tiny seed." },
+var STAGES = [
+  { min: 0, name: "Sleepy Seedling", emoji: "🌱", desc: "Just getting started, every garden begins with a tiny seed." },
   { min: 60, name: "Waking Sprout", emoji: "🐣", desc: "Stretching out and waking up to the world of revision." },
   { min: 150, name: "Focused Bud", emoji: "🌷", desc: "Starting to bloom with focus and good habits." },
   { min: 300, name: "Bright Blossom", emoji: "🌸", desc: "Flourishing! Consistent effort is really paying off." },
   { min: 520, name: "Glowing Scholar", emoji: "✨", desc: "Radiating knowledge and confidence." },
-  { min: 800, name: "Star Sage", emoji: "🌟", desc: "The final form — a true PSLE superstar." },
+  { min: 800, name: "Star Sage", emoji: "🌟", desc: "The final form, a true PSLE superstar." }
 ];
 
-const ACCESSORIES = [
+var ACCESSORIES = [
   { id: "bow", name: "Pink Bow", emoji: "🎀", cost: 40 },
   { id: "star", name: "Star Sticker", emoji: "⭐", cost: 35 },
   { id: "glasses", name: "Smart Glasses", emoji: "🤓", cost: 60 },
@@ -216,43 +217,49 @@ const ACCESSORIES = [
   { id: "crown", name: "Tiny Crown", emoji: "👑", cost: 130 },
   { id: "wand", name: "Magic Wand", emoji: "🪄", cost: 150 },
   { id: "cape", name: "Hero Cape", emoji: "🦸", cost: 170 },
-  { id: "gem", name: "Sparkle Gem", emoji: "💎", cost: 220 },
+  { id: "gem", name: "Sparkle Gem", emoji: "💎", cost: 220 }
 ];
 
-const BACKGROUNDS = [
+var BACKGROUNDS = [
   { id: "bg_default", name: "Soft Pastel", cost: 0, css: "linear-gradient(135deg, #FFE3EC, #E3F0FF)" },
   { id: "bg_meadow", name: "Spring Meadow", cost: 50, css: "linear-gradient(135deg, #D8F5A2, #96F2D7)" },
   { id: "bg_sunset", name: "Cotton Candy Sunset", cost: 90, css: "linear-gradient(135deg, #FFC9DE, #FFD8A8)" },
   { id: "bg_galaxy", name: "Dreamy Galaxy", cost: 140, css: "linear-gradient(135deg, #D0BFFF, #A5D8FF)" },
   { id: "bg_garden", name: "Blossom Garden", cost: 180, css: "linear-gradient(135deg, #FFB3CB, #C3FAE8)" },
-  { id: "bg_gold", name: "Golden Hour", cost: 250, css: "linear-gradient(135deg, #FFE066, #FFC078)" },
+  { id: "bg_gold", name: "Golden Hour", cost: 250, css: "linear-gradient(135deg, #FFE066, #FFC078)" }
 ];
 
-const uid = () => Math.random().toString(36).slice(2, 10);
-function getStage(stars) { let stage = STAGES[0]; for (const s of STAGES) if (stars >= s.min) stage = s; return stage; }
-function nextStage(stars) { return STAGES.find(s => s.min > stars) || null; }
+function uid() { return Math.random().toString(36).slice(2, 10); }
+function getStage(stars) {
+  var stage = STAGES[0];
+  for (var i = 0; i < STAGES.length; i++) { if (stars >= STAGES[i].min) stage = STAGES[i]; }
+  return stage;
+}
+function nextStage(stars) {
+  for (var i = 0; i < STAGES.length; i++) { if (STAGES[i].min > stars) return STAGES[i]; }
+  return null;
+}
 function daysWeeksUntil(target) {
-  const now = new Date();
-  const diffMs = target.getTime() - now.getTime();
-  const days = Math.max(0, Math.ceil(diffMs / 86400000));
-  return { days, weeks: Math.floor(days / 7), remDays: days % 7 };
+  var now = new Date();
+  var diffMs = target.getTime() - now.getTime();
+  var days = Math.max(0, Math.ceil(diffMs / 86400000));
+  return { days: days, weeks: Math.floor(days / 7), remDays: days % 7 };
 }
 function startOfWeek(d) {
-  const date = new Date(d);
-  const day = date.getDay();
+  var date = new Date(d);
+  var day = date.getDay();
   date.setDate(date.getDate() - day + (day === 0 ? -6 : 1));
-  date.setHours(0,0,0,0);
+  date.setHours(0, 0, 0, 0);
   return date;
 }
-function weekKey(ts) { return startOfWeek(new Date(ts)).toISOString().slice(0,10); }
+function weekKey(ts) { return startOfWeek(new Date(ts)).toISOString().slice(0, 10); }
 function escapeHtml(str) {
   if (!str) return "";
-  return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  return String(str).split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;").split('"').join("&quot;");
 }
 
-// ====================== STORAGE ======================
-const STORAGE_KEY = "eva-study-garden-state";
-const DEFAULT_STATE = {
+var STORAGE_KEY = "eva-study-garden-state";
+var DEFAULT_STATE = {
   avatarName: "",
   stars: 0,
   carrots: 0,
@@ -266,334 +273,339 @@ const DEFAULT_STATE = {
   tasks: [],
   errorBank: [],
   vocabBank: [],
-  papers: [],
+  papers: []
 };
 
 function loadState() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return Object.assign({}, DEFAULT_STATE, JSON.parse(raw));
-  } catch(e) { console.error("load failed", e); }
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      var parsed = JSON.parse(raw);
+      var merged = {};
+      for (var k in DEFAULT_STATE) merged[k] = DEFAULT_STATE[k];
+      for (var k2 in parsed) merged[k2] = parsed[k2];
+      return merged;
+    }
+  } catch (e) { console.error("load failed", e); }
   return null;
 }
 function saveState() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-  catch(e) { console.error("save failed", e); }
+  catch (e) { console.error("save failed", e); }
 }
 
-// ====================== AI CALL (BYO API key, optional) ======================
-// Since this is a standalone static site (e.g. GitHub Pages), there is no
-// built-in backend to call Claude on your behalf. To use the Vocab Generator
-// and Paper Question Generator, enter your own Anthropic API key below (stored
-// only in your browser's localStorage, never sent anywhere except Anthropic).
-function getApiKey() {
-  return localStorage.getItem("eva-study-garden-api-key") || "";
-}
-function setApiKey(key) {
-  localStorage.setItem("eva-study-garden-api-key", key);
-}
+function getApiKey() { return localStorage.getItem("eva-study-garden-api-key") || ""; }
+function setApiKey(key) { localStorage.setItem("eva-study-garden-api-key", key); }
 
-async function callClaude(messages, system) {
-  const apiKey = getApiKey();
+function callClaude(messages, system) {
+  var apiKey = getApiKey();
   if (!apiKey) {
-    throw new Error("NO_API_KEY");
+    return Promise.reject(new Error("NO_API_KEY"));
   }
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
+  return fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "x-api-key": apiKey,
       "anthropic-version": "2023-06-01",
-      "anthropic-dangerous-direct-browser-access": "true",
+      "anthropic-dangerous-direct-browser-access": "true"
     },
     body: JSON.stringify({
       model: "claude-sonnet-4-6",
       max_tokens: 1500,
       system: system,
-      messages: messages,
-    }),
+      messages: messages
+    })
+  }).then(function(res) {
+    if (!res.ok) {
+      return res.text().then(function(errText) {
+        throw new Error("API_ERROR: " + errText);
+      });
+    }
+    return res.json();
+  }).then(function(data) {
+    var blocks = data.content || [];
+    var out = "";
+    for (var i = 0; i < blocks.length; i++) {
+      if (blocks[i].type === "text") out += blocks[i].text + "\n";
+    }
+    return out;
   });
-  if (!res.ok) {
-    const errText = await res.text();
-    throw new Error("API_ERROR: " + errText);
-  }
-  const data = await res.json();
-  const textBlocks = (data.content || []).filter(c => c.type === "text").map(c => c.text);
-  return textBlocks.join("\n");
 }
 
 function extractJson(text) {
-  let clean = text.trim().replace(/```json/g,"").replace(/```/g,"").trim();
-  try { return JSON.parse(clean); } catch(e) {
-    const firstObj = clean.indexOf("{");
-    const firstArr = clean.indexOf("[");
-    let first = -1;
+  var clean = text.trim();
+  clean = clean.split("```json").join("").split("```").join("").trim();
+  try {
+    return JSON.parse(clean);
+  } catch (e) {
+    var firstObj = clean.indexOf("{");
+    var firstArr = clean.indexOf("[");
+    var first = -1;
     if (firstObj === -1) first = firstArr;
     else if (firstArr === -1) first = firstObj;
     else first = Math.min(firstObj, firstArr);
-    const last = Math.max(clean.lastIndexOf("}"), clean.lastIndexOf("]"));
+    var last = Math.max(clean.lastIndexOf("}"), clean.lastIndexOf("]"));
     if (first !== -1 && last !== -1) {
-      try { return JSON.parse(clean.slice(first, last+1)); } catch(e2) { return null; }
+      try { return JSON.parse(clean.slice(first, last + 1)); } catch (e2) { return null; }
     }
     return null;
   }
 }
 
 function readFileAsDataURL(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
+  return new Promise(function(resolve, reject) {
+    var reader = new FileReader();
+    reader.onload = function() { resolve(reader.result); };
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
 }
 
-// ====================== STATE ======================
-let state = loadState() || JSON.parse(JSON.stringify(DEFAULT_STATE));
-let currentTab = "home";
-let showNamePrompt = !state.avatarName;
-let showJourneyModal = false;
-let showApiKeyModal = false;
-let viewingError = null;
-let expandedVocabId = null;
-let vocabLoading = false;
-let papersGenerating = false;
-let papersQuestions = null;
-let papersActivePaperId = null;
-let papersErrorMsg = null;
-let timerActiveId = null;
-let timerSecondsLeft = 0;
-let timerRunning = false;
-let timerInterval = null;
+var state = loadState() || JSON.parse(JSON.stringify(DEFAULT_STATE));
+var currentTab = "home";
+var showNamePrompt = !state.avatarName;
+var showJourneyModal = false;
+var showApiKeyModal = false;
+var viewingError = null;
+var expandedVocabId = null;
+var vocabLoading = false;
+var papersGenerating = false;
+var papersQuestions = null;
+var papersActivePaperId = null;
+var papersErrorMsg = null;
+var timerActiveId = null;
+var timerSecondsLeft = 0;
+var timerRunning = false;
+var timerInterval = null;
 
 function persist() { saveState(); }
 
 function flashToast(msg) {
-  const el = document.createElement("div");
+  var el = document.createElement("div");
   el.className = "toast";
   el.textContent = msg;
   document.body.appendChild(el);
-  setTimeout(() => { el.style.opacity = "0"; }, 1900);
-  setTimeout(() => el.remove(), 2300);
+  setTimeout(function() { el.style.opacity = "0"; }, 1900);
+  setTimeout(function() { el.remove(); }, 2300);
 }
 
 function burstConfetti() {
-  const colors = ["#FFB3CB","#A5D8FF","#96F2D7","#FFE066","#D0BFFF"];
-  for (let i=0;i<24;i++) {
-    const piece = document.createElement("div");
-    const left = Math.random()*100;
-    const delay = Math.random()*0.4;
-    const dur = 1.2+Math.random()*0.8;
-    const color = colors[i % colors.length];
-    piece.style.position = "fixed";
-    piece.style.left = left+"%";
-    piece.style.top = "-10px";
-    piece.style.width = "8px";
-    piece.style.height = "8px";
-    piece.style.background = color;
-    piece.style.borderRadius = i%2===0 ? "50%" : "2px";
-    piece.style.zIndex = "999";
-    piece.style.pointerEvents = "none";
-    piece.style.animation = `fall ${dur}s ${delay}s ease-in forwards`;
-    document.body.appendChild(piece);
-    setTimeout(() => piece.remove(), (dur+delay)*1000+100);
+  var colors = ["#FFB3CB", "#A5D8FF", "#96F2D7", "#FFE066", "#D0BFFF"];
+  for (var i = 0; i < 24; i++) {
+    (function(i) {
+      var piece = document.createElement("div");
+      var left = Math.random() * 100;
+      var delay = Math.random() * 0.4;
+      var dur = 1.2 + Math.random() * 0.8;
+      var color = colors[i % colors.length];
+      piece.style.position = "fixed";
+      piece.style.left = left + "%";
+      piece.style.top = "-10px";
+      piece.style.width = "8px";
+      piece.style.height = "8px";
+      piece.style.background = color;
+      piece.style.borderRadius = i % 2 === 0 ? "50%" : "2px";
+      piece.style.zIndex = "999";
+      piece.style.pointerEvents = "none";
+      piece.style.animation = "fall " + dur + "s " + delay + "s ease-in forwards";
+      document.body.appendChild(piece);
+      setTimeout(function() { piece.remove(); }, (dur + delay) * 1000 + 100);
+    })(i);
   }
 }
-const styleTag = document.createElement("style");
-styleTag.textContent = "@keyframes fall { to { transform: translateY(110vh) rotate(360deg); opacity:0.3; } }";
+var styleTag = document.createElement("style");
+styleTag.textContent = "@keyframes fall { to { transform: translateY(110vh) rotate(360deg); opacity: 0.3; } }";
 document.head.appendChild(styleTag);
 
-// ====================== AVATAR RENDER ======================
 function avatarHtml(stage, equipped, size, bgCss) {
-  const accMap = {
-    bow: `<span style="position:absolute;top:-6px;left:50%;transform:translateX(-50%);font-size:${size*0.22}px;">🎀</span>`,
-    glasses: `<span style="position:absolute;top:32%;left:50%;transform:translateX(-50%);font-size:${size*0.26}px;">🤓</span>`,
-    crown: `<span style="position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:${size*0.24}px;">👑</span>`,
-    star: `<span style="position:absolute;bottom:-2px;right:-2px;font-size:${size*0.2}px;">⭐</span>`,
-    flower: `<span style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-size:${size*0.24}px;">💐</span>`,
-    ribbon: `<span style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);font-size:${size*0.22}px;">🌈</span>`,
-    bag: `<span style="position:absolute;bottom:-4px;left:-4px;font-size:${size*0.2}px;">🎒</span>`,
-    wand: `<span style="position:absolute;bottom:0;right:-8px;font-size:${size*0.22}px;">🪄</span>`,
-    cape: `<span style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);font-size:${size*0.3}px;">🦸</span>`,
-    gem: `<span style="position:absolute;top:50%;right:-10px;font-size:${size*0.2}px;">💎</span>`,
+  var accMap = {
+    bow: '<span style="position:absolute;top:-6px;left:50%;transform:translateX(-50%);font-size:' + (size*0.22) + 'px;">🎀</span>',
+    glasses: '<span style="position:absolute;top:32%;left:50%;transform:translateX(-50%);font-size:' + (size*0.26) + 'px;">🤓</span>',
+    crown: '<span style="position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:' + (size*0.24) + 'px;">👑</span>',
+    star: '<span style="position:absolute;bottom:-2px;right:-2px;font-size:' + (size*0.2) + 'px;">⭐</span>',
+    flower: '<span style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-size:' + (size*0.24) + 'px;">💐</span>',
+    ribbon: '<span style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);font-size:' + (size*0.22) + 'px;">🌈</span>',
+    bag: '<span style="position:absolute;bottom:-4px;left:-4px;font-size:' + (size*0.2) + 'px;">🎒</span>',
+    wand: '<span style="position:absolute;bottom:0;right:-8px;font-size:' + (size*0.22) + 'px;">🪄</span>',
+    cape: '<span style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);font-size:' + (size*0.3) + 'px;">🦸</span>',
+    gem: '<span style="position:absolute;top:50%;right:-10px;font-size:' + (size*0.2) + 'px;">💎</span>'
   };
-  let accHtml = "";
-  equipped.forEach(id => { if (accMap[id]) accHtml += accMap[id]; });
-  return `
-    <div style="width:${size}px;height:${size}px;border-radius:50%;background:${bgCss};
-      display:flex;align-items:center;justify-content:center;font-size:${size*0.5}px;
-      position:relative;box-shadow:0 6px 20px rgba(255,179,203,0.4);border:4px solid white;margin:0 auto;">
-      <span>${stage.emoji}</span>
-      ${accHtml}
-    </div>`;
+  var accHtml = "";
+  for (var i = 0; i < equipped.length; i++) { if (accMap[equipped[i]]) accHtml += accMap[equipped[i]]; }
+  return '<div style="width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:' + bgCss + ';' +
+    'display:flex;align-items:center;justify-content:center;font-size:' + (size*0.5) + 'px;' +
+    'position:relative;box-shadow:0 6px 20px rgba(255,179,203,0.4);border:4px solid white;margin:0 auto;">' +
+    '<span>' + stage.emoji + '</span>' + accHtml + '</div>';
 }
 
-// ====================== HEADER + NAV ======================
 function renderHeader() {
-  return `
-    <div class="header">
-      <div class="title">🌸 Eva's Study Garden</div>
-      <div class="pills">
-        <div class="pill" style="border:2px solid #FFD43B;"><span>⭐</span><span>${state.stars}</span></div>
-        <div class="pill" style="border:2px solid #FF922B;"><span>🥕</span><span>${state.carrots}</span></div>
-      </div>
-    </div>`;
+  return '<div class="header">' +
+    '<div class="title">🌸 Eva\\'s Study Garden</div>' +
+    '<div class="pills">' +
+    '<div class="pill" style="border:2px solid #FFD43B;"><span>⭐</span><span>' + state.stars + '</span></div>' +
+    '<div class="pill" style="border:2px solid #FF922B;"><span>🥕</span><span>' + state.carrots + '</span></div>' +
+    '</div></div>';
 }
 
-const NAV_ITEMS = [
+var NAV_ITEMS = [
   { id: "home", label: "Home", emoji: "🏠" },
   { id: "tasks", label: "Tasks", emoji: "📋" },
   { id: "errors", label: "Errors", emoji: "📸" },
   { id: "vocab", label: "Vocab", emoji: "📖" },
   { id: "papers", label: "Papers", emoji: "📄" },
   { id: "timer", label: "Timer", emoji: "⏱" },
-  { id: "shop", label: "Shop", emoji: "🛍" },
+  { id: "shop", label: "Shop", emoji: "🛍" }
 ];
 function renderNav() {
-  return `<div class="navbar">${NAV_ITEMS.map(it => `
-    <button class="navbtn ${currentTab===it.id?'active':''}" data-tab="${it.id}">
-      <span class="emoji">${it.emoji}</span><span>${it.label}</span>
-    </button>`).join("")}</div>`;
+  var html = '<div class="navbar">';
+  for (var i = 0; i < NAV_ITEMS.length; i++) {
+    var it = NAV_ITEMS[i];
+    html += '<button class="navbtn ' + (currentTab===it.id ? 'active' : '') + '" data-tab="' + it.id + '">' +
+      '<span class="emoji">' + it.emoji + '</span><span>' + it.label + '</span></button>';
+  }
+  html += '</div>';
+  return html;
 }
 
-// ====================== HOME TAB ======================
 function renderHome() {
-  const stage = getStage(state.stars);
-  const upcoming = nextStage(state.stars);
-  const progress = upcoming ? Math.min(100, ((state.stars - stage.min)/(upcoming.min - stage.min))*100) : 100;
-  const { days, weeks, remDays } = daysWeeksUntil(PSLE_DATE);
-  const now = Date.now();
-  const thisWeekKey = weekKey(now);
-  const lastWeekKey = weekKey(now - 7*86400000);
-  const tasksThisWeek = state.tasks.filter(t => t.done && t.completedAt && weekKey(t.completedAt)===thisWeekKey).length;
-  const tasksLastWeek = state.tasks.filter(t => t.done && t.completedAt && weekKey(t.completedAt)===lastWeekKey).length;
-  const masteredThisWeek = state.errorBank.filter(e => e.mastered && weekKey(e.createdAt)===thisWeekKey).length;
-  const vocabThisWeek = state.vocabBank.filter(v => weekKey(v.createdAt)===thisWeekKey).length;
-  const taskDelta = tasksThisWeek - tasksLastWeek;
-  const bg = BACKGROUNDS.find(b => b.id === state.equippedBackground) || BACKGROUNDS[0];
+  var stage = getStage(state.stars);
+  var upcoming = nextStage(state.stars);
+  var progress = upcoming ? Math.min(100, ((state.stars - stage.min) / (upcoming.min - stage.min)) * 100) : 100;
+  var dw = daysWeeksUntil(PSLE_DATE);
+  var now = Date.now();
+  var thisWeekKey = weekKey(now);
+  var lastWeekKey = weekKey(now - 7 * 86400000);
+  var tasksThisWeek = 0, tasksLastWeek = 0, masteredThisWeek = 0, vocabThisWeek = 0;
+  for (var i = 0; i < state.tasks.length; i++) {
+    var t = state.tasks[i];
+    if (t.done && t.completedAt) {
+      if (weekKey(t.completedAt) === thisWeekKey) tasksThisWeek++;
+      if (weekKey(t.completedAt) === lastWeekKey) tasksLastWeek++;
+    }
+  }
+  for (var j = 0; j < state.errorBank.length; j++) {
+    var er = state.errorBank[j];
+    if (er.mastered && weekKey(er.createdAt) === thisWeekKey) masteredThisWeek++;
+  }
+  for (var k = 0; k < state.vocabBank.length; k++) {
+    if (weekKey(state.vocabBank[k].createdAt) === thisWeekKey) vocabThisWeek++;
+  }
+  var taskDelta = tasksThisWeek - tasksLastWeek;
+  var bg = null;
+  for (var b = 0; b < BACKGROUNDS.length; b++) { if (BACKGROUNDS[b].id === state.equippedBackground) bg = BACKGROUNDS[b]; }
+  if (!bg) bg = BACKGROUNDS[0];
 
-  const motivationalMsgs = [
-    `${state.avatarName || "Your buddy"} believes in you! 💪`,
+  var motivationalMsgs = [
+    (state.avatarName || "Your buddy") + " believes in you! 💪",
     "Every task done is a step closer to PSLE success! 🌟",
     "Small steps every day lead to big results! 🌱",
-    "You've got this, keep the streak alive! 🔥",
+    "You've got this, keep the streak alive! 🔥"
   ];
-  const msg = motivationalMsgs[new Date().getDate() % motivationalMsgs.length];
+  var msg = motivationalMsgs[new Date().getDate() % motivationalMsgs.length];
 
-  return `
-    <div class="card" style="text-align:center;padding:20px;">
-      <div id="avatarNameClick" style="font-size:13px;font-weight:700;color:#D6336C;margin-bottom:8px;cursor:pointer;">${escapeHtml(state.avatarName || "Your Buddy")} ✏️</div>
-      <div id="avatarClick" style="cursor:pointer;">${avatarHtml(stage, state.equippedAccessories, 120, bg.css)}</div>
-      <div style="margin-top:10px;font-weight:800;font-size:17px;color:#495057;">${stage.name}</div>
-      <div style="font-size:11px;color:#bdb8ce;margin-top:2px;">(Tap your buddy to see the full growth journey)</div>
-      <div style="font-size:12px;color:#adb5bd;margin-top:6px;">
-        ${upcoming ? `${upcoming.min - state.stars} ⭐ to evolve into ${upcoming.name} ${upcoming.emoji}` : "Max evolution reached! 🎉"}
-      </div>
-      <div style="background:#f1f3f5;border-radius:10px;height:10px;margin-top:10px;overflow:hidden;">
-        <div style="width:${progress}%;height:100%;background:linear-gradient(90deg,#FFB3CB,#A5D8FF);border-radius:10px;"></div>
-      </div>
-      <button class="btn-secondary" id="shareCardBtn" style="margin-top:16px;">📤 Share Avatar Card</button>
-    </div>
+  var html = '';
+  html += '<div class="card" style="text-align:center;padding:20px;">';
+  html += '<div id="avatarNameClick" style="font-size:13px;font-weight:700;color:#D6336C;margin-bottom:8px;cursor:pointer;">' + escapeHtml(state.avatarName || "Your Buddy") + ' ✏️</div>';
+  html += '<div id="avatarClick" style="cursor:pointer;">' + avatarHtml(stage, state.equippedAccessories, 120, bg.css) + '</div>';
+  html += '<div style="margin-top:10px;font-weight:800;font-size:17px;color:#495057;">' + stage.name + '</div>';
+  html += '<div style="font-size:11px;color:#bdb8ce;margin-top:2px;">(Tap your buddy to see the full growth journey)</div>';
+  html += '<div style="font-size:12px;color:#adb5bd;margin-top:6px;">' + (upcoming ? ((upcoming.min - state.stars) + ' ⭐ to evolve into ' + upcoming.name + ' ' + upcoming.emoji) : "Max evolution reached! 🎉") + '</div>';
+  html += '<div style="background:#f1f3f5;border-radius:10px;height:10px;margin-top:10px;overflow:hidden;"><div style="width:' + progress + '%;height:100%;background:linear-gradient(90deg,#FFB3CB,#A5D8FF);border-radius:10px;"></div></div>';
+  html += '<button class="btn-secondary" id="shareCardBtn" style="margin-top:16px;">📤 Share Avatar Card</button>';
+  html += '</div>';
 
-    <div class="card" style="background:linear-gradient(135deg,#FFD8A8,#FFEC99);text-align:center;">
-      <div style="font-size:12px;font-weight:700;color:#9C6B00;">📅 PSLE Countdown</div>
-      <div style="font-size:24px;font-weight:800;color:#9C6B00;">${days} days</div>
-      <div style="font-size:11px;color:#9C6B00;">(${weeks} weeks ${remDays} days · 24 Sep 2026)</div>
-    </div>
+  html += '<div class="card" style="background:linear-gradient(135deg,#FFD8A8,#FFEC99);text-align:center;">';
+  html += '<div style="font-size:12px;font-weight:700;color:#9C6B00;">📅 PSLE Countdown</div>';
+  html += '<div style="font-size:24px;font-weight:800;color:#9C6B00;">' + dw.days + ' days</div>';
+  html += '<div style="font-size:11px;color:#9C6B00;">(' + dw.weeks + ' weeks ' + dw.remDays + ' days · 24 Sep 2026)</div>';
+  html += '</div>';
 
-    <div class="card" style="display:flex;align-items:center;gap:12px;">
-      <div style="font-size:30px;">🔥</div>
-      <div style="flex:1;">
-        <div style="font-weight:800;font-size:16px;color:#495057;">${state.streak} day streak</div>
-        <div style="font-size:11px;color:#adb5bd;">${state.freezeAvailable ? "🧊 1 streak freeze available — miss a day without losing your streak!" : "No freeze available — complete tasks to earn one back."}</div>
-      </div>
-    </div>
+  html += '<div class="card" style="display:flex;align-items:center;gap:12px;">';
+  html += '<div style="font-size:30px;">🔥</div>';
+  html += '<div style="flex:1;"><div style="font-weight:800;font-size:16px;color:#495057;">' + state.streak + ' day streak</div>';
+  html += '<div style="font-size:11px;color:#adb5bd;">' + (state.freezeAvailable ? "🧊 1 streak freeze available — miss a day without losing your streak!" : "No freeze available — complete tasks to earn one back.") + '</div></div></div>';
 
-    <div class="card" style="background:#FFF0F6;text-align:center;font-size:13px;color:#A61E4D;font-weight:600;">
-      ${msg}
-    </div>
+  html += '<div class="card" style="background:#FFF0F6;text-align:center;font-size:13px;color:#A61E4D;font-weight:600;">' + msg + '</div>';
 
-    <div style="margin-top:14px;">
-      <div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">📈 This week's progress</div>
-      <div class="stat-grid">
-        <div class="stat-box"><div class="emoji">✅</div><div class="value">${tasksThisWeek}</div><div class="label">Tasks done</div></div>
-        <div class="stat-box"><div class="emoji">🎯</div><div class="value">${masteredThisWeek}</div><div class="label">Errors mastered</div></div>
-        <div class="stat-box"><div class="emoji">📖</div><div class="value">${vocabThisWeek}</div><div class="label">New vocab</div></div>
-      </div>
-      ${tasksLastWeek > 0 ? `<div style="margin-top:8px;font-size:12px;text-align:center;font-weight:700;color:${taskDelta>=0?'#2B8A3E':'#E8590C'};">
-        ${taskDelta>=0 ? `🎉 ${taskDelta} more tasks than last week!` : `Last week you did ${tasksLastWeek}, let's beat that!`}
-      </div>` : ""}
-    </div>
+  html += '<div style="margin-top:14px;"><div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">📈 This week\\'s progress</div>';
+  html += '<div class="stat-grid">';
+  html += '<div class="stat-box"><div class="emoji">✅</div><div class="value">' + tasksThisWeek + '</div><div class="label">Tasks done</div></div>';
+  html += '<div class="stat-box"><div class="emoji">🎯</div><div class="value">' + masteredThisWeek + '</div><div class="label">Errors mastered</div></div>';
+  html += '<div class="stat-box"><div class="emoji">📖</div><div class="value">' + vocabThisWeek + '</div><div class="label">New vocab</div></div>';
+  html += '</div>';
+  if (tasksLastWeek > 0) {
+    html += '<div style="margin-top:8px;font-size:12px;text-align:center;font-weight:700;color:' + (taskDelta>=0?'#2B8A3E':'#E8590C') + ';">' +
+      (taskDelta>=0 ? ('🎉 ' + taskDelta + ' more tasks than last week!') : ('Last week you did ' + tasksLastWeek + ', let\\'s beat that!')) + '</div>';
+  }
+  html += '</div>';
 
-    <div class="card" style="margin-top:14px;background:#FFF9DB;border:2px dashed #FFE066;font-size:13px;color:#846b00;">
-      💡 Tip: Complete tasks, log errors, and review vocab to earn Stars (for growth) and Carrots (for the shop)!
-    </div>
-  `;
+  html += '<div class="card" style="margin-top:14px;background:#FFF9DB;border:2px dashed #FFE066;font-size:13px;color:#846b00;">💡 Tip: Complete tasks, log errors, and review vocab to earn Stars (for growth) and Carrots (for the shop)!</div>';
+
+  return html;
 }
 
 function renderJourneyModal() {
-  const stage = getStage(state.stars);
-  return `
-  <div class="modal-overlay" id="journeyOverlay">
-    <div class="modal-box" onclick="event.stopPropagation()">
-      <div style="font-weight:800;font-size:16px;color:#D6336C;margin-bottom:4px;">🌱 The Growth Journey</div>
-      <div style="font-size:12px;color:#868e96;margin-bottom:14px;">From sleepy seedling to star sage</div>
-      ${STAGES.map(s => {
-        const reached = state.stars >= s.min;
-        const isCurrent = s.name === stage.name;
-        return `<div class="journey-stage" style="background:${isCurrent ? '#FFE3EC' : (reached ? '#F8F9FA' : '#F8F9FA')};opacity:${reached?1:0.45};border:${isCurrent ? '2px solid #FFB3CB':'2px solid transparent'};">
-          <div style="font-size:28px;">${s.emoji}</div>
-          <div style="text-align:left;flex:1;">
-            <div style="font-weight:700;font-size:13px;color:#495057;">${s.name} ${isCurrent ? '· current' : ''}</div>
-            <div style="font-size:11px;color:#adb5bd;">${s.desc}</div>
-            <div style="font-size:10px;color:#ced4da;margin-top:2px;">${s.min}+ ⭐</div>
-          </div>
-          ${reached ? '<div style="font-size:16px;color:#82c91e;">✓</div>' : ''}
-        </div>`;
-      }).join("")}
-      <button class="btn-primary" id="closeJourneyBtn" style="margin-top:10px;width:100%;">Close</button>
-    </div>
-  </div>`;
+  var stage = getStage(state.stars);
+  var html = '<div class="modal-overlay" id="journeyOverlay"><div class="modal-box" onclick="event.stopPropagation()">';
+  html += '<div style="font-weight:800;font-size:16px;color:#D6336C;margin-bottom:4px;">🌱 The Growth Journey</div>';
+  html += '<div style="font-size:12px;color:#868e96;margin-bottom:14px;">From sleepy seedling to star sage</div>';
+  for (var i = 0; i < STAGES.length; i++) {
+    var s = STAGES[i];
+    var reached = state.stars >= s.min;
+    var isCurrent = s.name === stage.name;
+    html += '<div class="journey-stage" style="background:' + (isCurrent ? '#FFE3EC' : '#F8F9FA') + ';opacity:' + (reached?1:0.45) + ';border:' + (isCurrent ? '2px solid #FFB3CB' : '2px solid transparent') + ';">';
+    html += '<div style="font-size:28px;">' + s.emoji + '</div>';
+    html += '<div style="text-align:left;flex:1;"><div style="font-weight:700;font-size:13px;color:#495057;">' + s.name + (isCurrent ? ' · current' : '') + '</div>';
+    html += '<div style="font-size:11px;color:#adb5bd;">' + s.desc + '</div>';
+    html += '<div style="font-size:10px;color:#ced4da;margin-top:2px;">' + s.min + '+ ⭐</div></div>';
+    html += reached ? '<div style="font-size:16px;color:#82c91e;">✓</div>' : '';
+    html += '</div>';
+  }
+  html += '<button class="btn-primary" id="closeJourneyBtn" style="margin-top:10px;width:100%;">Close</button>';
+  html += '</div></div>';
+  return html;
 }
 
-// ====================== TASKS TAB ======================
 function renderTasks() {
-  const pending = state.tasks.filter(t => !t.done);
-  const done = state.tasks.filter(t => t.done);
-  return `
-    <div class="card" style="display:flex;gap:6px;">
-      <select id="taskSubjectSelect">${SUBJECTS.map(s=>`<option value="${s}">${s}</option>`).join("")}</select>
-      <input id="taskTextInput" placeholder="e.g. Complete 10 Maths questions" style="flex:1;" />
-      <button class="btn-primary" id="addTaskBtn" style="padding:0 14px;">+</button>
-    </div>
-    ${pending.length===0 && done.length===0 ? `<div class="empty"><div class="emoji">📋</div><div class="text">No tasks yet. Add your first revision task above!</div></div>` : ""}
-    ${pending.map(t => taskRowHtml(t)).join("")}
-    ${done.length>0 ? `<div style="margin-top:14px;font-size:12px;color:#adb5bd;font-weight:700;">COMPLETED</div>` : ""}
-    ${done.map(t => taskRowHtml(t)).join("")}
-  `;
+  var pending = [], done = [];
+  for (var i = 0; i < state.tasks.length; i++) { (state.tasks[i].done ? done : pending).push(state.tasks[i]); }
+  var html = '<div class="card" style="display:flex;gap:6px;">';
+  html += '<select id="taskSubjectSelect">';
+  for (var s = 0; s < SUBJECTS.length; s++) html += '<option value="' + SUBJECTS[s] + '">' + SUBJECTS[s] + '</option>';
+  html += '</select>';
+  html += '<input id="taskTextInput" placeholder="e.g. Complete 10 Maths questions" style="flex:1;" />';
+  html += '<button class="btn-primary" id="addTaskBtn" style="padding:0 14px;">+</button></div>';
+  if (pending.length === 0 && done.length === 0) {
+    html += '<div class="empty"><div class="emoji">📋</div><div class="text">No tasks yet. Add your first revision task above!</div></div>';
+  }
+  for (var p = 0; p < pending.length; p++) html += taskRowHtml(pending[p]);
+  if (done.length > 0) html += '<div style="margin-top:14px;font-size:12px;color:#adb5bd;font-weight:700;">COMPLETED</div>';
+  for (var d = 0; d < done.length; d++) html += taskRowHtml(done[d]);
+  return html;
 }
 function taskRowHtml(t) {
-  const c = SUBJECT_COLORS[t.subject] || SUBJECT_COLORS.English;
-  return `<div class="task-row" style="opacity:${t.done?0.6:1};">
-    <input type="checkbox" data-toggle-task="${t.id}" ${t.done?'checked':''} style="width:18px;height:18px;accent-color:#FFB3CB;" />
-    <span class="subject-pill" style="color:${c.text};background:${c.bg};">${t.subject}</span>
-    <span style="flex:1;font-size:13px;text-decoration:${t.done?'line-through':'none'};color:#495057;">${escapeHtml(t.text)}</span>
-    <button data-delete-task="${t.id}" style="border:none;background:none;color:#dee2e6;cursor:pointer;font-size:14px;">✕</button>
-  </div>`;
+  var c = SUBJECT_COLORS[t.subject] || SUBJECT_COLORS.English;
+  return '<div class="task-row" style="opacity:' + (t.done?0.6:1) + ';">' +
+    '<input type="checkbox" data-toggle-task="' + t.id + '" ' + (t.done?'checked':'') + ' style="width:18px;height:18px;accent-color:#FFB3CB;" />' +
+    '<span class="subject-pill" style="color:' + c.text + ';background:' + c.bg + ';">' + t.subject + '</span>' +
+    '<span style="flex:1;font-size:13px;text-decoration:' + (t.done?'line-through':'none') + ';color:#495057;">' + escapeHtml(t.text) + '</span>' +
+    '<button data-delete-task="' + t.id + '" style="border:none;background:none;color:#dee2e6;cursor:pointer;font-size:14px;">✕</button></div>';
 }
 
 function toggleTask(id) {
-  const task = state.tasks.find(t => t.id===id);
+  var task = null;
+  for (var i = 0; i < state.tasks.length; i++) { if (state.tasks[i].id === id) task = state.tasks[i]; }
   if (!task) return;
-  const willBeDone = !task.done;
+  var willBeDone = !task.done;
   task.done = willBeDone;
   task.completedAt = willBeDone ? Date.now() : null;
   if (willBeDone) {
     state.stars += 2;
     state.carrots += 1;
-    const today = new Date().toDateString();
+    var today = new Date().toDateString();
     if (state.lastCompletionDate !== today) {
-      const yesterday = new Date(Date.now()-86400000).toDateString();
+      var yesterday = new Date(Date.now() - 86400000).toDateString();
       if (state.lastCompletionDate === yesterday) {
         state.streak += 1;
       } else if (state.freezeAvailable && state.lastCompletionDate) {
@@ -603,254 +615,262 @@ function toggleTask(id) {
         state.streak = 1;
       }
       state.lastCompletionDate = today;
-      if (state.streak>0 && state.streak%7===0) state.freezeAvailable = true;
+      if (state.streak > 0 && state.streak % 7 === 0) state.freezeAvailable = true;
     }
     burstConfetti();
     flashToast("+2 ⭐ +1 🥕 Task complete!");
   } else {
-    state.stars = Math.max(0, state.stars-2);
-    state.carrots = Math.max(0, state.carrots-1);
+    state.stars = Math.max(0, state.stars - 2);
+    state.carrots = Math.max(0, state.carrots - 1);
   }
   persist();
   render();
 }
 function deleteTask(id) {
-  state.tasks = state.tasks.filter(t => t.id !== id);
+  var newTasks = [];
+  for (var i = 0; i < state.tasks.length; i++) { if (state.tasks[i].id !== id) newTasks.push(state.tasks[i]); }
+  state.tasks = newTasks;
   persist(); render();
 }
 function addTask() {
-  const subject = document.getElementById("taskSubjectSelect").value;
-  const text = document.getElementById("taskTextInput").value.trim();
+  var subject = document.getElementById("taskSubjectSelect").value;
+  var text = document.getElementById("taskTextInput").value.trim();
   if (!text) return;
-  state.tasks.unshift({ id: uid(), text, subject, done:false, createdAt: Date.now() });
+  state.tasks.unshift({ id: uid(), text: text, subject: subject, done: false, createdAt: Date.now() });
   persist(); render();
 }
 
-// ====================== ERROR BANK TAB ======================
-let errorFilter = "All";
-let errorFormSubject = "English";
-let errorFormNote = "";
-let errorUploading = false;
+var errorFilter = "All";
+var errorFormSubject = "English";
+var errorFormNote = "";
+var errorUploading = false;
 
 function renderErrors() {
-  const filtered = state.errorBank.filter(er => errorFilter==="All" || er.subject===errorFilter);
-  return `
-    <div class="card">
-      <div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">📸 Log a question you got wrong</div>
-      <select id="errorSubjectSelect" style="width:100%;margin-bottom:8px;">${SUBJECTS.map(s=>`<option value="${s}" ${s===errorFormSubject?'selected':''}>${s}</option>`).join("")}</select>
-      <input id="errorNoteInput" placeholder="Optional note, e.g. 'Forgot to carry the remainder'" style="width:100%;margin-bottom:8px;box-sizing:border-box;" value="${escapeHtml(errorFormNote)}" />
-      <label class="upload-label" style="background:${errorUploading?'#dee2e6':'#FFB3CB'};">
-        ${errorUploading ? "Uploading..." : "📷 Upload Photo of Question"}
-        <input type="file" accept="image/*" capture="environment" id="errorFileInput" style="display:none;" />
-      </label>
-    </div>
-    <div style="display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;">
-      ${["All",...SUBJECTS].map(s => `<button data-error-filter="${s}" style="flex-shrink:0;border:none;background:${errorFilter===s?'#495057':'white'};color:${errorFilter===s?'white':'#868e96'};border-radius:12px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;">${s}</button>`).join("")}
-    </div>
-    ${filtered.length===0 ? `<div class="empty"><div class="emoji">📸</div><div class="text">No errors logged yet for this subject.</div></div>` : ""}
-    <div class="err-grid">
-      ${filtered.map(er => {
-        const c = SUBJECT_COLORS[er.subject] || SUBJECT_COLORS.English;
-        return `<div class="err-card" style="opacity:${er.mastered?0.55:1};">
-          <img src="${er.image}" data-view-error="${er.id}" />
-          <div class="body">
-            <span class="subject-pill" style="color:${c.text};background:${c.bg};">${er.subject}</span>
-            ${er.note ? `<div style="font-size:11px;color:#868e96;margin-top:4px;">${escapeHtml(er.note)}</div>` : ""}
-            <div style="display:flex;justify-content:space-between;margin-top:6px;">
-              <button data-toggle-mastered="${er.id}" style="border:none;background:none;font-size:11px;color:${er.mastered?'#82c91e':'#adb5bd'};cursor:pointer;font-weight:700;">${er.mastered?'✓ Mastered':'Mark mastered'}</button>
-              <button data-delete-error="${er.id}" style="border:none;background:none;color:#ffc9c9;cursor:pointer;">✕</button>
-            </div>
-          </div>
-        </div>`;
-      }).join("")}
-    </div>
-  `;
+  var filtered = [];
+  for (var i = 0; i < state.errorBank.length; i++) {
+    var er = state.errorBank[i];
+    if (errorFilter === "All" || er.subject === errorFilter) filtered.push(er);
+  }
+  var html = '<div class="card"><div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">📸 Log a question you got wrong</div>';
+  html += '<select id="errorSubjectSelect" style="width:100%;margin-bottom:8px;">';
+  for (var s = 0; s < SUBJECTS.length; s++) html += '<option value="' + SUBJECTS[s] + '" ' + (SUBJECTS[s]===errorFormSubject?'selected':'') + '>' + SUBJECTS[s] + '</option>';
+  html += '</select>';
+  html += '<input id="errorNoteInput" placeholder="Optional note, e.g. Forgot to carry the remainder" style="width:100%;margin-bottom:8px;box-sizing:border-box;" value="' + escapeHtml(errorFormNote) + '" />';
+  html += '<label class="upload-label" style="background:' + (errorUploading?'#dee2e6':'#FFB3CB') + ';">' + (errorUploading ? "Uploading..." : "📷 Upload Photo of Question") +
+    '<input type="file" accept="image/*" capture="environment" id="errorFileInput" style="display:none;" /></label></div>';
+
+  html += '<div style="display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;">';
+  var filters = ["All"].concat(SUBJECTS);
+  for (var f = 0; f < filters.length; f++) {
+    var fs = filters[f];
+    html += '<button data-error-filter="' + fs + '" style="flex-shrink:0;border:none;background:' + (errorFilter===fs?'#495057':'white') + ';color:' + (errorFilter===fs?'white':'#868e96') + ';border-radius:12px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;">' + fs + '</button>';
+  }
+  html += '</div>';
+
+  if (filtered.length === 0) html += '<div class="empty"><div class="emoji">📸</div><div class="text">No errors logged yet for this subject.</div></div>';
+
+  html += '<div class="err-grid">';
+  for (var k = 0; k < filtered.length; k++) {
+    var e = filtered[k];
+    var c = SUBJECT_COLORS[e.subject] || SUBJECT_COLORS.English;
+    html += '<div class="err-card" style="opacity:' + (e.mastered?0.55:1) + ';">';
+    html += '<img src="' + e.image + '" data-view-error="' + e.id + '" />';
+    html += '<div class="body"><span class="subject-pill" style="color:' + c.text + ';background:' + c.bg + ';">' + e.subject + '</span>';
+    if (e.note) html += '<div style="font-size:11px;color:#868e96;margin-top:4px;">' + escapeHtml(e.note) + '</div>';
+    html += '<div style="display:flex;justify-content:space-between;margin-top:6px;">';
+    html += '<button data-toggle-mastered="' + e.id + '" style="border:none;background:none;font-size:11px;color:' + (e.mastered?'#82c91e':'#adb5bd') + ';cursor:pointer;font-weight:700;">' + (e.mastered?'✓ Mastered':'Mark mastered') + '</button>';
+    html += '<button data-delete-error="' + e.id + '" style="border:none;background:none;color:#ffc9c9;cursor:pointer;">✕</button>';
+    html += '</div></div></div>';
+  }
+  html += '</div>';
+  return html;
 }
 
 function renderViewingErrorModal() {
-  const er = viewingError;
+  var er = viewingError;
   if (!er) return "";
-  const c = SUBJECT_COLORS[er.subject] || SUBJECT_COLORS.English;
-  return `<div class="modal-overlay" id="viewErrorOverlay">
-    <div class="modal-box" style="max-width:360px;" onclick="event.stopPropagation()">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-        <span class="subject-pill" style="color:${c.text};background:${c.bg};">${er.subject}</span>
-        <button id="closeViewErrorBtn" style="border:none;background:none;font-size:16px;color:#adb5bd;cursor:pointer;">✕</button>
-      </div>
-      <img src="${er.image}" style="width:100%;border-radius:10px;" />
-      ${er.note ? `<div style="font-size:13px;color:#495057;margin-top:10px;background:#FFF9DB;border-radius:8px;padding:8px;text-align:left;">📝 ${escapeHtml(er.note)}</div>` : ""}
-      <div style="font-size:11px;color:#adb5bd;margin-top:8px;">Logged ${new Date(er.createdAt).toLocaleDateString()}</div>
-    </div>
-  </div>`;
+  var c = SUBJECT_COLORS[er.subject] || SUBJECT_COLORS.English;
+  var html = '<div class="modal-overlay" id="viewErrorOverlay"><div class="modal-box" style="max-width:360px;" onclick="event.stopPropagation()">';
+  html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">';
+  html += '<span class="subject-pill" style="color:' + c.text + ';background:' + c.bg + ';">' + er.subject + '</span>';
+  html += '<button id="closeViewErrorBtn" style="border:none;background:none;font-size:16px;color:#adb5bd;cursor:pointer;">✕</button></div>';
+  html += '<img src="' + er.image + '" style="width:100%;border-radius:10px;" />';
+  if (er.note) html += '<div style="font-size:13px;color:#495057;margin-top:10px;background:#FFF9DB;border-radius:8px;padding:8px;text-align:left;">📝 ' + escapeHtml(er.note) + '</div>';
+  html += '<div style="font-size:11px;color:#adb5bd;margin-top:8px;">Logged ' + new Date(er.createdAt).toLocaleDateString() + '</div>';
+  html += '</div></div>';
+  return html;
 }
 
 function toggleMastered(id) {
-  const er = state.errorBank.find(e=>e.id===id);
+  var er = null;
+  for (var i = 0; i < state.errorBank.length; i++) { if (state.errorBank[i].id === id) er = state.errorBank[i]; }
   if (!er) return;
   er.mastered = !er.mastered;
   state.stars += er.mastered ? 3 : -3;
   persist(); render();
 }
 function deleteError(id) {
-  state.errorBank = state.errorBank.filter(e=>e.id!==id);
+  var arr = [];
+  for (var i = 0; i < state.errorBank.length; i++) { if (state.errorBank[i].id !== id) arr.push(state.errorBank[i]); }
+  state.errorBank = arr;
   persist(); render();
 }
-async function handleErrorFile(e) {
-  const file = e.target.files[0];
+function handleErrorFile(e) {
+  var file = e.target.files[0];
   if (!file) return;
   errorUploading = true; render();
-  try {
-    const dataUrl = await readFileAsDataURL(file);
-    state.errorBank.unshift({ id: uid(), subject: errorFormSubject, image: dataUrl, note: errorFormNote, mastered:false, createdAt: Date.now() });
+  readFileAsDataURL(file).then(function(dataUrl) {
+    state.errorBank.unshift({ id: uid(), subject: errorFormSubject, image: dataUrl, note: errorFormNote, mastered: false, createdAt: Date.now() });
     state.carrots += 1;
     flashToast("+1 🥕 Error logged!");
     errorFormNote = "";
-  } catch(err) {
+    errorUploading = false;
+    persist(); render();
+  }).catch(function() {
     flashToast("Could not read image");
-  }
-  errorUploading = false;
-  persist(); render();
+    errorUploading = false;
+    persist(); render();
+  });
 }
 
-// ====================== VOCAB TAB ======================
-let vocabWordInput = "";
+var vocabWordInput = "";
 
 function renderVocab() {
-  const sorted = [...state.vocabBank].sort((a,b)=>a.word.localeCompare(b.word));
-  return `
-    <div class="card">
-      <div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">📖 Log new vocabulary</div>
-      <div style="display:flex;gap:6px;">
-        <input id="vocabWordInput" placeholder="e.g. meticulous" style="flex:1;" value="${escapeHtml(vocabWordInput)}" />
-        <button id="addVocabBtn" ${vocabLoading?'disabled':''} style="background:${vocabLoading?'#dee2e6':'#A5D8FF'};color:#1971C2;border:none;border-radius:10px;padding:0 14px;font-weight:700;cursor:pointer;">${vocabLoading?'...':'Add'}</button>
-      </div>
-      ${!getApiKey() ? `<div style="font-size:11px;color:#e8590c;margin-top:8px;">⚠️ <span id="vocabApiKeyLink" style="text-decoration:underline;cursor:pointer;">Set your Anthropic API key</span> to use AI-generated definitions.</div>` : ""}
-    </div>
-    ${sorted.length===0 ? `<div class="empty"><div class="emoji">📖</div><div class="text">No vocab logged yet. Add a word above!</div></div>` : ""}
-    ${sorted.map(v => {
-      const expanded = expandedVocabId === v.id;
-      return `<div class="vocab-card" data-expand-vocab="${v.id}">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <div>
-            <div style="font-weight:800;font-size:14px;color:#D6336C;">${escapeHtml(v.word)}</div>
-            <div style="font-size:12px;color:#495057;margin-top:2px;">${escapeHtml(v.definition)}</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:6px;">
-            <span style="font-size:12px;color:#adb5bd;">${expanded?'▲':'▼'}</span>
-            <button data-delete-vocab="${v.id}" style="border:none;background:none;color:#ffc9c9;cursor:pointer;">✕</button>
-          </div>
-        </div>
-        ${expanded ? `<div style="margin-top:8px;">
-          <div style="font-size:11px;color:#868e96;background:#FFF9DB;border-radius:8px;padding:6px;">✍️ Compo use: ${escapeHtml(v.compoExample)}</div>
-          <div style="font-size:11px;color:#868e96;margin-top:6px;background:#E3F0FF;border-radius:8px;padding:6px;">📄 In papers: ${escapeHtml(v.paperContext)}</div>
-        </div>` : ""}
-      </div>`;
-    }).join("")}
-  `;
+  var sorted = state.vocabBank.slice().sort(function(a,b){ return a.word.localeCompare(b.word); });
+  var html = '<div class="card"><div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">📖 Log new vocabulary</div>';
+  html += '<div style="display:flex;gap:6px;"><input id="vocabWordInput" placeholder="e.g. meticulous" style="flex:1;" value="' + escapeHtml(vocabWordInput) + '" />';
+  html += '<button id="addVocabBtn" ' + (vocabLoading?'disabled':'') + ' style="background:' + (vocabLoading?'#dee2e6':'#A5D8FF') + ';color:#1971C2;border:none;border-radius:10px;padding:0 14px;font-weight:700;cursor:pointer;">' + (vocabLoading?'...':'Add') + '</button></div>';
+  if (!getApiKey()) html += '<div style="font-size:11px;color:#e8590c;margin-top:8px;">⚠️ <span id="vocabApiKeyLink" style="text-decoration:underline;cursor:pointer;">Set your Anthropic API key</span> to use AI-generated definitions.</div>';
+  html += '</div>';
+
+  if (sorted.length === 0) html += '<div class="empty"><div class="emoji">📖</div><div class="text">No vocab logged yet. Add a word above!</div></div>';
+
+  for (var i = 0; i < sorted.length; i++) {
+    var v = sorted[i];
+    var expanded = expandedVocabId === v.id;
+    html += '<div class="vocab-card" data-expand-vocab="' + v.id + '">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;">';
+    html += '<div><div style="font-weight:800;font-size:14px;color:#D6336C;">' + escapeHtml(v.word) + '</div>';
+    html += '<div style="font-size:12px;color:#495057;margin-top:2px;">' + escapeHtml(v.definition) + '</div></div>';
+    html += '<div style="display:flex;align-items:center;gap:6px;"><span style="font-size:12px;color:#adb5bd;">' + (expanded?'▲':'▼') + '</span>';
+    html += '<button data-delete-vocab="' + v.id + '" style="border:none;background:none;color:#ffc9c9;cursor:pointer;">✕</button></div></div>';
+    if (expanded) {
+      html += '<div style="margin-top:8px;"><div style="font-size:11px;color:#868e96;background:#FFF9DB;border-radius:8px;padding:6px;">✍️ Compo use: ' + escapeHtml(v.compoExample) + '</div>';
+      html += '<div style="font-size:11px;color:#868e96;margin-top:6px;background:#E3F0FF;border-radius:8px;padding:6px;">📄 In papers: ' + escapeHtml(v.paperContext) + '</div></div>';
+    }
+    html += '</div>';
+  }
+  return html;
 }
 
 function deleteVocab(id) {
-  state.vocabBank = state.vocabBank.filter(v=>v.id!==id);
+  var arr = [];
+  for (var i = 0; i < state.vocabBank.length; i++) { if (state.vocabBank[i].id !== id) arr.push(state.vocabBank[i]); }
+  state.vocabBank = arr;
   persist(); render();
 }
-async function addVocab() {
-  const word = document.getElementById("vocabWordInput").value.trim();
+function addVocab() {
+  var word = document.getElementById("vocabWordInput").value.trim();
   if (!word) return;
   if (!getApiKey()) { showApiKeyModal = true; render(); return; }
   vocabLoading = true; render();
-  try {
-    const system = "You are a helpful PSLE English tutor for a Singapore Primary 6 student. Respond ONLY with valid JSON, no preamble, no markdown fences. The JSON object must have exactly these keys: definition (simple, student-friendly, 1 sentence), compoExample (one example sentence showing how to use the word naturally in a composition, suitable for a 12 year old), paperContext (a short explanation of how/where such a word typically appears in PSLE past year papers, e.g. comprehension or cloze passages, with a brief example phrase).";
-    const text = await callClaude([{role:"user", content:`Word: "${word}"`}], system);
-    const parsed = extractJson(text);
+  var system = "You are a helpful PSLE English tutor for a Singapore Primary 6 student. Respond ONLY with valid JSON, no preamble, no markdown fences. The JSON object must have exactly these keys: definition (simple, student-friendly, 1 sentence), compoExample (one example sentence showing how to use the word naturally in a composition, suitable for a 12 year old), paperContext (a short explanation of how/where such a word typically appears in PSLE past year papers, e.g. comprehension or cloze passages, with a brief example phrase).";
+  callClaude([{ role: "user", content: 'Word: "' + word + '"' }], system).then(function(text) {
+    var parsed = extractJson(text);
     if (!parsed) throw new Error("parse fail");
-    state.vocabBank.unshift({ id: uid(), word, definition: parsed.definition||"", compoExample: parsed.compoExample||"", paperContext: parsed.paperContext||"", createdAt: Date.now() });
+    state.vocabBank.unshift({ id: uid(), word: word, definition: parsed.definition||"", compoExample: parsed.compoExample||"", paperContext: parsed.paperContext||"", createdAt: Date.now() });
     state.carrots += 1;
     flashToast("+1 🥕 Vocab added!");
     vocabWordInput = "";
-  } catch(e) {
+    vocabLoading = false;
+    persist(); render();
+  }).catch(function(e) {
     if (e.message === "NO_API_KEY") { showApiKeyModal = true; }
     else flashToast("Hmm, could not generate. Check your API key and try again.");
-  }
-  vocabLoading = false;
-  persist(); render();
+    vocabLoading = false;
+    persist(); render();
+  });
 }
 
-// ====================== PAPERS TAB ======================
-let papersSubject = "English";
-let papersUploading = false;
-const MAX_PDF_BYTES = 30*1024*1024;
+var papersSubject = "English";
+var papersUploading = false;
+var MAX_PDF_BYTES = 30 * 1024 * 1024;
 
 function renderPapers() {
-  const activePaper = state.papers.find(p=>p.id===papersActivePaperId);
-  return `
-    <div class="card">
-      <div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">📄 Upload past year paper (PDF, incl. scanned)</div>
-      <select id="paperSubjectSelect" style="width:100%;margin-bottom:8px;">${SUBJECTS.map(s=>`<option value="${s}" ${s===papersSubject?'selected':''}>${s}</option>`).join("")}</select>
-      <label class="upload-label" style="background:${papersUploading?'#dee2e6':'#A5D8FF'};color:#1971C2;">
-        ${papersUploading ? "Uploading..." : "📎 Upload PDF Paper"}
-        <input type="file" accept="application/pdf" id="paperFileInput" style="display:none;" />
-      </label>
-      <div style="font-size:10px;color:#adb5bd;margin-top:6px;">Tip: if a scanned PDF fails, try rescanning flat (not at an angle), in good lighting, at a moderate resolution (under ~15MB works best).</div>
-      ${!getApiKey() ? `<div style="font-size:11px;color:#e8590c;margin-top:8px;">⚠️ <span id="papersApiKeyLink" style="text-decoration:underline;cursor:pointer;">Set your Anthropic API key</span> to generate practice questions.</div>` : ""}
-    </div>
-    ${state.papers.length===0 ? `<div class="empty"><div class="emoji">📄</div><div class="text">No papers uploaded yet.</div></div>` : ""}
-    ${state.papers.map(p => {
-      const c = SUBJECT_COLORS[p.subject] || SUBJECT_COLORS.English;
-      const isGenerating = papersGenerating && papersActivePaperId === p.id;
-      return `<div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <div>
-            <span class="subject-pill" style="color:${c.text};background:${c.bg};">${p.subject}</span>
-            <div style="font-size:12px;color:#495057;margin-top:4px;word-break:break-all;">${escapeHtml(p.name)}</div>
-            <div style="font-size:10px;color:#ced4da;margin-top:2px;">${p.sizeKB?p.sizeKB+' KB':''}</div>
-          </div>
-          <button data-delete-paper="${p.id}" style="border:none;background:none;color:#ffc9c9;cursor:pointer;">✕</button>
-        </div>
-        <button data-generate-paper="${p.id}" ${papersGenerating?'disabled':''} style="margin-top:8px;width:100%;background:${isGenerating?'#dee2e6':'#FFE3EC'};color:#D6336C;border:none;border-radius:10px;padding:8px;font-weight:700;font-size:12px;cursor:pointer;">
-          ${isGenerating ? "Reading paper..." : "✨ Generate practice questions from errors"}
-        </button>
-      </div>`;
-    }).join("")}
-    ${papersErrorMsg ? `<div class="card" style="background:#FFF5F5;border:2px solid #FFC9C9;color:#C92A2A;font-size:12px;">⚠️ ${escapeHtml(papersErrorMsg)}</div>` : ""}
-    ${papersQuestions && papersQuestions.length>0 && activePaper ? `
-      <div style="margin-top:14px;">
-        <div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">Practice from "${escapeHtml(activePaper.name)}"</div>
-        ${papersQuestions.map((q,i) => questionCardHtml(q,i)).join("")}
-      </div>` : ""}
-  `;
+  var activePaper = null;
+  for (var i = 0; i < state.papers.length; i++) { if (state.papers[i].id === papersActivePaperId) activePaper = state.papers[i]; }
+  var html = '<div class="card"><div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">📄 Upload past year paper (PDF, incl. scanned)</div>';
+  html += '<select id="paperSubjectSelect" style="width:100%;margin-bottom:8px;">';
+  for (var s = 0; s < SUBJECTS.length; s++) html += '<option value="' + SUBJECTS[s] + '" ' + (SUBJECTS[s]===papersSubject?'selected':'') + '>' + SUBJECTS[s] + '</option>';
+  html += '</select>';
+  html += '<label class="upload-label" style="background:' + (papersUploading?'#dee2e6':'#A5D8FF') + ';color:#1971C2;">' + (papersUploading ? "Uploading..." : "📎 Upload PDF Paper") +
+    '<input type="file" accept="application/pdf" id="paperFileInput" style="display:none;" /></label>';
+  html += '<div style="font-size:10px;color:#adb5bd;margin-top:6px;">Tip: if a scanned PDF fails, try rescanning flat (not at an angle), in good lighting, at a moderate resolution (under ~15MB works best).</div>';
+  if (!getApiKey()) html += '<div style="font-size:11px;color:#e8590c;margin-top:8px;">⚠️ <span id="papersApiKeyLink" style="text-decoration:underline;cursor:pointer;">Set your Anthropic API key</span> to generate practice questions.</div>';
+  html += '</div>';
+
+  if (state.papers.length === 0) html += '<div class="empty"><div class="emoji">📄</div><div class="text">No papers uploaded yet.</div></div>';
+
+  for (var p = 0; p < state.papers.length; p++) {
+    var paper = state.papers[p];
+    var c = SUBJECT_COLORS[paper.subject] || SUBJECT_COLORS.English;
+    var isGenerating = papersGenerating && papersActivePaperId === paper.id;
+    html += '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;">';
+    html += '<div><span class="subject-pill" style="color:' + c.text + ';background:' + c.bg + ';">' + paper.subject + '</span>';
+    html += '<div style="font-size:12px;color:#495057;margin-top:4px;word-break:break-all;">' + escapeHtml(paper.name) + '</div>';
+    html += '<div style="font-size:10px;color:#ced4da;margin-top:2px;">' + (paper.sizeKB?paper.sizeKB+' KB':'') + '</div></div>';
+    html += '<button data-delete-paper="' + paper.id + '" style="border:none;background:none;color:#ffc9c9;cursor:pointer;">✕</button></div>';
+    html += '<button data-generate-paper="' + paper.id + '" ' + (papersGenerating?'disabled':'') + ' style="margin-top:8px;width:100%;background:' + (isGenerating?'#dee2e6':'#FFE3EC') + ';color:#D6336C;border:none;border-radius:10px;padding:8px;font-weight:700;font-size:12px;cursor:pointer;">' +
+      (isGenerating ? "Reading paper..." : "✨ Generate practice questions from errors") + '</button></div>';
+  }
+
+  if (papersErrorMsg) html += '<div class="card" style="background:#FFF5F5;border:2px solid #FFC9C9;color:#C92A2A;font-size:12px;">⚠️ ' + escapeHtml(papersErrorMsg) + '</div>';
+
+  if (papersQuestions && papersQuestions.length > 0 && activePaper) {
+    html += '<div style="margin-top:14px;"><div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">Practice from "' + escapeHtml(activePaper.name) + '"</div>';
+    for (var q = 0; q < papersQuestions.length; q++) html += questionCardHtml(papersQuestions[q], q);
+    html += '</div>';
+  }
+  return html;
 }
 function questionCardHtml(q, i) {
-  return `<div class="card" data-qcard="${i}">
-    <div style="font-size:12px;font-weight:700;color:#D6336C;margin-bottom:4px;">Q${i+1}</div>
-    <div style="font-size:13px;color:#495057;">${escapeHtml(q.question)}</div>
-    <button data-toggle-answer="${i}" style="margin-top:8px;border:none;background:none;color:#1971C2;font-size:11px;font-weight:700;cursor:pointer;">${q._show?'Hide answer':'Show answer'}</button>
-    ${q._show ? `<div style="margin-top:6px;background:#E6FCF5;border-radius:8px;padding:8px;">
-      <div style="font-size:12px;font-weight:700;color:#0CA678;">${escapeHtml(q.answer)}</div>
-      <div style="font-size:11px;color:#495057;margin-top:4px;">${escapeHtml(q.explanation)}</div>
-    </div>` : ""}
-  </div>`;
+  var html = '<div class="card" data-qcard="' + i + '"><div style="font-size:12px;font-weight:700;color:#D6336C;margin-bottom:4px;">Q' + (i+1) + '</div>';
+  html += '<div style="font-size:13px;color:#495057;">' + escapeHtml(q.question) + '</div>';
+  html += '<button data-toggle-answer="' + i + '" style="margin-top:8px;border:none;background:none;color:#1971C2;font-size:11px;font-weight:700;cursor:pointer;">' + (q._show?'Hide answer':'Show answer') + '</button>';
+  if (q._show) {
+    html += '<div style="margin-top:6px;background:#E6FCF5;border-radius:8px;padding:8px;"><div style="font-size:12px;font-weight:700;color:#0CA678;">' + escapeHtml(q.answer) + '</div>';
+    html += '<div style="font-size:11px;color:#495057;margin-top:4px;">' + escapeHtml(q.explanation) + '</div></div>';
+  }
+  html += '</div>';
+  return html;
 }
 
 function deletePaper(id) {
-  state.papers = state.papers.filter(p=>p.id!==id);
+  var arr = [];
+  for (var i = 0; i < state.papers.length; i++) { if (state.papers[i].id !== id) arr.push(state.papers[i]); }
+  state.papers = arr;
   persist(); render();
 }
-async function handlePaperFile(e) {
-  const file = e.target.files[0];
+function handlePaperFile(e) {
+  var file = e.target.files[0];
   if (!file) return;
   if (file.type !== "application/pdf") { flashToast("Please upload a PDF file"); return; }
-  if (file.size > MAX_PDF_BYTES) { flashToast("This PDF is quite large — try a smaller scan or fewer pages"); e.target.value=""; return; }
+  if (file.size > MAX_PDF_BYTES) { flashToast("This PDF is quite large — try a smaller scan or fewer pages"); e.target.value = ""; return; }
   papersUploading = true; render();
-  try {
-    const dataUrl = await readFileAsDataURL(file);
-    state.papers.unshift({ id: uid(), name: file.name, subject: papersSubject, dataUrl, sizeKB: Math.round(file.size/1024), createdAt: Date.now() });
+  readFileAsDataURL(file).then(function(dataUrl) {
+    state.papers.unshift({ id: uid(), name: file.name, subject: papersSubject, dataUrl: dataUrl, sizeKB: Math.round(file.size/1024), createdAt: Date.now() });
     flashToast("📄 Paper uploaded!");
-  } catch(err) { flashToast("Upload failed, try again"); }
-  papersUploading = false;
-  persist(); render();
+    papersUploading = false;
+    persist(); render();
+  }).catch(function() {
+    flashToast("Upload failed, try again");
+    papersUploading = false;
+    persist(); render();
+  });
 }
-async function generateFromPaper(paperId) {
-  const paper = state.papers.find(p=>p.id===paperId);
+function generateFromPaper(paperId) {
+  var paper = null;
+  for (var i = 0; i < state.papers.length; i++) { if (state.papers[i].id === paperId) paper = state.papers[i]; }
   if (!paper) return;
   if (!getApiKey()) { showApiKeyModal = true; render(); return; }
   papersGenerating = true;
@@ -858,16 +878,24 @@ async function generateFromPaper(paperId) {
   papersQuestions = null;
   papersErrorMsg = null;
   render();
-  try {
-    const base64 = paper.dataUrl.split(",")[1];
-    const errorNotes = state.errorBank.filter(er=>er.subject===paper.subject).map(er=>er.note).filter(Boolean).slice(0,10);
-    const system = "You are a PSLE tutor. You will be given a PDF of a past year exam paper. It may be a scanned, image-based PDF — read it using your vision/document capability, page by page, exactly as if reading scanned photographs of paper. Even if the PDF has no selectable text layer, look at the visual content of each page. Respond ONLY with valid JSON: an array of 5 objects, each with keys: question, answer, explanation. If you genuinely cannot see any readable content in the PDF at all, respond with exactly: {\\"error\\": \\"unreadable\\"} and nothing else." + (errorNotes.length ? ` The student has previously struggled with: ${errorNotes.join("; ")}. Prioritise targeting these weak areas.` : "");
-    const messages = [{ role:"user", content:[
-      { type:"document", source:{ type:"base64", media_type:"application/pdf", data: base64 } },
-      { type:"text", text:`This is a ${paper.subject} PSLE past year paper. Generate 5 fresh practice questions in the same style, targeting the student's weak areas if provided.` }
-    ]}];
-    const text = await callClaude(messages, system);
-    const parsed = extractJson(text);
+
+  var base64 = paper.dataUrl.split(",")[1];
+  var errorNotes = [];
+  for (var j = 0; j < state.errorBank.length; j++) {
+    var er = state.errorBank[j];
+    if (er.subject === paper.subject && er.note) errorNotes.push(er.note);
+  }
+  errorNotes = errorNotes.slice(0, 10);
+  var system = "You are a PSLE tutor. You will be given a PDF of a past year exam paper. It may be a scanned, image-based PDF, read it using your vision and document capability, page by page, exactly as if reading scanned photographs of paper. Even if the PDF has no selectable text layer, look at the visual content of each page. Respond ONLY with valid JSON: an array of 5 objects, each with keys: question, answer, explanation. If you genuinely cannot see any readable content in the PDF at all, respond with exactly this and nothing else: {\\"error\\": \\"unreadable\\"}";
+  if (errorNotes.length) system += " The student has previously struggled with: " + errorNotes.join("; ") + ". Prioritise targeting these weak areas.";
+
+  var messages = [{ role: "user", content: [
+    { type: "document", source: { type: "base64", media_type: "application/pdf", data: base64 } },
+    { type: "text", text: "This is a " + paper.subject + " PSLE past year paper. Generate 5 fresh practice questions in the same style, targeting the student's weak areas if provided." }
+  ]}];
+
+  callClaude(messages, system).then(function(text) {
+    var parsed = extractJson(text);
     if (!parsed) {
       papersErrorMsg = "Couldn't understand the response. The scan may be too blurry, rotated, or low contrast. Try rescanning with good lighting and a straight angle.";
       papersQuestions = [];
@@ -882,65 +910,68 @@ async function generateFromPaper(paperId) {
       papersErrorMsg = "Unexpected response format. Please try again.";
       papersQuestions = [];
     }
-  } catch(err) {
+    papersGenerating = false;
+    persist(); render();
+  }).catch(function(err) {
     if (err.message === "NO_API_KEY") { showApiKeyModal = true; }
     else papersErrorMsg = "Something went wrong reading this PDF. Check your internet connection / API key and try again, or try a smaller file.";
-  }
-  papersGenerating = false;
-  persist(); render();
+    papersGenerating = false;
+    persist(); render();
+  });
 }
 
-// ====================== TIMER TAB ======================
 function renderTimer() {
-  const active = TIMERS.find(t=>t.id===timerActiveId);
-  const fmt = (s) => { const m=Math.floor(s/60), sec=s%60; return String(m).padStart(2,'0')+":"+String(sec).padStart(2,'0'); };
-  return `
-    ${active ? `
-      <div class="card" style="text-align:center;padding:20px;">
-        <div style="font-size:13px;font-weight:700;color:#868e96;">${active.label}</div>
-        <div style="font-size:40px;font-weight:800;color:${timerSecondsLeft<60?'#FA5252':'#D6336C'};margin:8px 0;font-family:monospace;">${fmt(timerSecondsLeft)}</div>
-        ${timerSecondsLeft===0 ? `<div style="font-size:14px;font-weight:700;color:#82c91e;">⏰ Time's up! Well done!</div>` : ""}
-        <div style="display:flex;gap:8px;justify-content:center;margin-top:8px;">
-          <button id="timerPauseResumeBtn" ${timerSecondsLeft===0?'disabled':''} style="background:#A5D8FF;color:#1971C2;border:none;border-radius:10px;padding:8px 16px;font-weight:700;cursor:pointer;">${timerRunning?'Pause':'Resume'}</button>
-          <button id="timerResetBtn" style="background:#FFE3EC;color:#D6336C;border:none;border-radius:10px;padding:8px 16px;font-weight:700;cursor:pointer;">Reset</button>
-        </div>
-        <div style="margin-top:14px;text-align:left;background:#FFF9DB;border-radius:12px;padding:12px;">
-          <div style="font-size:12px;font-weight:700;color:#846b00;margin-bottom:6px;">💡 Tips for this paper</div>
-          ${active.tips.map(tip=>`<div style="font-size:12px;color:#846b00;margin-bottom:4px;display:flex;gap:6px;"><span>•</span><span>${tip}</span></div>`).join("")}
-        </div>
-      </div>
-    ` : `<div class="empty"><div class="emoji">⏱</div><div class="text">Pick a PSLE paper below to start an exam timer.</div></div>`}
-    <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px;">
-      ${TIMERS.map(t => `<button data-start-timer="${t.id}" style="display:flex;justify-content:space-between;align-items:center;background:white;border:none;border-radius:12px;padding:12px 14px;box-shadow:0 2px 8px rgba(0,0,0,0.04);cursor:pointer;text-align:left;">
-        <span style="font-size:13px;font-weight:700;color:#495057;">${t.label}</span>
-        <span style="font-size:12px;color:#adb5bd;">${t.mins} min</span>
-      </button>`).join("")}
-    </div>
-  `;
+  var active = null;
+  for (var i = 0; i < TIMERS.length; i++) { if (TIMERS[i].id === timerActiveId) active = TIMERS[i]; }
+  function fmt(s) { var m = Math.floor(s/60), sec = s%60; return String(m).padStart(2,'0') + ":" + String(sec).padStart(2,'0'); }
+  var html = '';
+  if (active) {
+    html += '<div class="card" style="text-align:center;padding:20px;">';
+    html += '<div style="font-size:13px;font-weight:700;color:#868e96;">' + active.label + '</div>';
+    html += '<div style="font-size:40px;font-weight:800;color:' + (timerSecondsLeft<60?'#FA5252':'#D6336C') + ';margin:8px 0;font-family:monospace;">' + fmt(timerSecondsLeft) + '</div>';
+    if (timerSecondsLeft === 0) html += '<div style="font-size:14px;font-weight:700;color:#82c91e;">⏰ Time\\'s up! Well done!</div>';
+    html += '<div style="display:flex;gap:8px;justify-content:center;margin-top:8px;">';
+    html += '<button id="timerPauseResumeBtn" ' + (timerSecondsLeft===0?'disabled':'') + ' style="background:#A5D8FF;color:#1971C2;border:none;border-radius:10px;padding:8px 16px;font-weight:700;cursor:pointer;">' + (timerRunning?'Pause':'Resume') + '</button>';
+    html += '<button id="timerResetBtn" style="background:#FFE3EC;color:#D6336C;border:none;border-radius:10px;padding:8px 16px;font-weight:700;cursor:pointer;">Reset</button></div>';
+    html += '<div style="margin-top:14px;text-align:left;background:#FFF9DB;border-radius:12px;padding:12px;"><div style="font-size:12px;font-weight:700;color:#846b00;margin-bottom:6px;">💡 Tips for this paper</div>';
+    for (var t = 0; t < active.tips.length; t++) html += '<div style="font-size:12px;color:#846b00;margin-bottom:4px;display:flex;gap:6px;"><span>•</span><span>' + active.tips[t] + '</span></div>';
+    html += '</div></div>';
+  } else {
+    html += '<div class="empty"><div class="emoji">⏱</div><div class="text">Pick a PSLE paper below to start an exam timer.</div></div>';
+  }
+  html += '<div style="margin-top:14px;display:flex;flex-direction:column;gap:8px;">';
+  for (var k = 0; k < TIMERS.length; k++) {
+    var tm = TIMERS[k];
+    html += '<button data-start-timer="' + tm.id + '" style="display:flex;justify-content:space-between;align-items:center;background:white;border:none;border-radius:12px;padding:12px 14px;box-shadow:0 2px 8px rgba(0,0,0,0.04);cursor:pointer;text-align:left;">' +
+      '<span style="font-size:13px;font-weight:700;color:#495057;">' + tm.label + '</span><span style="font-size:12px;color:#adb5bd;">' + tm.mins + ' min</span></button>';
+  }
+  html += '</div>';
+  return html;
 }
 function startTimer(id) {
-  const t = TIMERS.find(x=>x.id===id);
+  var t = null;
+  for (var i = 0; i < TIMERS.length; i++) { if (TIMERS[i].id === id) t = TIMERS[i]; }
   if (!t) return;
   timerActiveId = id;
-  timerSecondsLeft = t.mins*60;
+  timerSecondsLeft = t.mins * 60;
   timerRunning = true;
   clearInterval(timerInterval);
-  timerInterval = setInterval(()=>{
+  timerInterval = setInterval(function() {
     timerSecondsLeft -= 1;
-    if (timerSecondsLeft<=0) { timerSecondsLeft=0; timerRunning=false; clearInterval(timerInterval); }
+    if (timerSecondsLeft <= 0) { timerSecondsLeft = 0; timerRunning = false; clearInterval(timerInterval); }
     render();
-  },1000);
+  }, 1000);
   render();
 }
 function timerPauseResume() {
   timerRunning = !timerRunning;
   if (timerRunning) {
     clearInterval(timerInterval);
-    timerInterval = setInterval(()=>{
+    timerInterval = setInterval(function() {
       timerSecondsLeft -= 1;
-      if (timerSecondsLeft<=0) { timerSecondsLeft=0; timerRunning=false; clearInterval(timerInterval); }
+      if (timerSecondsLeft <= 0) { timerSecondsLeft = 0; timerRunning = false; clearInterval(timerInterval); }
       render();
-    },1000);
+    }, 1000);
   } else {
     clearInterval(timerInterval);
   }
@@ -952,60 +983,64 @@ function timerReset() {
   render();
 }
 
-// ====================== SHOP TAB ======================
 function renderShop() {
-  return `
-    <div style="text-align:center;margin-bottom:12px;font-size:13px;color:#868e96;">Spend your Carrots 🥕 on cute accessories and backgrounds! (Earn carrots from tasks, errors & vocab)</div>
-    <div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">🎀 Accessories</div>
-    <div class="shop-grid">
-      ${ACCESSORIES.map(item => {
-        const owned = state.ownedAccessories.includes(item.id);
-        const equipped = state.equippedAccessories.includes(item.id);
-        return `<div class="shop-item">
-          <div style="font-size:30px;">${item.emoji}</div>
-          <div style="font-size:12px;font-weight:700;color:#495057;margin-top:4px;">${item.name}</div>
-          ${!owned ? `<button data-buy-acc="${item.id}" style="margin-top:8px;width:100%;background:#FFD8A8;color:#9C6B00;border:none;border-radius:10px;padding:6px;font-weight:700;font-size:12px;cursor:pointer;">🥕 ${item.cost}</button>`
-            : `<button data-equip-acc="${item.id}" style="margin-top:8px;width:100%;background:${equipped?'#82c91e':'#E9ECEF'};color:${equipped?'white':'#868e96'};border:none;border-radius:10px;padding:6px;font-weight:700;font-size:12px;cursor:pointer;">${equipped?'Equipped ✓':'Equip'}</button>`}
-        </div>`;
-      }).join("")}
-    </div>
-    <div style="font-size:13px;font-weight:700;color:#495057;margin:16px 0 8px;">🎨 Backgrounds</div>
-    <div class="bg-grid">
-      ${BACKGROUNDS.map(bg => {
-        const owned = state.ownedBackgrounds.includes(bg.id);
-        const equipped = state.equippedBackground === bg.id;
-        return `<div class="bg-item" style="background:${bg.css};">
-          <div style="background:rgba(255,255,255,0.85);border-radius:10px;padding:8px;">
-            <div style="font-size:12px;font-weight:700;color:#495057;">${bg.name}</div>
-            ${!owned ? `<button data-buy-bg="${bg.id}" style="margin-top:8px;width:100%;background:#FFD8A8;color:#9C6B00;border:none;border-radius:10px;padding:6px;font-weight:700;font-size:12px;cursor:pointer;">🥕 ${bg.cost}</button>`
-              : `<button data-equip-bg="${bg.id}" style="margin-top:8px;width:100%;background:${equipped?'#82c91e':'#E9ECEF'};color:${equipped?'white':'#868e96'};border:none;border-radius:10px;padding:6px;font-weight:700;font-size:12px;cursor:pointer;">${equipped?'Equipped ✓':'Equip'}</button>`}
-          </div>
-        </div>`;
-      }).join("")}
-    </div>
-  `;
+  var html = '<div style="text-align:center;margin-bottom:12px;font-size:13px;color:#868e96;">Spend your Carrots 🥕 on cute accessories and backgrounds! (Earn carrots from tasks, errors & vocab)</div>';
+  html += '<div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">🎀 Accessories</div><div class="shop-grid">';
+  for (var i = 0; i < ACCESSORIES.length; i++) {
+    var item = ACCESSORIES[i];
+    var owned = state.ownedAccessories.indexOf(item.id) !== -1;
+    var equipped = state.equippedAccessories.indexOf(item.id) !== -1;
+    html += '<div class="shop-item"><div style="font-size:30px;">' + item.emoji + '</div><div style="font-size:12px;font-weight:700;color:#495057;margin-top:4px;">' + item.name + '</div>';
+    if (!owned) {
+      html += '<button data-buy-acc="' + item.id + '" style="margin-top:8px;width:100%;background:#FFD8A8;color:#9C6B00;border:none;border-radius:10px;padding:6px;font-weight:700;font-size:12px;cursor:pointer;">🥕 ' + item.cost + '</button>';
+    } else {
+      html += '<button data-equip-acc="' + item.id + '" style="margin-top:8px;width:100%;background:' + (equipped?'#82c91e':'#E9ECEF') + ';color:' + (equipped?'white':'#868e96') + ';border:none;border-radius:10px;padding:6px;font-weight:700;font-size:12px;cursor:pointer;">' + (equipped?'Equipped ✓':'Equip') + '</button>';
+    }
+    html += '</div>';
+  }
+  html += '</div>';
+
+  html += '<div style="font-size:13px;font-weight:700;color:#495057;margin:16px 0 8px;">🎨 Backgrounds</div><div class="bg-grid">';
+  for (var b = 0; b < BACKGROUNDS.length; b++) {
+    var bg = BACKGROUNDS[b];
+    var ownedBg = state.ownedBackgrounds.indexOf(bg.id) !== -1;
+    var equippedBg = state.equippedBackground === bg.id;
+    html += '<div class="bg-item" style="background:' + bg.css + ';"><div style="background:rgba(255,255,255,0.85);border-radius:10px;padding:8px;">';
+    html += '<div style="font-size:12px;font-weight:700;color:#495057;">' + bg.name + '</div>';
+    if (!ownedBg) {
+      html += '<button data-buy-bg="' + bg.id + '" style="margin-top:8px;width:100%;background:#FFD8A8;color:#9C6B00;border:none;border-radius:10px;padding:6px;font-weight:700;font-size:12px;cursor:pointer;">🥕 ' + bg.cost + '</button>';
+    } else {
+      html += '<button data-equip-bg="' + bg.id + '" style="margin-top:8px;width:100%;background:' + (equippedBg?'#82c91e':'#E9ECEF') + ';color:' + (equippedBg?'white':'#868e96') + ';border:none;border-radius:10px;padding:6px;font-weight:700;font-size:12px;cursor:pointer;">' + (equippedBg?'Equipped ✓':'Equip') + '</button>';
+    }
+    html += '</div></div>';
+  }
+  html += '</div>';
+  return html;
 }
 function buyAccessory(id) {
-  const item = ACCESSORIES.find(a=>a.id===id);
+  var item = null;
+  for (var i = 0; i < ACCESSORIES.length; i++) { if (ACCESSORIES[i].id === id) item = ACCESSORIES[i]; }
   if (!item) return;
   if (state.carrots < item.cost) { flashToast("Not enough carrots yet! Keep completing tasks 🥕"); return; }
   state.carrots -= item.cost;
   state.ownedAccessories.push(id);
-  flashToast(`Bought ${item.name}!`);
+  flashToast("Bought " + item.name + "!");
   persist(); render();
 }
 function equipAccessory(id) {
-  if (state.equippedAccessories.includes(id)) state.equippedAccessories = state.equippedAccessories.filter(a=>a!==id);
+  var idx = state.equippedAccessories.indexOf(id);
+  if (idx !== -1) state.equippedAccessories.splice(idx, 1);
   else state.equippedAccessories.push(id);
   persist(); render();
 }
 function buyBackground(id) {
-  const bg = BACKGROUNDS.find(b=>b.id===id);
+  var bg = null;
+  for (var i = 0; i < BACKGROUNDS.length; i++) { if (BACKGROUNDS[i].id === id) bg = BACKGROUNDS[i]; }
   if (!bg) return;
   if (state.carrots < bg.cost) { flashToast("Not enough carrots yet! Keep completing tasks 🥕"); return; }
   state.carrots -= bg.cost;
   state.ownedBackgrounds.push(id);
-  flashToast(`Unlocked ${bg.name}!`);
+  flashToast("Unlocked " + bg.name + "!");
   persist(); render();
 }
 function equipBackground(id) {
@@ -1013,178 +1048,198 @@ function equipBackground(id) {
   persist(); render();
 }
 
-// ====================== MODALS ======================
 function renderNamePromptModal() {
-  return `<div class="modal-overlay" id="namePromptOverlay">
-    <div class="modal-box" onclick="event.stopPropagation()">
-      <div style="font-size:40px;">🌱</div>
-      <div style="font-weight:800;font-size:16px;color:#D6336C;margin-top:8px;">Name your Study Buddy!</div>
-      <div style="font-size:12px;color:#868e96;margin-top:4px;">Give your little companion a cute name</div>
-      <input id="nameInput" placeholder="e.g. Mochi, Pip, Sunny..." style="width:100%;margin-top:14px;box-sizing:border-box;text-align:center;border:2px solid #FFE3EC;" />
-      <button class="btn-primary" id="saveNameBtn" style="margin-top:14px;width:100%;">Let's go! ✨</button>
-    </div>
-  </div>`;
+  var html = '<div class="modal-overlay" id="namePromptOverlay"><div class="modal-box" onclick="event.stopPropagation()">';
+  html += '<div style="font-size:40px;">🌱</div><div style="font-weight:800;font-size:16px;color:#D6336C;margin-top:8px;">Name your Study Buddy!</div>';
+  html += '<div style="font-size:12px;color:#868e96;margin-top:4px;">Give your little companion a cute name</div>';
+  html += '<input id="nameInput" placeholder="e.g. Mochi, Pip, Sunny..." style="width:100%;margin-top:14px;box-sizing:border-box;text-align:center;border:2px solid #FFE3EC;" />';
+  html += '<button class="btn-primary" id="saveNameBtn" style="margin-top:14px;width:100%;">Let\\'s go! ✨</button></div></div>';
+  return html;
 }
 function renderApiKeyModal() {
-  return `<div class="modal-overlay" id="apiKeyOverlay">
-    <div class="modal-box" onclick="event.stopPropagation()">
-      <div style="font-size:36px;">🔑</div>
-      <div style="font-weight:800;font-size:15px;color:#D6336C;margin-top:8px;">Connect your Anthropic API key</div>
-      <div style="font-size:12px;color:#868e96;margin-top:6px;text-align:left;">
-        This standalone site has no server, so AI features (vocab definitions, paper question generation) need your own Anthropic API key.
-        It's saved only in this browser's local storage and sent directly to Anthropic — never anywhere else.
-        Get a key at <span style="color:#1971C2;">console.anthropic.com</span>.
-      </div>
-      <input id="apiKeyInput" placeholder="sk-ant-..." style="width:100%;margin-top:14px;box-sizing:border-box;" value="${escapeHtml(getApiKey())}" />
-      <div style="display:flex;gap:8px;margin-top:14px;">
-        <button class="btn-secondary" id="cancelApiKeyBtn" style="flex:1;">Cancel</button>
-        <button class="btn-primary" id="saveApiKeyBtn" style="flex:1;">Save</button>
-      </div>
-    </div>
-  </div>`;
+  var html = '<div class="modal-overlay" id="apiKeyOverlay"><div class="modal-box" onclick="event.stopPropagation()">';
+  html += '<div style="font-size:36px;">🔑</div><div style="font-weight:800;font-size:15px;color:#D6336C;margin-top:8px;">Connect your Anthropic API key</div>';
+  html += '<div style="font-size:12px;color:#868e96;margin-top:6px;text-align:left;">This standalone site has no server, so AI features (vocab definitions, paper question generation) need your own Anthropic API key. It is saved only in this browser\\'s local storage and sent directly to Anthropic, never anywhere else. Get a key at console.anthropic.com.</div>';
+  html += '<input id="apiKeyInput" placeholder="sk-ant-..." style="width:100%;margin-top:14px;box-sizing:border-box;" value="' + escapeHtml(getApiKey()) + '" />';
+  html += '<div style="display:flex;gap:8px;margin-top:14px;"><button class="btn-secondary" id="cancelApiKeyBtn" style="flex:1;">Cancel</button><button class="btn-primary" id="saveApiKeyBtn" style="flex:1;">Save</button></div></div></div>';
+  return html;
 }
 
-// ====================== MAIN RENDER ======================
 function render() {
-  const app = document.getElementById("app");
-  let tabHtml = "";
-  if (currentTab==="home") tabHtml = renderHome();
-  else if (currentTab==="tasks") tabHtml = renderTasks();
-  else if (currentTab==="errors") tabHtml = renderErrors();
-  else if (currentTab==="vocab") tabHtml = renderVocab();
-  else if (currentTab==="papers") tabHtml = renderPapers();
-  else if (currentTab==="timer") tabHtml = renderTimer();
-  else if (currentTab==="shop") tabHtml = renderShop();
+  var app = document.getElementById("app");
+  var tabHtml = "";
+  if (currentTab === "home") tabHtml = renderHome();
+  else if (currentTab === "tasks") tabHtml = renderTasks();
+  else if (currentTab === "errors") tabHtml = renderErrors();
+  else if (currentTab === "vocab") tabHtml = renderVocab();
+  else if (currentTab === "papers") tabHtml = renderPapers();
+  else if (currentTab === "timer") tabHtml = renderTimer();
+  else if (currentTab === "shop") tabHtml = renderShop();
 
-  app.innerHTML = `
-    ${renderHeader()}
-    ${renderNav()}
-    <div>${tabHtml}</div>
-    ${showNamePrompt ? renderNamePromptModal() : ""}
-    ${showJourneyModal ? renderJourneyModal() : ""}
-    ${showApiKeyModal ? renderApiKeyModal() : ""}
-    ${viewingError ? renderViewingErrorModal() : ""}
-  `;
+  app.innerHTML = renderHeader() + renderNav() + '<div>' + tabHtml + '</div>' +
+    (showNamePrompt ? renderNamePromptModal() : '') +
+    (showJourneyModal ? renderJourneyModal() : '') +
+    (showApiKeyModal ? renderApiKeyModal() : '') +
+    (viewingError ? renderViewingErrorModal() : '');
   attachListeners();
 }
 
 function attachListeners() {
-  document.querySelectorAll(".navbtn").forEach(btn => {
-    btn.addEventListener("click", () => { currentTab = btn.dataset.tab; render(); });
-  });
+  var navBtns = document.querySelectorAll(".navbtn");
+  for (var i = 0; i < navBtns.length; i++) {
+    navBtns[i].addEventListener("click", function() { currentTab = this.dataset.tab; render(); });
+  }
 
-  // Home
-  const shareBtn = document.getElementById("shareCardBtn");
-  if (shareBtn) shareBtn.addEventListener("click", () => flashToast("📸 Screenshot this card to share with friends!"));
-  const avatarNameClick = document.getElementById("avatarNameClick");
-  if (avatarNameClick) avatarNameClick.addEventListener("click", () => { showNamePrompt = true; render(); });
-  const avatarClick = document.getElementById("avatarClick");
-  if (avatarClick) avatarClick.addEventListener("click", () => { showJourneyModal = true; render(); });
+  var shareBtn = document.getElementById("shareCardBtn");
+  if (shareBtn) shareBtn.addEventListener("click", function() { flashToast("📸 Screenshot this card to share with friends!"); });
+  var avatarNameClick = document.getElementById("avatarNameClick");
+  if (avatarNameClick) avatarNameClick.addEventListener("click", function() { showNamePrompt = true; render(); });
+  var avatarClick = document.getElementById("avatarClick");
+  if (avatarClick) avatarClick.addEventListener("click", function() { showJourneyModal = true; render(); });
 
-  // Journey modal
-  const journeyOverlay = document.getElementById("journeyOverlay");
-  if (journeyOverlay) journeyOverlay.addEventListener("click", () => { showJourneyModal = false; render(); });
-  const closeJourneyBtn = document.getElementById("closeJourneyBtn");
-  if (closeJourneyBtn) closeJourneyBtn.addEventListener("click", () => { showJourneyModal = false; render(); });
+  var journeyOverlay = document.getElementById("journeyOverlay");
+  if (journeyOverlay) journeyOverlay.addEventListener("click", function() { showJourneyModal = false; render(); });
+  var closeJourneyBtn = document.getElementById("closeJourneyBtn");
+  if (closeJourneyBtn) closeJourneyBtn.addEventListener("click", function() { showJourneyModal = false; render(); });
 
-  // Name modal
-  const saveNameBtn = document.getElementById("saveNameBtn");
-  if (saveNameBtn) saveNameBtn.addEventListener("click", () => {
-    const val = document.getElementById("nameInput").value.trim();
+  var saveNameBtn = document.getElementById("saveNameBtn");
+  if (saveNameBtn) saveNameBtn.addEventListener("click", function() {
+    var val = document.getElementById("nameInput").value.trim();
     state.avatarName = val || "Buddy";
     showNamePrompt = false;
     persist(); render();
   });
 
-  // API key modal
-  const vocabApiKeyLink = document.getElementById("vocabApiKeyLink");
-  if (vocabApiKeyLink) vocabApiKeyLink.addEventListener("click", () => { showApiKeyModal = true; render(); });
-  const papersApiKeyLink = document.getElementById("papersApiKeyLink");
-  if (papersApiKeyLink) papersApiKeyLink.addEventListener("click", () => { showApiKeyModal = true; render(); });
-  const apiKeyOverlay = document.getElementById("apiKeyOverlay");
-  if (apiKeyOverlay) apiKeyOverlay.addEventListener("click", () => { showApiKeyModal = false; render(); });
-  const cancelApiKeyBtn = document.getElementById("cancelApiKeyBtn");
-  if (cancelApiKeyBtn) cancelApiKeyBtn.addEventListener("click", () => { showApiKeyModal = false; render(); });
-  const saveApiKeyBtn = document.getElementById("saveApiKeyBtn");
-  if (saveApiKeyBtn) saveApiKeyBtn.addEventListener("click", () => {
-    const val = document.getElementById("apiKeyInput").value.trim();
+  var vocabApiKeyLink = document.getElementById("vocabApiKeyLink");
+  if (vocabApiKeyLink) vocabApiKeyLink.addEventListener("click", function() { showApiKeyModal = true; render(); });
+  var papersApiKeyLink = document.getElementById("papersApiKeyLink");
+  if (papersApiKeyLink) papersApiKeyLink.addEventListener("click", function() { showApiKeyModal = true; render(); });
+  var apiKeyOverlay = document.getElementById("apiKeyOverlay");
+  if (apiKeyOverlay) apiKeyOverlay.addEventListener("click", function() { showApiKeyModal = false; render(); });
+  var cancelApiKeyBtn = document.getElementById("cancelApiKeyBtn");
+  if (cancelApiKeyBtn) cancelApiKeyBtn.addEventListener("click", function() { showApiKeyModal = false; render(); });
+  var saveApiKeyBtn = document.getElementById("saveApiKeyBtn");
+  if (saveApiKeyBtn) saveApiKeyBtn.addEventListener("click", function() {
+    var val = document.getElementById("apiKeyInput").value.trim();
     setApiKey(val);
     showApiKeyModal = false;
     flashToast("API key saved!");
     render();
   });
 
-  // Tasks
-  const addTaskBtn = document.getElementById("addTaskBtn");
+  var addTaskBtn = document.getElementById("addTaskBtn");
   if (addTaskBtn) addTaskBtn.addEventListener("click", addTask);
-  const taskTextInput = document.getElementById("taskTextInput");
-  if (taskTextInput) taskTextInput.addEventListener("keydown", (e)=>{ if(e.key==="Enter") addTask(); });
-  document.querySelectorAll("[data-toggle-task]").forEach(el => el.addEventListener("change", ()=>toggleTask(el.dataset.toggleTask)));
-  document.querySelectorAll("[data-delete-task]").forEach(el => el.addEventListener("click", ()=>deleteTask(el.dataset.deleteTask)));
-
-  // Errors
-  document.querySelectorAll("[data-error-filter]").forEach(el => el.addEventListener("click", ()=>{ errorFilter = el.dataset.errorFilter; render(); }));
-  const errorSubjectSelect = document.getElementById("errorSubjectSelect");
-  if (errorSubjectSelect) errorSubjectSelect.addEventListener("change", (e)=>{ errorFormSubject = e.target.value; });
-  const errorNoteInput = document.getElementById("errorNoteInput");
-  if (errorNoteInput) errorNoteInput.addEventListener("input", (e)=>{ errorFormNote = e.target.value; });
-  const errorFileInput = document.getElementById("errorFileInput");
-  if (errorFileInput) errorFileInput.addEventListener("change", handleErrorFile);
-  document.querySelectorAll("[data-view-error]").forEach(el => el.addEventListener("click", ()=>{
-    viewingError = state.errorBank.find(er=>er.id===el.dataset.viewError);
-    render();
-  }));
-  document.querySelectorAll("[data-toggle-mastered]").forEach(el => el.addEventListener("click", ()=>toggleMastered(el.dataset.toggleMastered)));
-  document.querySelectorAll("[data-delete-error]").forEach(el => el.addEventListener("click", ()=>deleteError(el.dataset.deleteError)));
-  const closeViewErrorBtn = document.getElementById("closeViewErrorBtn");
-  if (closeViewErrorBtn) closeViewErrorBtn.addEventListener("click", ()=>{ viewingError=null; render(); });
-  const viewErrorOverlay = document.getElementById("viewErrorOverlay");
-  if (viewErrorOverlay) viewErrorOverlay.addEventListener("click", ()=>{ viewingError=null; render(); });
-
-  // Vocab
-  const vocabWordInputEl = document.getElementById("vocabWordInput");
-  if (vocabWordInputEl) {
-    vocabWordInputEl.addEventListener("input", (e)=>{ vocabWordInput = e.target.value; });
-    vocabWordInputEl.addEventListener("keydown", (e)=>{ if(e.key==="Enter") addVocab(); });
+  var taskTextInput = document.getElementById("taskTextInput");
+  if (taskTextInput) taskTextInput.addEventListener("keydown", function(e) { if (e.key === "Enter") addTask(); });
+  var toggleTaskEls = document.querySelectorAll("[data-toggle-task]");
+  for (var i2 = 0; i2 < toggleTaskEls.length; i2++) {
+    toggleTaskEls[i2].addEventListener("change", function() { toggleTask(this.dataset.toggleTask); });
   }
-  const addVocabBtn = document.getElementById("addVocabBtn");
+  var delTaskEls = document.querySelectorAll("[data-delete-task]");
+  for (var i3 = 0; i3 < delTaskEls.length; i3++) {
+    delTaskEls[i3].addEventListener("click", function() { deleteTask(this.dataset.deleteTask); });
+  }
+
+  var errFilterEls = document.querySelectorAll("[data-error-filter]");
+  for (var i4 = 0; i4 < errFilterEls.length; i4++) {
+    errFilterEls[i4].addEventListener("click", function() { errorFilter = this.dataset.errorFilter; render(); });
+  }
+  var errorSubjectSelect = document.getElementById("errorSubjectSelect");
+  if (errorSubjectSelect) errorSubjectSelect.addEventListener("change", function(e) { errorFormSubject = e.target.value; });
+  var errorNoteInput = document.getElementById("errorNoteInput");
+  if (errorNoteInput) errorNoteInput.addEventListener("input", function(e) { errorFormNote = e.target.value; });
+  var errorFileInput = document.getElementById("errorFileInput");
+  if (errorFileInput) errorFileInput.addEventListener("change", handleErrorFile);
+  var viewErrEls = document.querySelectorAll("[data-view-error]");
+  for (var i5 = 0; i5 < viewErrEls.length; i5++) {
+    viewErrEls[i5].addEventListener("click", function() {
+      var id = this.dataset.viewError;
+      for (var j = 0; j < state.errorBank.length; j++) { if (state.errorBank[j].id === id) viewingError = state.errorBank[j]; }
+      render();
+    });
+  }
+  var toggleMasteredEls = document.querySelectorAll("[data-toggle-mastered]");
+  for (var i6 = 0; i6 < toggleMasteredEls.length; i6++) {
+    toggleMasteredEls[i6].addEventListener("click", function() { toggleMastered(this.dataset.toggleMastered); });
+  }
+  var delErrEls = document.querySelectorAll("[data-delete-error]");
+  for (var i7 = 0; i7 < delErrEls.length; i7++) {
+    delErrEls[i7].addEventListener("click", function() { deleteError(this.dataset.deleteError); });
+  }
+  var closeViewErrorBtn = document.getElementById("closeViewErrorBtn");
+  if (closeViewErrorBtn) closeViewErrorBtn.addEventListener("click", function() { viewingError = null; render(); });
+  var viewErrorOverlay = document.getElementById("viewErrorOverlay");
+  if (viewErrorOverlay) viewErrorOverlay.addEventListener("click", function() { viewingError = null; render(); });
+
+  var vocabWordInputEl = document.getElementById("vocabWordInput");
+  if (vocabWordInputEl) {
+    vocabWordInputEl.addEventListener("input", function(e) { vocabWordInput = e.target.value; });
+    vocabWordInputEl.addEventListener("keydown", function(e) { if (e.key === "Enter") addVocab(); });
+  }
+  var addVocabBtn = document.getElementById("addVocabBtn");
   if (addVocabBtn) addVocabBtn.addEventListener("click", addVocab);
-  document.querySelectorAll("[data-expand-vocab]").forEach(el => el.addEventListener("click", (e)=>{
-    if (e.target.closest("[data-delete-vocab]")) return;
-    const id = el.dataset.expandVocab;
-    expandedVocabId = expandedVocabId===id ? null : id;
-    render();
-  }));
-  document.querySelectorAll("[data-delete-vocab]").forEach(el => el.addEventListener("click", (e)=>{ e.stopPropagation(); deleteVocab(el.dataset.deleteVocab); }));
+  var expandVocabEls = document.querySelectorAll("[data-expand-vocab]");
+  for (var i8 = 0; i8 < expandVocabEls.length; i8++) {
+    expandVocabEls[i8].addEventListener("click", function(e) {
+      if (e.target.closest("[data-delete-vocab]")) return;
+      var id = this.dataset.expandVocab;
+      expandedVocabId = expandedVocabId === id ? null : id;
+      render();
+    });
+  }
+  var delVocabEls = document.querySelectorAll("[data-delete-vocab]");
+  for (var i9 = 0; i9 < delVocabEls.length; i9++) {
+    delVocabEls[i9].addEventListener("click", function(e) { e.stopPropagation(); deleteVocab(this.dataset.deleteVocab); });
+  }
 
-  // Papers
-  const paperSubjectSelect = document.getElementById("paperSubjectSelect");
-  if (paperSubjectSelect) paperSubjectSelect.addEventListener("change", (e)=>{ papersSubject = e.target.value; });
-  const paperFileInput = document.getElementById("paperFileInput");
+  var paperSubjectSelect = document.getElementById("paperSubjectSelect");
+  if (paperSubjectSelect) paperSubjectSelect.addEventListener("change", function(e) { papersSubject = e.target.value; });
+  var paperFileInput = document.getElementById("paperFileInput");
   if (paperFileInput) paperFileInput.addEventListener("change", handlePaperFile);
-  document.querySelectorAll("[data-delete-paper]").forEach(el => el.addEventListener("click", ()=>deletePaper(el.dataset.deletePaper)));
-  document.querySelectorAll("[data-generate-paper]").forEach(el => el.addEventListener("click", ()=>generateFromPaper(el.dataset.generatePaper)));
-  document.querySelectorAll("[data-toggle-answer]").forEach(el => el.addEventListener("click", ()=>{
-    const idx = parseInt(el.dataset.toggleAnswer,10);
-    if (papersQuestions && papersQuestions[idx]) papersQuestions[idx]._show = !papersQuestions[idx]._show;
-    render();
-  }));
+  var delPaperEls = document.querySelectorAll("[data-delete-paper]");
+  for (var i10 = 0; i10 < delPaperEls.length; i10++) {
+    delPaperEls[i10].addEventListener("click", function() { deletePaper(this.dataset.deletePaper); });
+  }
+  var genPaperEls = document.querySelectorAll("[data-generate-paper]");
+  for (var i11 = 0; i11 < genPaperEls.length; i11++) {
+    genPaperEls[i11].addEventListener("click", function() { generateFromPaper(this.dataset.generatePaper); });
+  }
+  var toggleAnswerEls = document.querySelectorAll("[data-toggle-answer]");
+  for (var i12 = 0; i12 < toggleAnswerEls.length; i12++) {
+    toggleAnswerEls[i12].addEventListener("click", function() {
+      var idx = parseInt(this.dataset.toggleAnswer, 10);
+      if (papersQuestions && papersQuestions[idx]) papersQuestions[idx]._show = !papersQuestions[idx]._show;
+      render();
+    });
+  }
 
-  // Timer
-  document.querySelectorAll("[data-start-timer]").forEach(el => el.addEventListener("click", ()=>startTimer(el.dataset.startTimer)));
-  const timerPauseResumeBtn = document.getElementById("timerPauseResumeBtn");
+  var startTimerEls = document.querySelectorAll("[data-start-timer]");
+  for (var i13 = 0; i13 < startTimerEls.length; i13++) {
+    startTimerEls[i13].addEventListener("click", function() { startTimer(this.dataset.startTimer); });
+  }
+  var timerPauseResumeBtn = document.getElementById("timerPauseResumeBtn");
   if (timerPauseResumeBtn) timerPauseResumeBtn.addEventListener("click", timerPauseResume);
-  const timerResetBtn = document.getElementById("timerResetBtn");
+  var timerResetBtn = document.getElementById("timerResetBtn");
   if (timerResetBtn) timerResetBtn.addEventListener("click", timerReset);
 
-  // Shop
-  document.querySelectorAll("[data-buy-acc]").forEach(el => el.addEventListener("click", ()=>buyAccessory(el.dataset.buyAcc)));
-  document.querySelectorAll("[data-equip-acc]").forEach(el => el.addEventListener("click", ()=>equipAccessory(el.dataset.equipAcc)));
-  document.querySelectorAll("[data-buy-bg]").forEach(el => el.addEventListener("click", ()=>buyBackground(el.dataset.buyBg)));
-  document.querySelectorAll("[data-equip-bg]").forEach(el => el.addEventListener("click", ()=>equipBackground(el.dataset.equipBg)));
+  var buyAccEls = document.querySelectorAll("[data-buy-acc]");
+  for (var i14 = 0; i14 < buyAccEls.length; i14++) {
+    buyAccEls[i14].addEventListener("click", function() { buyAccessory(this.dataset.buyAcc); });
+  }
+  var equipAccEls = document.querySelectorAll("[data-equip-acc]");
+  for (var i15 = 0; i15 < equipAccEls.length; i15++) {
+    equipAccEls[i15].addEventListener("click", function() { equipAccessory(this.dataset.equipAcc); });
+  }
+  var buyBgEls = document.querySelectorAll("[data-buy-bg]");
+  for (var i16 = 0; i16 < buyBgEls.length; i16++) {
+    buyBgEls[i16].addEventListener("click", function() { buyBackground(this.dataset.buyBg); });
+  }
+  var equipBgEls = document.querySelectorAll("[data-equip-bg]");
+  for (var i17 = 0; i17 < equipBgEls.length; i17++) {
+    equipBgEls[i17].addEventListener("click", function() { equipBackground(this.dataset.equipBg); });
+  }
 }
 
-// ====================== INIT ======================
 render();
 </script>
 </body>
