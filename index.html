@@ -1,83 +1,209 @@
-import { useState, useEffect, useRef } from "react";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eva's Study Garden</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: linear-gradient(180deg, #FFF7FB 0%, #F3F8FF 100%);
+    margin: 0;
+    padding: 16px;
+    color: #495057;
+  }
+  #app {
+    max-width: 480px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .card {
+    background: white;
+    border-radius: 14px;
+    padding: 12px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .title { font-size: 18px; font-weight: 800; color: #D6336C; }
+  .pills { display: flex; gap: 8px; }
+  .pill {
+    background: white;
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #495057;
+  }
+  .navbar {
+    display: flex;
+    overflow-x: auto;
+    gap: 6px;
+    padding-bottom: 4px;
+    margin-bottom: 12px;
+  }
+  .navbtn {
+    flex-shrink: 0;
+    border: none;
+    background: white;
+    color: #868e96;
+    border-radius: 14px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-width: 56px;
+  }
+  .navbtn.active { background: #FFB3CB; color: white; }
+  .navbtn .emoji { font-size: 16px; }
+  button { font-family: inherit; }
+  input, select {
+    font-family: inherit;
+    border-radius: 10px;
+    border: 2px solid #eee;
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+  .empty { text-align: center; padding: 30px 10px; color: #adb5bd; }
+  .empty .emoji { font-size: 32px; }
+  .empty .text { font-size: 13px; margin-top: 6px; }
+  .toast {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fff;
+    border: 2px solid #FFB3CB;
+    border-radius: 14px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #D6336C;
+    z-index: 60;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+    transition: opacity 0.3s;
+  }
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 70;
+    padding: 20px;
+  }
+  .modal-box {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    max-width: 340px;
+    max-height: 85vh;
+    overflow-y: auto;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  }
+  .btn-primary {
+    background: #FFB3CB; color: white; border: none; border-radius: 12px;
+    padding: 10px 18px; font-weight: 700; font-size: 13px; cursor: pointer;
+  }
+  .btn-secondary {
+    background: #FFE3EC; color: #D6336C; border: none; border-radius: 12px;
+    padding: 10px 18px; font-weight: 700; font-size: 13px; cursor: pointer;
+  }
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .stat-box { background: white; border-radius: 12px; padding: 10px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+  .stat-box .emoji { font-size: 18px; }
+  .stat-box .value { font-weight: 800; font-size: 16px; color: #495057; }
+  .stat-box .label { font-size: 10px; color: #adb5bd; }
+  .subject-pill { font-size: 9px; font-weight: 700; border-radius: 8px; padding: 2px 6px; }
+  .err-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .err-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+  .err-card img { width: 100%; height: 110px; object-fit: cover; cursor: pointer; display: block; }
+  .err-card .body { padding: 8px; }
+  .task-row { display: flex; align-items: center; gap: 8px; background: white; border-radius: 12px; padding: 10px; margin-bottom: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+  .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .shop-item { background: white; border-radius: 14px; padding: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+  .bg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+  .bg-item { border-radius: 14px; padding: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); position: relative; overflow: hidden; }
+  .journey-stage { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 12px; margin-bottom: 6px; }
+  .vocab-card { background: white; border-radius: 12px; padding: 12px; margin-bottom: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); cursor: pointer; }
+  a.upload-label {
+    display: block; text-align: center; color: white; border-radius: 10px;
+    padding: 10px; font-weight: 700; font-size: 13px; cursor: pointer;
+  }
+  ::-webkit-scrollbar { height: 4px; }
+</style>
+</head>
+<body>
+<div id="app"></div>
 
-// ---------- Constants ----------
+<script>
+// ====================== CONSTANTS ======================
 const SUBJECTS = ["English", "Maths", "Science"];
 const SUBJECT_COLORS = {
-  English: { bg: "#FFE3EC", text: "#D6336C", border: "#FFB3CB" },
-  Maths: { bg: "#E3F0FF", text: "#1971C2", border: "#A5D8FF" },
-  Science: { bg: "#E6FCF5", text: "#0CA678", border: "#96F2D7" },
+  English: { bg: "#FFE3EC", text: "#D6336C" },
+  Maths: { bg: "#E3F0FF", text: "#1971C2" },
+  Science: { bg: "#E6FCF5", text: "#0CA678" },
 };
-
 const PSLE_DATE = new Date("2026-09-24T00:00:00");
 
 const TIMERS = [
-  {
-    id: "eng1",
-    label: "English Paper 1 (Writing)",
-    mins: 70,
-    tips: [
-      "Spend 5-10 min planning your composition before writing.",
-      "Check you've used at least 2-3 'wow' vocabulary words.",
-      "Leave 5 min at the end to check spelling, punctuation & tenses.",
-      "Make sure your story has a clear beginning, middle and end.",
-    ],
-  },
-  {
-    id: "eng2",
-    label: "English Paper 2 (Comprehension)",
-    mins: 110,
-    tips: [
-      "Read the whole passage once before answering questions.",
-      "For 'in your own words' questions, don't copy phrases directly.",
-      "Check the number of marks — give that many points in your answer.",
-      "Leave time to recheck grammar (subject-verb agreement, tenses).",
-      "For cloze/grammar sections, read the full sentence before choosing.",
-    ],
-  },
-  {
-    id: "math1",
-    label: "Maths Paper 1 (No Calculator)",
-    mins: 60,
-    tips: [
-      "Check units (cm vs m, g vs kg) before finalising answers.",
-      "For MCQ, eliminate obviously wrong options first.",
-      "Re-read the question — did it ask for the difference, total, or remainder?",
-      "Double check your calculations using estimation.",
-    ],
-  },
-  {
-    id: "math2",
-    label: "Maths Paper 2 (With Calculator)",
-    mins: 90,
-    tips: [
-      "Show your working clearly for method marks, even with a calculator.",
-      "Label your answers with correct units.",
-      "For word problems, draw a model or diagram if it helps.",
-      "Check if the answer makes sense (e.g. not negative for a length).",
-      "Leave 5-10 min to check all your answers at the end.",
-    ],
-  },
-  {
-    id: "sci",
-    label: "Science Paper",
-    mins: 105,
-    tips: [
-      "Underline key terms in the question (e.g. 'explain', 'compare').",
-      "Use correct scientific vocabulary in your answers.",
-      "For open-ended questions, link cause and effect clearly.",
-      "Check diagrams are labelled if the question asks for one.",
-      "Review answers for completeness — did you answer ALL parts of the question?",
-    ],
-  },
+  { id: "eng1", label: "English Paper 1 (Writing)", mins: 70, tips: [
+    "Spend 5-10 min planning your composition before writing.",
+    "Check you've used at least 2-3 'wow' vocabulary words.",
+    "Leave 5 min at the end to check spelling, punctuation & tenses.",
+    "Make sure your story has a clear beginning, middle and end."
+  ]},
+  { id: "eng2", label: "English Paper 2 (Comprehension)", mins: 110, tips: [
+    "Read the whole passage once before answering questions.",
+    "For 'in your own words' questions, don't copy phrases directly.",
+    "Check the number of marks — give that many points in your answer.",
+    "Leave time to recheck grammar (subject-verb agreement, tenses).",
+    "For cloze/grammar sections, read the full sentence before choosing."
+  ]},
+  { id: "math1", label: "Maths Paper 1 (No Calculator)", mins: 60, tips: [
+    "Check units (cm vs m, g vs kg) before finalising answers.",
+    "For MCQ, eliminate obviously wrong options first.",
+    "Re-read the question — did it ask for the difference, total, or remainder?",
+    "Double check your calculations using estimation."
+  ]},
+  { id: "math2", label: "Maths Paper 2 (With Calculator)", mins: 90, tips: [
+    "Show your working clearly for method marks, even with a calculator.",
+    "Label your answers with correct units.",
+    "For word problems, draw a model or diagram if it helps.",
+    "Check if the answer makes sense (e.g. not negative for a length).",
+    "Leave 5-10 min to check all your answers at the end."
+  ]},
+  { id: "sci", label: "Science Paper", mins: 105, tips: [
+    "Underline key terms in the question (e.g. 'explain', 'compare').",
+    "Use correct scientific vocabulary in your answers.",
+    "For open-ended questions, link cause and effect clearly.",
+    "Check diagrams are labelled if the question asks for one.",
+    "Review answers for completeness — did you answer ALL parts of the question?"
+  ]},
 ];
 
 const STAGES = [
-  { min: 0, name: "Sleepy Seedling", emoji: "🌱" },
-  { min: 60, name: "Waking Sprout", emoji: "🐣" },
-  { min: 150, name: "Focused Bud", emoji: "🌷" },
-  { min: 300, name: "Bright Blossom", emoji: "🌸" },
-  { min: 520, name: "Glowing Scholar", emoji: "✨" },
-  { min: 800, name: "Star Sage", emoji: "🌟" },
+  { min: 0, name: "Sleepy Seedling", emoji: "🌱", desc: "Just getting started — every garden begins with a tiny seed." },
+  { min: 60, name: "Waking Sprout", emoji: "🐣", desc: "Stretching out and waking up to the world of revision." },
+  { min: 150, name: "Focused Bud", emoji: "🌷", desc: "Starting to bloom with focus and good habits." },
+  { min: 300, name: "Bright Blossom", emoji: "🌸", desc: "Flourishing! Consistent effort is really paying off." },
+  { min: 520, name: "Glowing Scholar", emoji: "✨", desc: "Radiating knowledge and confidence." },
+  { min: 800, name: "Star Sage", emoji: "🌟", desc: "The final form — a true PSLE superstar." },
 ];
 
 const ACCESSORIES = [
@@ -93,54 +219,39 @@ const ACCESSORIES = [
   { id: "gem", name: "Sparkle Gem", emoji: "💎", cost: 220 },
 ];
 
-const uid = () => Math.random().toString(36).slice(2, 10);
+const BACKGROUNDS = [
+  { id: "bg_default", name: "Soft Pastel", cost: 0, css: "linear-gradient(135deg, #FFE3EC, #E3F0FF)" },
+  { id: "bg_meadow", name: "Spring Meadow", cost: 50, css: "linear-gradient(135deg, #D8F5A2, #96F2D7)" },
+  { id: "bg_sunset", name: "Cotton Candy Sunset", cost: 90, css: "linear-gradient(135deg, #FFC9DE, #FFD8A8)" },
+  { id: "bg_galaxy", name: "Dreamy Galaxy", cost: 140, css: "linear-gradient(135deg, #D0BFFF, #A5D8FF)" },
+  { id: "bg_garden", name: "Blossom Garden", cost: 180, css: "linear-gradient(135deg, #FFB3CB, #C3FAE8)" },
+  { id: "bg_gold", name: "Golden Hour", cost: 250, css: "linear-gradient(135deg, #FFE066, #FFC078)" },
+];
 
-function getStage(stars) {
-  let stage = STAGES[0];
-  for (const s of STAGES) if (stars >= s.min) stage = s;
-  return stage;
-}
-function nextStage(stars) {
-  return STAGES.find((s) => s.min > stars) || null;
-}
+const uid = () => Math.random().toString(36).slice(2, 10);
+function getStage(stars) { let stage = STAGES[0]; for (const s of STAGES) if (stars >= s.min) stage = s; return stage; }
+function nextStage(stars) { return STAGES.find(s => s.min > stars) || null; }
 function daysWeeksUntil(target) {
   const now = new Date();
   const diffMs = target.getTime() - now.getTime();
   const days = Math.max(0, Math.ceil(diffMs / 86400000));
-  const weeks = Math.floor(days / 7);
-  const remDays = days % 7;
-  return { days, weeks, remDays };
+  return { days, weeks: Math.floor(days / 7), remDays: days % 7 };
 }
 function startOfWeek(d) {
   const date = new Date(d);
   const day = date.getDay();
-  const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-  date.setDate(diff);
-  date.setHours(0, 0, 0, 0);
+  date.setDate(date.getDate() - day + (day === 0 ? -6 : 1));
+  date.setHours(0,0,0,0);
   return date;
 }
-function weekKey(ts) {
-  return startOfWeek(new Date(ts)).toISOString().slice(0, 10);
+function weekKey(ts) { return startOfWeek(new Date(ts)).toISOString().slice(0,10); }
+function escapeHtml(str) {
+  if (!str) return "";
+  return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
 
-// ---------- Storage helpers ----------
-async function loadState() {
-  try {
-    const res = await window.storage.get("eva-study-garden-state");
-    if (res && res.value) return JSON.parse(res.value);
-  } catch (e) {
-    // not found - use default
-  }
-  return null;
-}
-async function saveState(state) {
-  try {
-    await window.storage.set("eva-study-garden-state", JSON.stringify(state));
-  } catch (e) {
-    console.error("Save failed", e);
-  }
-}
-
+// ====================== STORAGE ======================
+const STORAGE_KEY = "eva-study-garden-state";
 const DEFAULT_STATE = {
   avatarName: "",
   stars: 0,
@@ -150,11 +261,83 @@ const DEFAULT_STATE = {
   freezeAvailable: true,
   ownedAccessories: [],
   equippedAccessories: [],
+  ownedBackgrounds: ["bg_default"],
+  equippedBackground: "bg_default",
   tasks: [],
   errorBank: [],
   vocabBank: [],
   papers: [],
 };
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return Object.assign({}, DEFAULT_STATE, JSON.parse(raw));
+  } catch(e) { console.error("load failed", e); }
+  return null;
+}
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  catch(e) { console.error("save failed", e); }
+}
+
+// ====================== AI CALL (BYO API key, optional) ======================
+// Since this is a standalone static site (e.g. GitHub Pages), there is no
+// built-in backend to call Claude on your behalf. To use the Vocab Generator
+// and Paper Question Generator, enter your own Anthropic API key below (stored
+// only in your browser's localStorage, never sent anywhere except Anthropic).
+function getApiKey() {
+  return localStorage.getItem("eva-study-garden-api-key") || "";
+}
+function setApiKey(key) {
+  localStorage.setItem("eva-study-garden-api-key", key);
+}
+
+async function callClaude(messages, system) {
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    throw new Error("NO_API_KEY");
+  }
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true",
+    },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-6",
+      max_tokens: 1500,
+      system: system,
+      messages: messages,
+    }),
+  });
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error("API_ERROR: " + errText);
+  }
+  const data = await res.json();
+  const textBlocks = (data.content || []).filter(c => c.type === "text").map(c => c.text);
+  return textBlocks.join("\n");
+}
+
+function extractJson(text) {
+  let clean = text.trim().replace(/```json/g,"").replace(/```/g,"").trim();
+  try { return JSON.parse(clean); } catch(e) {
+    const firstObj = clean.indexOf("{");
+    const firstArr = clean.indexOf("[");
+    let first = -1;
+    if (firstObj === -1) first = firstArr;
+    else if (firstArr === -1) first = firstObj;
+    else first = Math.min(firstObj, firstArr);
+    const last = Math.max(clean.lastIndexOf("}"), clean.lastIndexOf("]"));
+    if (first !== -1 && last !== -1) {
+      try { return JSON.parse(clean.slice(first, last+1)); } catch(e2) { return null; }
+    }
+    return null;
+  }
+}
 
 function readFileAsDataURL(file) {
   return new Promise((resolve, reject) => {
@@ -165,348 +348,129 @@ function readFileAsDataURL(file) {
   });
 }
 
-async function callClaude(messages, system) {
-  const body = { model: "claude-sonnet-4-6", max_tokens: 1500, messages };
-  if (system) body.system = system;
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  const data = await res.json();
-  const textBlocks = (data.content || []).filter((c) => c.type === "text").map((c) => c.text);
-  return { text: textBlocks.join("\n"), raw: data };
+// ====================== STATE ======================
+let state = loadState() || JSON.parse(JSON.stringify(DEFAULT_STATE));
+let currentTab = "home";
+let showNamePrompt = !state.avatarName;
+let showJourneyModal = false;
+let showApiKeyModal = false;
+let viewingError = null;
+let expandedVocabId = null;
+let vocabLoading = false;
+let papersGenerating = false;
+let papersQuestions = null;
+let papersActivePaperId = null;
+let papersErrorMsg = null;
+let timerActiveId = null;
+let timerSecondsLeft = 0;
+let timerRunning = false;
+let timerInterval = null;
+
+function persist() { saveState(); }
+
+function flashToast(msg) {
+  const el = document.createElement("div");
+  el.className = "toast";
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => { el.style.opacity = "0"; }, 1900);
+  setTimeout(() => el.remove(), 2300);
 }
 
-function extractJson(text) {
-  let clean = text.trim().replace(/```json/g, "").replace(/```/g, "").trim();
-  try {
-    return JSON.parse(clean);
-  } catch (e) {
-    const firstObj = clean.indexOf("{");
-    const firstArr = clean.indexOf("[");
-    let first = -1;
-    if (firstObj === -1) first = firstArr;
-    else if (firstArr === -1) first = firstObj;
-    else first = Math.min(firstObj, firstArr);
-    const last = Math.max(clean.lastIndexOf("}"), clean.lastIndexOf("]"));
-    if (first !== -1 && last !== -1) {
-      try {
-        return JSON.parse(clean.slice(first, last + 1));
-      } catch (e2) {
-        return null;
-      }
-    }
-    return null;
+function burstConfetti() {
+  const colors = ["#FFB3CB","#A5D8FF","#96F2D7","#FFE066","#D0BFFF"];
+  for (let i=0;i<24;i++) {
+    const piece = document.createElement("div");
+    const left = Math.random()*100;
+    const delay = Math.random()*0.4;
+    const dur = 1.2+Math.random()*0.8;
+    const color = colors[i % colors.length];
+    piece.style.position = "fixed";
+    piece.style.left = left+"%";
+    piece.style.top = "-10px";
+    piece.style.width = "8px";
+    piece.style.height = "8px";
+    piece.style.background = color;
+    piece.style.borderRadius = i%2===0 ? "50%" : "2px";
+    piece.style.zIndex = "999";
+    piece.style.pointerEvents = "none";
+    piece.style.animation = `fall ${dur}s ${delay}s ease-in forwards`;
+    document.body.appendChild(piece);
+    setTimeout(() => piece.remove(), (dur+delay)*1000+100);
   }
 }
+const styleTag = document.createElement("style");
+styleTag.textContent = "@keyframes fall { to { transform: translateY(110vh) rotate(360deg); opacity:0.3; } }";
+document.head.appendChild(styleTag);
 
-// ---------- Confetti ----------
-function Confetti({ show }) {
-  if (!show) return null;
-  const pieces = Array.from({ length: 24 });
-  return (
-    <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden">
-      {pieces.map((_, i) => {
-        const left = Math.random() * 100;
-        const delay = Math.random() * 0.4;
-        const dur = 1.2 + Math.random() * 0.8;
-        const colors = ["#FFB3CB", "#A5D8FF", "#96F2D7", "#FFE066", "#D0BFFF"];
-        const color = colors[i % colors.length];
-        return (
-          <div
-            key={i}
-            style={{
-              position: "absolute",
-              left: `${left}%`,
-              top: "-10px",
-              width: 8,
-              height: 8,
-              background: color,
-              borderRadius: i % 2 === 0 ? "50%" : "2px",
-              animation: `fall ${dur}s ${delay}s ease-in forwards`,
-            }}
-          />
-        );
-      })}
-      <style>{`@keyframes fall { to { transform: translateY(110vh) rotate(360deg); opacity: 0.3; } }`}</style>
-    </div>
-  );
+// ====================== AVATAR RENDER ======================
+function avatarHtml(stage, equipped, size, bgCss) {
+  const accMap = {
+    bow: `<span style="position:absolute;top:-6px;left:50%;transform:translateX(-50%);font-size:${size*0.22}px;">🎀</span>`,
+    glasses: `<span style="position:absolute;top:32%;left:50%;transform:translateX(-50%);font-size:${size*0.26}px;">🤓</span>`,
+    crown: `<span style="position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:${size*0.24}px;">👑</span>`,
+    star: `<span style="position:absolute;bottom:-2px;right:-2px;font-size:${size*0.2}px;">⭐</span>`,
+    flower: `<span style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-size:${size*0.24}px;">💐</span>`,
+    ribbon: `<span style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);font-size:${size*0.22}px;">🌈</span>`,
+    bag: `<span style="position:absolute;bottom:-4px;left:-4px;font-size:${size*0.2}px;">🎒</span>`,
+    wand: `<span style="position:absolute;bottom:0;right:-8px;font-size:${size*0.22}px;">🪄</span>`,
+    cape: `<span style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);font-size:${size*0.3}px;">🦸</span>`,
+    gem: `<span style="position:absolute;top:50%;right:-10px;font-size:${size*0.2}px;">💎</span>`,
+  };
+  let accHtml = "";
+  equipped.forEach(id => { if (accMap[id]) accHtml += accMap[id]; });
+  return `
+    <div style="width:${size}px;height:${size}px;border-radius:50%;background:${bgCss};
+      display:flex;align-items:center;justify-content:center;font-size:${size*0.5}px;
+      position:relative;box-shadow:0 6px 20px rgba(255,179,203,0.4);border:4px solid white;margin:0 auto;">
+      <span>${stage.emoji}</span>
+      ${accHtml}
+    </div>`;
 }
 
-// ---------- Avatar ----------
-function Avatar({ stage, equipped, size = 120 }) {
-  return (
-    <div
-      style={{
-        width: size,
-        height: size,
-        borderRadius: "50%",
-        background: "linear-gradient(135deg, #FFE3EC, #E3F0FF)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontSize: size * 0.5,
-        position: "relative",
-        boxShadow: "0 6px 20px rgba(255,179,203,0.4)",
-        border: "4px solid white",
-      }}
-    >
-      <span>{stage.emoji}</span>
-      {equipped.includes("bow") && <span style={{ position: "absolute", top: -6, left: "50%", transform: "translateX(-50%)", fontSize: size * 0.22 }}>🎀</span>}
-      {equipped.includes("glasses") && <span style={{ position: "absolute", top: "32%", left: "50%", transform: "translateX(-50%)", fontSize: size * 0.26 }}>🤓</span>}
-      {equipped.includes("crown") && <span style={{ position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)", fontSize: size * 0.24 }}>👑</span>}
-      {equipped.includes("star") && <span style={{ position: "absolute", bottom: -2, right: -2, fontSize: size * 0.2 }}>⭐</span>}
-      {equipped.includes("flower") && <span style={{ position: "absolute", top: -10, left: "50%", transform: "translateX(-50%)", fontSize: size * 0.24 }}>💐</span>}
-      {equipped.includes("ribbon") && <span style={{ position: "absolute", bottom: -6, left: "50%", transform: "translateX(-50%)", fontSize: size * 0.22 }}>🌈</span>}
-      {equipped.includes("bag") && <span style={{ position: "absolute", bottom: -4, left: -4, fontSize: size * 0.2 }}>🎒</span>}
-      {equipped.includes("wand") && <span style={{ position: "absolute", bottom: 0, right: -8, fontSize: size * 0.22 }}>🪄</span>}
-      {equipped.includes("cape") && <span style={{ position: "absolute", bottom: -6, left: "50%", transform: "translateX(-50%)", fontSize: size * 0.3 }}>🦸</span>}
-      {equipped.includes("gem") && <span style={{ position: "absolute", top: "50%", right: -10, fontSize: size * 0.2 }}>💎</span>}
-    </div>
-  );
+// ====================== HEADER + NAV ======================
+function renderHeader() {
+  return `
+    <div class="header">
+      <div class="title">🌸 Eva's Study Garden</div>
+      <div class="pills">
+        <div class="pill" style="border:2px solid #FFD43B;"><span>⭐</span><span>${state.stars}</span></div>
+        <div class="pill" style="border:2px solid #FF922B;"><span>🥕</span><span>${state.carrots}</span></div>
+      </div>
+    </div>`;
 }
 
-// ---------- Main App ----------
-export default function StudyGarden() {
-  const [state, setState] = useState(DEFAULT_STATE);
-  const [loaded, setLoaded] = useState(false);
-  const [tab, setTab] = useState("home");
-  const [showConfetti, setShowConfetti] = useState(false);
-  const [toast, setToast] = useState(null);
-  const [showNamePrompt, setShowNamePrompt] = useState(false);
+const NAV_ITEMS = [
+  { id: "home", label: "Home", emoji: "🏠" },
+  { id: "tasks", label: "Tasks", emoji: "📋" },
+  { id: "errors", label: "Errors", emoji: "📸" },
+  { id: "vocab", label: "Vocab", emoji: "📖" },
+  { id: "papers", label: "Papers", emoji: "📄" },
+  { id: "timer", label: "Timer", emoji: "⏱" },
+  { id: "shop", label: "Shop", emoji: "🛍" },
+];
+function renderNav() {
+  return `<div class="navbar">${NAV_ITEMS.map(it => `
+    <button class="navbtn ${currentTab===it.id?'active':''}" data-tab="${it.id}">
+      <span class="emoji">${it.emoji}</span><span>${it.label}</span>
+    </button>`).join("")}</div>`;
+}
 
-  useEffect(() => {
-    (async () => {
-      const saved = await loadState();
-      if (saved) {
-        setState({ ...DEFAULT_STATE, ...saved });
-        if (!saved.avatarName) setShowNamePrompt(true);
-      } else {
-        setShowNamePrompt(true);
-      }
-      setLoaded(true);
-    })();
-  }, []);
-
-  useEffect(() => {
-    if (loaded) saveState(state);
-  }, [state, loaded]);
-
-  const flashToast = (msg) => {
-    setToast(msg);
-    setTimeout(() => setToast(null), 2200);
-  };
-  const burst = () => {
-    setShowConfetti(true);
-    setTimeout(() => setShowConfetti(false), 1500);
-  };
-
+// ====================== HOME TAB ======================
+function renderHome() {
   const stage = getStage(state.stars);
   const upcoming = nextStage(state.stars);
-
-  if (!loaded) {
-    return (
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 400, fontFamily: "system-ui" }}>
-        <div style={{ fontSize: 40 }}>🌸</div>
-      </div>
-    );
-  }
-
-  return (
-    <div
-      style={{
-        fontFamily: "'Segoe UI', system-ui, sans-serif",
-        background: "linear-gradient(180deg, #FFF7FB 0%, #F3F8FF 100%)",
-        minHeight: 600,
-        borderRadius: 20,
-        padding: 16,
-        maxWidth: 480,
-        margin: "0 auto",
-        position: "relative",
-        boxShadow: "0 4px 30px rgba(0,0,0,0.06)",
-      }}
-    >
-      <Confetti show={showConfetti} />
-      {toast && (
-        <div
-          style={{
-            position: "fixed",
-            top: 16,
-            left: "50%",
-            transform: "translateX(-50%)",
-            background: "#fff",
-            border: "2px solid #FFB3CB",
-            borderRadius: 14,
-            padding: "8px 16px",
-            fontSize: 14,
-            fontWeight: 600,
-            color: "#D6336C",
-            zIndex: 60,
-            boxShadow: "0 4px 14px rgba(0,0,0,0.1)",
-          }}
-        >
-          {toast}
-        </div>
-      )}
-
-      {showNamePrompt && (
-        <NamePromptModal
-          onSave={(name) => {
-            setState((s) => ({ ...s, avatarName: name }));
-            setShowNamePrompt(false);
-          }}
-        />
-      )}
-
-      <Header state={state} />
-      <NavBar tab={tab} setTab={setTab} />
-
-      <div style={{ marginTop: 14 }}>
-        {tab === "home" && (
-          <HomeTab state={state} setState={setState} stage={stage} upcoming={upcoming} flashToast={flashToast} setShowNamePrompt={setShowNamePrompt} />
-        )}
-        {tab === "tasks" && <TasksTab state={state} setState={setState} flashToast={flashToast} burst={burst} />}
-        {tab === "errors" && <ErrorBankTab state={state} setState={setState} flashToast={flashToast} />}
-        {tab === "vocab" && <VocabTab state={state} setState={setState} flashToast={flashToast} />}
-        {tab === "papers" && <PapersTab state={state} setState={setState} flashToast={flashToast} />}
-        {tab === "timer" && <TimerTab />}
-        {tab === "shop" && <ShopTab state={state} setState={setState} flashToast={flashToast} />}
-      </div>
-    </div>
-  );
-}
-
-// ---------- Name Prompt ----------
-function NamePromptModal({ onSave }) {
-  const [name, setName] = useState("");
-  return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0,0,0,0.35)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 70,
-        padding: 20,
-      }}
-    >
-      <div style={{ background: "white", borderRadius: 20, padding: 24, maxWidth: 320, textAlign: "center", boxShadow: "0 10px 40px rgba(0,0,0,0.2)" }}>
-        <div style={{ fontSize: 40 }}>🌱</div>
-        <div style={{ fontWeight: 800, fontSize: 16, color: "#D6336C", marginTop: 8 }}>Name your Study Buddy!</div>
-        <div style={{ fontSize: 12, color: "#868e96", marginTop: 4 }}>Give your little companion a cute name</div>
-        <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="e.g. Mochi, Pip, Sunny..."
-          autoFocus
-          style={{ width: "100%", borderRadius: 12, border: "2px solid #FFE3EC", padding: "10px 12px", fontSize: 14, marginTop: 14, boxSizing: "border-box", textAlign: "center" }}
-        />
-        <button
-          onClick={() => onSave(name.trim() || "Buddy")}
-          style={{ marginTop: 14, width: "100%", background: "#FFB3CB", color: "white", border: "none", borderRadius: 12, padding: "10px", fontWeight: 700, fontSize: 14, cursor: "pointer" }}
-        >
-          Let's go! ✨
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// ---------- Header ----------
-function Header({ state }) {
-  return (
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-      <div style={{ fontSize: 18, fontWeight: 800, color: "#D6336C" }}>🌸 Eva's Study Garden</div>
-      <div style={{ display: "flex", gap: 8 }}>
-        <Pill icon="⭐" label={state.stars} color="#FFD43B" />
-        <Pill icon="🥕" label={state.carrots} color="#FF922B" />
-      </div>
-    </div>
-  );
-}
-function Pill({ icon, label, color }) {
-  return (
-    <div
-      style={{
-        background: "white",
-        borderRadius: 20,
-        padding: "4px 10px",
-        fontSize: 13,
-        fontWeight: 700,
-        display: "flex",
-        alignItems: "center",
-        gap: 4,
-        border: `2px solid ${color}`,
-        color: "#495057",
-      }}
-    >
-      <span>{icon}</span>
-      <span>{label}</span>
-    </div>
-  );
-}
-
-// ---------- Nav ----------
-function NavBar({ tab, setTab }) {
-  const items = [
-    { id: "home", label: "Home", emoji: "🏠" },
-    { id: "tasks", label: "Tasks", emoji: "📋" },
-    { id: "errors", label: "Errors", emoji: "📸" },
-    { id: "vocab", label: "Vocab", emoji: "📖" },
-    { id: "papers", label: "Papers", emoji: "📄" },
-    { id: "timer", label: "Timer", emoji: "⏱" },
-    { id: "shop", label: "Shop", emoji: "🛍" },
-  ];
-  return (
-    <div style={{ display: "flex", overflowX: "auto", gap: 6, paddingBottom: 4 }}>
-      {items.map((it) => (
-        <button
-          key={it.id}
-          onClick={() => setTab(it.id)}
-          style={{
-            flexShrink: 0,
-            border: "none",
-            background: tab === it.id ? "#FFB3CB" : "white",
-            color: tab === it.id ? "white" : "#868e96",
-            borderRadius: 14,
-            padding: "8px 12px",
-            fontSize: 12,
-            fontWeight: 700,
-            cursor: "pointer",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 2,
-            minWidth: 56,
-          }}
-        >
-          <span style={{ fontSize: 16 }}>{it.emoji}</span>
-          <span>{it.label}</span>
-        </button>
-      ))}
-    </div>
-  );
-}
-
-// ---------- Home Tab ----------
-function HomeTab({ state, stage, upcoming, flashToast, setShowNamePrompt }) {
-  const progressToNext = upcoming ? Math.min(100, ((state.stars - stage.min) / (upcoming.min - stage.min)) * 100) : 100;
+  const progress = upcoming ? Math.min(100, ((state.stars - stage.min)/(upcoming.min - stage.min))*100) : 100;
   const { days, weeks, remDays } = daysWeeksUntil(PSLE_DATE);
-
-  // weekly improvement stats
   const now = Date.now();
   const thisWeekKey = weekKey(now);
-  const lastWeekKey = weekKey(now - 7 * 86400000);
-  const tasksThisWeek = state.tasks.filter((t) => t.done && t.completedAt && weekKey(t.completedAt) === thisWeekKey).length;
-  const tasksLastWeek = state.tasks.filter((t) => t.done && t.completedAt && weekKey(t.completedAt) === lastWeekKey).length;
-  const errorsThisWeek = state.errorBank.filter((e) => weekKey(e.createdAt) === thisWeekKey).length;
-  const masteredThisWeek = state.errorBank.filter((e) => e.mastered && weekKey(e.createdAt) === thisWeekKey).length;
-  const vocabThisWeek = state.vocabBank.filter((v) => weekKey(v.createdAt) === thisWeekKey).length;
-
+  const lastWeekKey = weekKey(now - 7*86400000);
+  const tasksThisWeek = state.tasks.filter(t => t.done && t.completedAt && weekKey(t.completedAt)===thisWeekKey).length;
+  const tasksLastWeek = state.tasks.filter(t => t.done && t.completedAt && weekKey(t.completedAt)===lastWeekKey).length;
+  const masteredThisWeek = state.errorBank.filter(e => e.mastered && weekKey(e.createdAt)===thisWeekKey).length;
+  const vocabThisWeek = state.vocabBank.filter(v => weekKey(v.createdAt)===thisWeekKey).length;
   const taskDelta = tasksThisWeek - tasksLastWeek;
+  const bg = BACKGROUNDS.find(b => b.id === state.equippedBackground) || BACKGROUNDS[0];
 
   const motivationalMsgs = [
     `${state.avatarName || "Your buddy"} believes in you! 💪`,
@@ -516,703 +480,712 @@ function HomeTab({ state, stage, upcoming, flashToast, setShowNamePrompt }) {
   ];
   const msg = motivationalMsgs[new Date().getDate() % motivationalMsgs.length];
 
-  return (
-    <div>
-      <div style={{ background: "white", borderRadius: 18, padding: 20, textAlign: "center", boxShadow: "0 4px 14px rgba(0,0,0,0.05)" }}>
-        <div
-          onClick={() => setShowNamePrompt(true)}
-          style={{ fontSize: 13, fontWeight: 700, color: "#D6336C", marginBottom: 8, cursor: "pointer" }}
-          title="Click to rename"
-        >
-          {state.avatarName || "Your Buddy"} ✏️
-        </div>
-        <Avatar stage={stage} equipped={state.equippedAccessories} size={120} />
-        <div style={{ marginTop: 10, fontWeight: 800, fontSize: 17, color: "#495057" }}>{stage.name}</div>
-        <div style={{ fontSize: 12, color: "#adb5bd", marginTop: 2 }}>
-          {upcoming ? `${upcoming.min - state.stars} ⭐ to evolve into ${upcoming.name} ${upcoming.emoji}` : "Max evolution reached! 🎉"}
-        </div>
-        <div style={{ background: "#f1f3f5", borderRadius: 10, height: 10, marginTop: 10, overflow: "hidden" }}>
-          <div style={{ width: `${progressToNext}%`, height: "100%", background: "linear-gradient(90deg,#FFB3CB,#A5D8FF)", borderRadius: 10, transition: "width 0.4s" }} />
-        </div>
-        <button
-          onClick={() => flashToast("📸 Screenshot this card to share with friends!")}
-          style={{ marginTop: 16, background: "#FFE3EC", color: "#D6336C", border: "none", borderRadius: 12, padding: "10px 18px", fontWeight: 700, fontSize: 13, cursor: "pointer" }}
-        >
-          📤 Share Avatar Card
-        </button>
+  return `
+    <div class="card" style="text-align:center;padding:20px;">
+      <div id="avatarNameClick" style="font-size:13px;font-weight:700;color:#D6336C;margin-bottom:8px;cursor:pointer;">${escapeHtml(state.avatarName || "Your Buddy")} ✏️</div>
+      <div id="avatarClick" style="cursor:pointer;">${avatarHtml(stage, state.equippedAccessories, 120, bg.css)}</div>
+      <div style="margin-top:10px;font-weight:800;font-size:17px;color:#495057;">${stage.name}</div>
+      <div style="font-size:11px;color:#bdb8ce;margin-top:2px;">(Tap your buddy to see the full growth journey)</div>
+      <div style="font-size:12px;color:#adb5bd;margin-top:6px;">
+        ${upcoming ? `${upcoming.min - state.stars} ⭐ to evolve into ${upcoming.name} ${upcoming.emoji}` : "Max evolution reached! 🎉"}
       </div>
-
-      {/* PSLE Countdown */}
-      <div style={{ marginTop: 12, background: "linear-gradient(135deg,#FFD8A8,#FFEC99)", borderRadius: 16, padding: 14, textAlign: "center" }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: "#9C6B00" }}>📅 PSLE Countdown</div>
-        <div style={{ fontSize: 24, fontWeight: 800, color: "#9C6B00" }}>{days} days</div>
-        <div style={{ fontSize: 11, color: "#9C6B00" }}>
-          ({weeks} weeks {remDays} days · 24 Sep 2026)
-        </div>
+      <div style="background:#f1f3f5;border-radius:10px;height:10px;margin-top:10px;overflow:hidden;">
+        <div style="width:${progress}%;height:100%;background:linear-gradient(90deg,#FFB3CB,#A5D8FF);border-radius:10px;"></div>
       </div>
+      <button class="btn-secondary" id="shareCardBtn" style="margin-top:16px;">📤 Share Avatar Card</button>
+    </div>
 
-      {/* Streak */}
-      <div style={{ marginTop: 12, background: "white", borderRadius: 16, padding: 14, display: "flex", alignItems: "center", gap: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
-        <div style={{ fontSize: 30 }}>🔥</div>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontWeight: 800, fontSize: 16, color: "#495057" }}>{state.streak} day streak</div>
-          <div style={{ fontSize: 11, color: "#adb5bd" }}>
-            {state.freezeAvailable ? "🧊 1 streak freeze available — miss a day without losing your streak!" : "No freeze available — complete tasks to earn one back."}
-          </div>
-        </div>
-      </div>
+    <div class="card" style="background:linear-gradient(135deg,#FFD8A8,#FFEC99);text-align:center;">
+      <div style="font-size:12px;font-weight:700;color:#9C6B00;">📅 PSLE Countdown</div>
+      <div style="font-size:24px;font-weight:800;color:#9C6B00;">${days} days</div>
+      <div style="font-size:11px;color:#9C6B00;">(${weeks} weeks ${remDays} days · 24 Sep 2026)</div>
+    </div>
 
-      {/* Motivation card */}
-      <div style={{ marginTop: 12, background: "#FFF0F6", borderRadius: 14, padding: 14, fontSize: 13, color: "#A61E4D", textAlign: "center", fontWeight: 600 }}>
-        {msg}
-      </div>
-
-      {/* Weekly progress */}
-      <div style={{ marginTop: 14 }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: "#495057", marginBottom: 8 }}>📈 This week's progress</div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
-          <StatBox label="Tasks done" value={tasksThisWeek} emoji="✅" />
-          <StatBox label="Errors mastered" value={masteredThisWeek} emoji="🎯" />
-          <StatBox label="New vocab" value={vocabThisWeek} emoji="📖" />
-        </div>
-        {tasksLastWeek > 0 && (
-          <div style={{ marginTop: 8, fontSize: 12, textAlign: "center", color: taskDelta >= 0 ? "#2B8A3E" : "#E8590C", fontWeight: 700 }}>
-            {taskDelta >= 0 ? `🎉 ${taskDelta} more tasks than last week!` : `Last week you did ${tasksLastWeek}, let's beat that!`}
-          </div>
-        )}
-      </div>
-
-      <div style={{ marginTop: 14, background: "#FFF9DB", borderRadius: 14, padding: 14, fontSize: 13, color: "#846b00", border: "2px dashed #FFE066" }}>
-        💡 Tip: Complete tasks, log errors, and review vocab to earn Stars (for growth) and Carrots (for the shop)!
+    <div class="card" style="display:flex;align-items:center;gap:12px;">
+      <div style="font-size:30px;">🔥</div>
+      <div style="flex:1;">
+        <div style="font-weight:800;font-size:16px;color:#495057;">${state.streak} day streak</div>
+        <div style="font-size:11px;color:#adb5bd;">${state.freezeAvailable ? "🧊 1 streak freeze available — miss a day without losing your streak!" : "No freeze available — complete tasks to earn one back."}</div>
       </div>
     </div>
-  );
-}
-function StatBox({ label, value, emoji }) {
-  return (
-    <div style={{ background: "white", borderRadius: 12, padding: 10, textAlign: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
-      <div style={{ fontSize: 18 }}>{emoji}</div>
-      <div style={{ fontWeight: 800, fontSize: 16, color: "#495057" }}>{value}</div>
-      <div style={{ fontSize: 10, color: "#adb5bd" }}>{label}</div>
+
+    <div class="card" style="background:#FFF0F6;text-align:center;font-size:13px;color:#A61E4D;font-weight:600;">
+      ${msg}
     </div>
-  );
+
+    <div style="margin-top:14px;">
+      <div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">📈 This week's progress</div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="emoji">✅</div><div class="value">${tasksThisWeek}</div><div class="label">Tasks done</div></div>
+        <div class="stat-box"><div class="emoji">🎯</div><div class="value">${masteredThisWeek}</div><div class="label">Errors mastered</div></div>
+        <div class="stat-box"><div class="emoji">📖</div><div class="value">${vocabThisWeek}</div><div class="label">New vocab</div></div>
+      </div>
+      ${tasksLastWeek > 0 ? `<div style="margin-top:8px;font-size:12px;text-align:center;font-weight:700;color:${taskDelta>=0?'#2B8A3E':'#E8590C'};">
+        ${taskDelta>=0 ? `🎉 ${taskDelta} more tasks than last week!` : `Last week you did ${tasksLastWeek}, let's beat that!`}
+      </div>` : ""}
+    </div>
+
+    <div class="card" style="margin-top:14px;background:#FFF9DB;border:2px dashed #FFE066;font-size:13px;color:#846b00;">
+      💡 Tip: Complete tasks, log errors, and review vocab to earn Stars (for growth) and Carrots (for the shop)!
+    </div>
+  `;
 }
 
-// ---------- Tasks Tab ----------
-function TasksTab({ state, setState, flashToast, burst }) {
-  const [text, setText] = useState("");
-  const [subject, setSubject] = useState("English");
+function renderJourneyModal() {
+  const stage = getStage(state.stars);
+  return `
+  <div class="modal-overlay" id="journeyOverlay">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div style="font-weight:800;font-size:16px;color:#D6336C;margin-bottom:4px;">🌱 The Growth Journey</div>
+      <div style="font-size:12px;color:#868e96;margin-bottom:14px;">From sleepy seedling to star sage</div>
+      ${STAGES.map(s => {
+        const reached = state.stars >= s.min;
+        const isCurrent = s.name === stage.name;
+        return `<div class="journey-stage" style="background:${isCurrent ? '#FFE3EC' : (reached ? '#F8F9FA' : '#F8F9FA')};opacity:${reached?1:0.45};border:${isCurrent ? '2px solid #FFB3CB':'2px solid transparent'};">
+          <div style="font-size:28px;">${s.emoji}</div>
+          <div style="text-align:left;flex:1;">
+            <div style="font-weight:700;font-size:13px;color:#495057;">${s.name} ${isCurrent ? '· current' : ''}</div>
+            <div style="font-size:11px;color:#adb5bd;">${s.desc}</div>
+            <div style="font-size:10px;color:#ced4da;margin-top:2px;">${s.min}+ ⭐</div>
+          </div>
+          ${reached ? '<div style="font-size:16px;color:#82c91e;">✓</div>' : ''}
+        </div>`;
+      }).join("")}
+      <button class="btn-primary" id="closeJourneyBtn" style="margin-top:10px;width:100%;">Close</button>
+    </div>
+  </div>`;
+}
 
-  const addTask = () => {
-    if (!text.trim()) return;
-    setState((s) => ({ ...s, tasks: [{ id: uid(), text: text.trim(), subject, done: false, createdAt: Date.now() }, ...s.tasks] }));
-    setText("");
-  };
+// ====================== TASKS TAB ======================
+function renderTasks() {
+  const pending = state.tasks.filter(t => !t.done);
+  const done = state.tasks.filter(t => t.done);
+  return `
+    <div class="card" style="display:flex;gap:6px;">
+      <select id="taskSubjectSelect">${SUBJECTS.map(s=>`<option value="${s}">${s}</option>`).join("")}</select>
+      <input id="taskTextInput" placeholder="e.g. Complete 10 Maths questions" style="flex:1;" />
+      <button class="btn-primary" id="addTaskBtn" style="padding:0 14px;">+</button>
+    </div>
+    ${pending.length===0 && done.length===0 ? `<div class="empty"><div class="emoji">📋</div><div class="text">No tasks yet. Add your first revision task above!</div></div>` : ""}
+    ${pending.map(t => taskRowHtml(t)).join("")}
+    ${done.length>0 ? `<div style="margin-top:14px;font-size:12px;color:#adb5bd;font-weight:700;">COMPLETED</div>` : ""}
+    ${done.map(t => taskRowHtml(t)).join("")}
+  `;
+}
+function taskRowHtml(t) {
+  const c = SUBJECT_COLORS[t.subject] || SUBJECT_COLORS.English;
+  return `<div class="task-row" style="opacity:${t.done?0.6:1};">
+    <input type="checkbox" data-toggle-task="${t.id}" ${t.done?'checked':''} style="width:18px;height:18px;accent-color:#FFB3CB;" />
+    <span class="subject-pill" style="color:${c.text};background:${c.bg};">${t.subject}</span>
+    <span style="flex:1;font-size:13px;text-decoration:${t.done?'line-through':'none'};color:#495057;">${escapeHtml(t.text)}</span>
+    <button data-delete-task="${t.id}" style="border:none;background:none;color:#dee2e6;cursor:pointer;font-size:14px;">✕</button>
+  </div>`;
+}
 
-  const toggleTask = (id) => {
-    setState((s) => {
-      const task = s.tasks.find((t) => t.id === id);
-      const willBeDone = task && !task.done;
-      const tasks = s.tasks.map((t) => (t.id === id ? { ...t, done: !t.done, completedAt: !t.done ? Date.now() : null } : t));
-      let stars = s.stars;
-      let carrots = s.carrots;
-      let streak = s.streak;
-      let lastCompletionDate = s.lastCompletionDate;
-      let freezeAvailable = s.freezeAvailable;
-      if (willBeDone) {
-        stars += 2;
-        carrots += 1;
-        const today = new Date().toDateString();
-        if (lastCompletionDate !== today) {
-          const yesterday = new Date(Date.now() - 86400000).toDateString();
-          if (lastCompletionDate === yesterday) {
-            streak += 1;
-          } else if (freezeAvailable && lastCompletionDate) {
-            streak += 1;
-            freezeAvailable = false;
-          } else {
-            streak = 1;
-          }
-          lastCompletionDate = today;
-          if (streak > 0 && streak % 7 === 0) freezeAvailable = true;
-        }
+function toggleTask(id) {
+  const task = state.tasks.find(t => t.id===id);
+  if (!task) return;
+  const willBeDone = !task.done;
+  task.done = willBeDone;
+  task.completedAt = willBeDone ? Date.now() : null;
+  if (willBeDone) {
+    state.stars += 2;
+    state.carrots += 1;
+    const today = new Date().toDateString();
+    if (state.lastCompletionDate !== today) {
+      const yesterday = new Date(Date.now()-86400000).toDateString();
+      if (state.lastCompletionDate === yesterday) {
+        state.streak += 1;
+      } else if (state.freezeAvailable && state.lastCompletionDate) {
+        state.streak += 1;
+        state.freezeAvailable = false;
       } else {
-        stars = Math.max(0, stars - 2);
-        carrots = Math.max(0, carrots - 1);
+        state.streak = 1;
       }
-      return { ...s, tasks, stars, carrots, streak, lastCompletionDate, freezeAvailable };
-    });
-    burst();
+      state.lastCompletionDate = today;
+      if (state.streak>0 && state.streak%7===0) state.freezeAvailable = true;
+    }
+    burstConfetti();
     flashToast("+2 ⭐ +1 🥕 Task complete!");
-  };
+  } else {
+    state.stars = Math.max(0, state.stars-2);
+    state.carrots = Math.max(0, state.carrots-1);
+  }
+  persist();
+  render();
+}
+function deleteTask(id) {
+  state.tasks = state.tasks.filter(t => t.id !== id);
+  persist(); render();
+}
+function addTask() {
+  const subject = document.getElementById("taskSubjectSelect").value;
+  const text = document.getElementById("taskTextInput").value.trim();
+  if (!text) return;
+  state.tasks.unshift({ id: uid(), text, subject, done:false, createdAt: Date.now() });
+  persist(); render();
+}
 
-  const deleteTask = (id) => setState((s) => ({ ...s, tasks: s.tasks.filter((t) => t.id !== id) }));
-  const pending = state.tasks.filter((t) => !t.done);
-  const done = state.tasks.filter((t) => t.done);
+// ====================== ERROR BANK TAB ======================
+let errorFilter = "All";
+let errorFormSubject = "English";
+let errorFormNote = "";
+let errorUploading = false;
 
-  return (
-    <div>
-      <div style={{ display: "flex", gap: 6, marginBottom: 10 }}>
-        <select value={subject} onChange={(e) => setSubject(e.target.value)} style={{ borderRadius: 10, border: "2px solid #eee", padding: "8px", fontSize: 13 }}>
-          {SUBJECTS.map((s) => (
-            <option key={s}>{s}</option>
-          ))}
-        </select>
-        <input
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && addTask()}
-          placeholder="e.g. Complete 10 Maths questions"
-          style={{ flex: 1, borderRadius: 10, border: "2px solid #eee", padding: "8px 10px", fontSize: 13 }}
-        />
-        <button onClick={addTask} style={{ background: "#FFB3CB", color: "white", border: "none", borderRadius: 10, padding: "0 14px", fontWeight: 700, cursor: "pointer" }}>
-          +
+function renderErrors() {
+  const filtered = state.errorBank.filter(er => errorFilter==="All" || er.subject===errorFilter);
+  return `
+    <div class="card">
+      <div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">📸 Log a question you got wrong</div>
+      <select id="errorSubjectSelect" style="width:100%;margin-bottom:8px;">${SUBJECTS.map(s=>`<option value="${s}" ${s===errorFormSubject?'selected':''}>${s}</option>`).join("")}</select>
+      <input id="errorNoteInput" placeholder="Optional note, e.g. 'Forgot to carry the remainder'" style="width:100%;margin-bottom:8px;box-sizing:border-box;" value="${escapeHtml(errorFormNote)}" />
+      <label class="upload-label" style="background:${errorUploading?'#dee2e6':'#FFB3CB'};">
+        ${errorUploading ? "Uploading..." : "📷 Upload Photo of Question"}
+        <input type="file" accept="image/*" capture="environment" id="errorFileInput" style="display:none;" />
+      </label>
+    </div>
+    <div style="display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;">
+      ${["All",...SUBJECTS].map(s => `<button data-error-filter="${s}" style="flex-shrink:0;border:none;background:${errorFilter===s?'#495057':'white'};color:${errorFilter===s?'white':'#868e96'};border-radius:12px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;">${s}</button>`).join("")}
+    </div>
+    ${filtered.length===0 ? `<div class="empty"><div class="emoji">📸</div><div class="text">No errors logged yet for this subject.</div></div>` : ""}
+    <div class="err-grid">
+      ${filtered.map(er => {
+        const c = SUBJECT_COLORS[er.subject] || SUBJECT_COLORS.English;
+        return `<div class="err-card" style="opacity:${er.mastered?0.55:1};">
+          <img src="${er.image}" data-view-error="${er.id}" />
+          <div class="body">
+            <span class="subject-pill" style="color:${c.text};background:${c.bg};">${er.subject}</span>
+            ${er.note ? `<div style="font-size:11px;color:#868e96;margin-top:4px;">${escapeHtml(er.note)}</div>` : ""}
+            <div style="display:flex;justify-content:space-between;margin-top:6px;">
+              <button data-toggle-mastered="${er.id}" style="border:none;background:none;font-size:11px;color:${er.mastered?'#82c91e':'#adb5bd'};cursor:pointer;font-weight:700;">${er.mastered?'✓ Mastered':'Mark mastered'}</button>
+              <button data-delete-error="${er.id}" style="border:none;background:none;color:#ffc9c9;cursor:pointer;">✕</button>
+            </div>
+          </div>
+        </div>`;
+      }).join("")}
+    </div>
+  `;
+}
+
+function renderViewingErrorModal() {
+  const er = viewingError;
+  if (!er) return "";
+  const c = SUBJECT_COLORS[er.subject] || SUBJECT_COLORS.English;
+  return `<div class="modal-overlay" id="viewErrorOverlay">
+    <div class="modal-box" style="max-width:360px;" onclick="event.stopPropagation()">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span class="subject-pill" style="color:${c.text};background:${c.bg};">${er.subject}</span>
+        <button id="closeViewErrorBtn" style="border:none;background:none;font-size:16px;color:#adb5bd;cursor:pointer;">✕</button>
+      </div>
+      <img src="${er.image}" style="width:100%;border-radius:10px;" />
+      ${er.note ? `<div style="font-size:13px;color:#495057;margin-top:10px;background:#FFF9DB;border-radius:8px;padding:8px;text-align:left;">📝 ${escapeHtml(er.note)}</div>` : ""}
+      <div style="font-size:11px;color:#adb5bd;margin-top:8px;">Logged ${new Date(er.createdAt).toLocaleDateString()}</div>
+    </div>
+  </div>`;
+}
+
+function toggleMastered(id) {
+  const er = state.errorBank.find(e=>e.id===id);
+  if (!er) return;
+  er.mastered = !er.mastered;
+  state.stars += er.mastered ? 3 : -3;
+  persist(); render();
+}
+function deleteError(id) {
+  state.errorBank = state.errorBank.filter(e=>e.id!==id);
+  persist(); render();
+}
+async function handleErrorFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  errorUploading = true; render();
+  try {
+    const dataUrl = await readFileAsDataURL(file);
+    state.errorBank.unshift({ id: uid(), subject: errorFormSubject, image: dataUrl, note: errorFormNote, mastered:false, createdAt: Date.now() });
+    state.carrots += 1;
+    flashToast("+1 🥕 Error logged!");
+    errorFormNote = "";
+  } catch(err) {
+    flashToast("Could not read image");
+  }
+  errorUploading = false;
+  persist(); render();
+}
+
+// ====================== VOCAB TAB ======================
+let vocabWordInput = "";
+
+function renderVocab() {
+  const sorted = [...state.vocabBank].sort((a,b)=>a.word.localeCompare(b.word));
+  return `
+    <div class="card">
+      <div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">📖 Log new vocabulary</div>
+      <div style="display:flex;gap:6px;">
+        <input id="vocabWordInput" placeholder="e.g. meticulous" style="flex:1;" value="${escapeHtml(vocabWordInput)}" />
+        <button id="addVocabBtn" ${vocabLoading?'disabled':''} style="background:${vocabLoading?'#dee2e6':'#A5D8FF'};color:#1971C2;border:none;border-radius:10px;padding:0 14px;font-weight:700;cursor:pointer;">${vocabLoading?'...':'Add'}</button>
+      </div>
+      ${!getApiKey() ? `<div style="font-size:11px;color:#e8590c;margin-top:8px;">⚠️ <span id="vocabApiKeyLink" style="text-decoration:underline;cursor:pointer;">Set your Anthropic API key</span> to use AI-generated definitions.</div>` : ""}
+    </div>
+    ${sorted.length===0 ? `<div class="empty"><div class="emoji">📖</div><div class="text">No vocab logged yet. Add a word above!</div></div>` : ""}
+    ${sorted.map(v => {
+      const expanded = expandedVocabId === v.id;
+      return `<div class="vocab-card" data-expand-vocab="${v.id}">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-weight:800;font-size:14px;color:#D6336C;">${escapeHtml(v.word)}</div>
+            <div style="font-size:12px;color:#495057;margin-top:2px;">${escapeHtml(v.definition)}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:12px;color:#adb5bd;">${expanded?'▲':'▼'}</span>
+            <button data-delete-vocab="${v.id}" style="border:none;background:none;color:#ffc9c9;cursor:pointer;">✕</button>
+          </div>
+        </div>
+        ${expanded ? `<div style="margin-top:8px;">
+          <div style="font-size:11px;color:#868e96;background:#FFF9DB;border-radius:8px;padding:6px;">✍️ Compo use: ${escapeHtml(v.compoExample)}</div>
+          <div style="font-size:11px;color:#868e96;margin-top:6px;background:#E3F0FF;border-radius:8px;padding:6px;">📄 In papers: ${escapeHtml(v.paperContext)}</div>
+        </div>` : ""}
+      </div>`;
+    }).join("")}
+  `;
+}
+
+function deleteVocab(id) {
+  state.vocabBank = state.vocabBank.filter(v=>v.id!==id);
+  persist(); render();
+}
+async function addVocab() {
+  const word = document.getElementById("vocabWordInput").value.trim();
+  if (!word) return;
+  if (!getApiKey()) { showApiKeyModal = true; render(); return; }
+  vocabLoading = true; render();
+  try {
+    const system = "You are a helpful PSLE English tutor for a Singapore Primary 6 student. Respond ONLY with valid JSON, no preamble, no markdown fences. The JSON object must have exactly these keys: definition (simple, student-friendly, 1 sentence), compoExample (one example sentence showing how to use the word naturally in a composition, suitable for a 12 year old), paperContext (a short explanation of how/where such a word typically appears in PSLE past year papers, e.g. comprehension or cloze passages, with a brief example phrase).";
+    const text = await callClaude([{role:"user", content:`Word: "${word}"`}], system);
+    const parsed = extractJson(text);
+    if (!parsed) throw new Error("parse fail");
+    state.vocabBank.unshift({ id: uid(), word, definition: parsed.definition||"", compoExample: parsed.compoExample||"", paperContext: parsed.paperContext||"", createdAt: Date.now() });
+    state.carrots += 1;
+    flashToast("+1 🥕 Vocab added!");
+    vocabWordInput = "";
+  } catch(e) {
+    if (e.message === "NO_API_KEY") { showApiKeyModal = true; }
+    else flashToast("Hmm, could not generate. Check your API key and try again.");
+  }
+  vocabLoading = false;
+  persist(); render();
+}
+
+// ====================== PAPERS TAB ======================
+let papersSubject = "English";
+let papersUploading = false;
+const MAX_PDF_BYTES = 30*1024*1024;
+
+function renderPapers() {
+  const activePaper = state.papers.find(p=>p.id===papersActivePaperId);
+  return `
+    <div class="card">
+      <div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">📄 Upload past year paper (PDF, incl. scanned)</div>
+      <select id="paperSubjectSelect" style="width:100%;margin-bottom:8px;">${SUBJECTS.map(s=>`<option value="${s}" ${s===papersSubject?'selected':''}>${s}</option>`).join("")}</select>
+      <label class="upload-label" style="background:${papersUploading?'#dee2e6':'#A5D8FF'};color:#1971C2;">
+        ${papersUploading ? "Uploading..." : "📎 Upload PDF Paper"}
+        <input type="file" accept="application/pdf" id="paperFileInput" style="display:none;" />
+      </label>
+      <div style="font-size:10px;color:#adb5bd;margin-top:6px;">Tip: if a scanned PDF fails, try rescanning flat (not at an angle), in good lighting, at a moderate resolution (under ~15MB works best).</div>
+      ${!getApiKey() ? `<div style="font-size:11px;color:#e8590c;margin-top:8px;">⚠️ <span id="papersApiKeyLink" style="text-decoration:underline;cursor:pointer;">Set your Anthropic API key</span> to generate practice questions.</div>` : ""}
+    </div>
+    ${state.papers.length===0 ? `<div class="empty"><div class="emoji">📄</div><div class="text">No papers uploaded yet.</div></div>` : ""}
+    ${state.papers.map(p => {
+      const c = SUBJECT_COLORS[p.subject] || SUBJECT_COLORS.English;
+      const isGenerating = papersGenerating && papersActivePaperId === p.id;
+      return `<div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <span class="subject-pill" style="color:${c.text};background:${c.bg};">${p.subject}</span>
+            <div style="font-size:12px;color:#495057;margin-top:4px;word-break:break-all;">${escapeHtml(p.name)}</div>
+            <div style="font-size:10px;color:#ced4da;margin-top:2px;">${p.sizeKB?p.sizeKB+' KB':''}</div>
+          </div>
+          <button data-delete-paper="${p.id}" style="border:none;background:none;color:#ffc9c9;cursor:pointer;">✕</button>
+        </div>
+        <button data-generate-paper="${p.id}" ${papersGenerating?'disabled':''} style="margin-top:8px;width:100%;background:${isGenerating?'#dee2e6':'#FFE3EC'};color:#D6336C;border:none;border-radius:10px;padding:8px;font-weight:700;font-size:12px;cursor:pointer;">
+          ${isGenerating ? "Reading paper..." : "✨ Generate practice questions from errors"}
         </button>
-      </div>
-
-      {pending.length === 0 && done.length === 0 && <EmptyState emoji="📋" text="No tasks yet. Add your first revision task above!" />}
-      {pending.map((t) => (
-        <TaskRow key={t.id} task={t} onToggle={toggleTask} onDelete={deleteTask} />
-      ))}
-      {done.length > 0 && <div style={{ marginTop: 14, fontSize: 12, color: "#adb5bd", fontWeight: 700 }}>COMPLETED</div>}
-      {done.map((t) => (
-        <TaskRow key={t.id} task={t} onToggle={toggleTask} onDelete={deleteTask} />
-      ))}
-    </div>
-  );
+      </div>`;
+    }).join("")}
+    ${papersErrorMsg ? `<div class="card" style="background:#FFF5F5;border:2px solid #FFC9C9;color:#C92A2A;font-size:12px;">⚠️ ${escapeHtml(papersErrorMsg)}</div>` : ""}
+    ${papersQuestions && papersQuestions.length>0 && activePaper ? `
+      <div style="margin-top:14px;">
+        <div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">Practice from "${escapeHtml(activePaper.name)}"</div>
+        ${papersQuestions.map((q,i) => questionCardHtml(q,i)).join("")}
+      </div>` : ""}
+  `;
 }
-function TaskRow({ task, onToggle, onDelete }) {
-  const c = SUBJECT_COLORS[task.subject] || SUBJECT_COLORS.English;
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8, background: "white", borderRadius: 12, padding: 10, marginBottom: 6, boxShadow: "0 2px 6px rgba(0,0,0,0.04)", opacity: task.done ? 0.6 : 1 }}>
-      <input type="checkbox" checked={task.done} onChange={() => onToggle(task.id)} style={{ width: 18, height: 18, accentColor: "#FFB3CB" }} />
-      <span style={{ fontSize: 10, fontWeight: 700, color: c.text, background: c.bg, borderRadius: 8, padding: "2px 6px" }}>{task.subject}</span>
-      <span style={{ flex: 1, fontSize: 13, textDecoration: task.done ? "line-through" : "none", color: "#495057" }}>{task.text}</span>
-      <button onClick={() => onDelete(task.id)} style={{ border: "none", background: "none", color: "#dee2e6", cursor: "pointer", fontSize: 14 }}>
-        ✕
-      </button>
-    </div>
-  );
-}
-function EmptyState({ emoji, text }) {
-  return (
-    <div style={{ textAlign: "center", padding: "30px 10px", color: "#adb5bd" }}>
-      <div style={{ fontSize: 32 }}>{emoji}</div>
-      <div style={{ fontSize: 13, marginTop: 6 }}>{text}</div>
-    </div>
-  );
+function questionCardHtml(q, i) {
+  return `<div class="card" data-qcard="${i}">
+    <div style="font-size:12px;font-weight:700;color:#D6336C;margin-bottom:4px;">Q${i+1}</div>
+    <div style="font-size:13px;color:#495057;">${escapeHtml(q.question)}</div>
+    <button data-toggle-answer="${i}" style="margin-top:8px;border:none;background:none;color:#1971C2;font-size:11px;font-weight:700;cursor:pointer;">${q._show?'Hide answer':'Show answer'}</button>
+    ${q._show ? `<div style="margin-top:6px;background:#E6FCF5;border-radius:8px;padding:8px;">
+      <div style="font-size:12px;font-weight:700;color:#0CA678;">${escapeHtml(q.answer)}</div>
+      <div style="font-size:11px;color:#495057;margin-top:4px;">${escapeHtml(q.explanation)}</div>
+    </div>` : ""}
+  </div>`;
 }
 
-// ---------- Error Bank Tab ----------
-function ErrorBankTab({ state, setState, flashToast }) {
-  const [subject, setSubject] = useState("English");
-  const [filter, setFilter] = useState("All");
-  const [uploading, setUploading] = useState(false);
-  const [note, setNote] = useState("");
-  const [viewing, setViewing] = useState(null);
-
-  const handleFile = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setUploading(true);
-    try {
-      const dataUrl = await readFileAsDataURL(file);
-      setState((s) => ({
-        ...s,
-        errorBank: [{ id: uid(), subject, image: dataUrl, note, mastered: false, createdAt: Date.now() }, ...s.errorBank],
-        carrots: s.carrots + 1,
-      }));
-      flashToast("+1 🥕 Error logged!");
-      setNote("");
-    } catch (err) {
-      flashToast("Could not read image");
+function deletePaper(id) {
+  state.papers = state.papers.filter(p=>p.id!==id);
+  persist(); render();
+}
+async function handlePaperFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.type !== "application/pdf") { flashToast("Please upload a PDF file"); return; }
+  if (file.size > MAX_PDF_BYTES) { flashToast("This PDF is quite large — try a smaller scan or fewer pages"); e.target.value=""; return; }
+  papersUploading = true; render();
+  try {
+    const dataUrl = await readFileAsDataURL(file);
+    state.papers.unshift({ id: uid(), name: file.name, subject: papersSubject, dataUrl, sizeKB: Math.round(file.size/1024), createdAt: Date.now() });
+    flashToast("📄 Paper uploaded!");
+  } catch(err) { flashToast("Upload failed, try again"); }
+  papersUploading = false;
+  persist(); render();
+}
+async function generateFromPaper(paperId) {
+  const paper = state.papers.find(p=>p.id===paperId);
+  if (!paper) return;
+  if (!getApiKey()) { showApiKeyModal = true; render(); return; }
+  papersGenerating = true;
+  papersActivePaperId = paperId;
+  papersQuestions = null;
+  papersErrorMsg = null;
+  render();
+  try {
+    const base64 = paper.dataUrl.split(",")[1];
+    const errorNotes = state.errorBank.filter(er=>er.subject===paper.subject).map(er=>er.note).filter(Boolean).slice(0,10);
+    const system = "You are a PSLE tutor. You will be given a PDF of a past year exam paper. It may be a scanned, image-based PDF — read it using your vision/document capability, page by page, exactly as if reading scanned photographs of paper. Even if the PDF has no selectable text layer, look at the visual content of each page. Respond ONLY with valid JSON: an array of 5 objects, each with keys: question, answer, explanation. If you genuinely cannot see any readable content in the PDF at all, respond with exactly: {\\"error\\": \\"unreadable\\"} and nothing else." + (errorNotes.length ? ` The student has previously struggled with: ${errorNotes.join("; ")}. Prioritise targeting these weak areas.` : "");
+    const messages = [{ role:"user", content:[
+      { type:"document", source:{ type:"base64", media_type:"application/pdf", data: base64 } },
+      { type:"text", text:`This is a ${paper.subject} PSLE past year paper. Generate 5 fresh practice questions in the same style, targeting the student's weak areas if provided.` }
+    ]}];
+    const text = await callClaude(messages, system);
+    const parsed = extractJson(text);
+    if (!parsed) {
+      papersErrorMsg = "Couldn't understand the response. The scan may be too blurry, rotated, or low contrast. Try rescanning with good lighting and a straight angle.";
+      papersQuestions = [];
+    } else if (parsed.error === "unreadable") {
+      papersErrorMsg = "This PDF couldn't be read — it might be password-protected, corrupted, or the scan quality is too low. Try re-scanning at higher resolution.";
+      papersQuestions = [];
+    } else if (Array.isArray(parsed)) {
+      papersQuestions = parsed;
+      state.carrots += 3;
+      flashToast("+3 🥕 Practice questions ready!");
+    } else {
+      papersErrorMsg = "Unexpected response format. Please try again.";
+      papersQuestions = [];
     }
-    setUploading(false);
-    e.target.value = "";
-  };
+  } catch(err) {
+    if (err.message === "NO_API_KEY") { showApiKeyModal = true; }
+    else papersErrorMsg = "Something went wrong reading this PDF. Check your internet connection / API key and try again, or try a smaller file.";
+  }
+  papersGenerating = false;
+  persist(); render();
+}
 
-  const toggleMastered = (id) => {
-    setState((s) => ({
-      ...s,
-      errorBank: s.errorBank.map((er) => (er.id === id ? { ...er, mastered: !er.mastered } : er)),
-      stars: s.stars + (s.errorBank.find((er) => er.id === id)?.mastered ? -3 : 3),
-    }));
-  };
-  const deleteError = (id) => setState((s) => ({ ...s, errorBank: s.errorBank.filter((er) => er.id !== id) }));
-  const filtered = state.errorBank.filter((er) => filter === "All" || er.subject === filter);
+// ====================== TIMER TAB ======================
+function renderTimer() {
+  const active = TIMERS.find(t=>t.id===timerActiveId);
+  const fmt = (s) => { const m=Math.floor(s/60), sec=s%60; return String(m).padStart(2,'0')+":"+String(sec).padStart(2,'0'); };
+  return `
+    ${active ? `
+      <div class="card" style="text-align:center;padding:20px;">
+        <div style="font-size:13px;font-weight:700;color:#868e96;">${active.label}</div>
+        <div style="font-size:40px;font-weight:800;color:${timerSecondsLeft<60?'#FA5252':'#D6336C'};margin:8px 0;font-family:monospace;">${fmt(timerSecondsLeft)}</div>
+        ${timerSecondsLeft===0 ? `<div style="font-size:14px;font-weight:700;color:#82c91e;">⏰ Time's up! Well done!</div>` : ""}
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:8px;">
+          <button id="timerPauseResumeBtn" ${timerSecondsLeft===0?'disabled':''} style="background:#A5D8FF;color:#1971C2;border:none;border-radius:10px;padding:8px 16px;font-weight:700;cursor:pointer;">${timerRunning?'Pause':'Resume'}</button>
+          <button id="timerResetBtn" style="background:#FFE3EC;color:#D6336C;border:none;border-radius:10px;padding:8px 16px;font-weight:700;cursor:pointer;">Reset</button>
+        </div>
+        <div style="margin-top:14px;text-align:left;background:#FFF9DB;border-radius:12px;padding:12px;">
+          <div style="font-size:12px;font-weight:700;color:#846b00;margin-bottom:6px;">💡 Tips for this paper</div>
+          ${active.tips.map(tip=>`<div style="font-size:12px;color:#846b00;margin-bottom:4px;display:flex;gap:6px;"><span>•</span><span>${tip}</span></div>`).join("")}
+        </div>
+      </div>
+    ` : `<div class="empty"><div class="emoji">⏱</div><div class="text">Pick a PSLE paper below to start an exam timer.</div></div>`}
+    <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px;">
+      ${TIMERS.map(t => `<button data-start-timer="${t.id}" style="display:flex;justify-content:space-between;align-items:center;background:white;border:none;border-radius:12px;padding:12px 14px;box-shadow:0 2px 8px rgba(0,0,0,0.04);cursor:pointer;text-align:left;">
+        <span style="font-size:13px;font-weight:700;color:#495057;">${t.label}</span>
+        <span style="font-size:12px;color:#adb5bd;">${t.mins} min</span>
+      </button>`).join("")}
+    </div>
+  `;
+}
+function startTimer(id) {
+  const t = TIMERS.find(x=>x.id===id);
+  if (!t) return;
+  timerActiveId = id;
+  timerSecondsLeft = t.mins*60;
+  timerRunning = true;
+  clearInterval(timerInterval);
+  timerInterval = setInterval(()=>{
+    timerSecondsLeft -= 1;
+    if (timerSecondsLeft<=0) { timerSecondsLeft=0; timerRunning=false; clearInterval(timerInterval); }
+    render();
+  },1000);
+  render();
+}
+function timerPauseResume() {
+  timerRunning = !timerRunning;
+  if (timerRunning) {
+    clearInterval(timerInterval);
+    timerInterval = setInterval(()=>{
+      timerSecondsLeft -= 1;
+      if (timerSecondsLeft<=0) { timerSecondsLeft=0; timerRunning=false; clearInterval(timerInterval); }
+      render();
+    },1000);
+  } else {
+    clearInterval(timerInterval);
+  }
+  render();
+}
+function timerReset() {
+  clearInterval(timerInterval);
+  timerActiveId = null; timerSecondsLeft = 0; timerRunning = false;
+  render();
+}
 
-  return (
-    <div>
-      {viewing && (
-        <div
-          onClick={() => setViewing(null)}
-          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 80, padding: 20 }}
-        >
-          <div onClick={(e) => e.stopPropagation()} style={{ background: "white", borderRadius: 16, padding: 14, maxWidth: 360, maxHeight: "85vh", overflowY: "auto" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-              <span style={{ fontSize: 10, fontWeight: 700, color: SUBJECT_COLORS[viewing.subject].text, background: SUBJECT_COLORS[viewing.subject].bg, borderRadius: 8, padding: "2px 6px" }}>
-                {viewing.subject}
-              </span>
-              <button onClick={() => setViewing(null)} style={{ border: "none", background: "none", fontSize: 16, color: "#adb5bd", cursor: "pointer" }}>
-                ✕
-              </button>
-            </div>
-            <img src={viewing.image} alt="error full" style={{ width: "100%", borderRadius: 10 }} />
-            {viewing.note && <div style={{ fontSize: 13, color: "#495057", marginTop: 10, background: "#FFF9DB", borderRadius: 8, padding: 8 }}>📝 {viewing.note}</div>}
-            <div style={{ fontSize: 11, color: "#adb5bd", marginTop: 8 }}>Logged {new Date(viewing.createdAt).toLocaleDateString()}</div>
+// ====================== SHOP TAB ======================
+function renderShop() {
+  return `
+    <div style="text-align:center;margin-bottom:12px;font-size:13px;color:#868e96;">Spend your Carrots 🥕 on cute accessories and backgrounds! (Earn carrots from tasks, errors & vocab)</div>
+    <div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">🎀 Accessories</div>
+    <div class="shop-grid">
+      ${ACCESSORIES.map(item => {
+        const owned = state.ownedAccessories.includes(item.id);
+        const equipped = state.equippedAccessories.includes(item.id);
+        return `<div class="shop-item">
+          <div style="font-size:30px;">${item.emoji}</div>
+          <div style="font-size:12px;font-weight:700;color:#495057;margin-top:4px;">${item.name}</div>
+          ${!owned ? `<button data-buy-acc="${item.id}" style="margin-top:8px;width:100%;background:#FFD8A8;color:#9C6B00;border:none;border-radius:10px;padding:6px;font-weight:700;font-size:12px;cursor:pointer;">🥕 ${item.cost}</button>`
+            : `<button data-equip-acc="${item.id}" style="margin-top:8px;width:100%;background:${equipped?'#82c91e':'#E9ECEF'};color:${equipped?'white':'#868e96'};border:none;border-radius:10px;padding:6px;font-weight:700;font-size:12px;cursor:pointer;">${equipped?'Equipped ✓':'Equip'}</button>`}
+        </div>`;
+      }).join("")}
+    </div>
+    <div style="font-size:13px;font-weight:700;color:#495057;margin:16px 0 8px;">🎨 Backgrounds</div>
+    <div class="bg-grid">
+      ${BACKGROUNDS.map(bg => {
+        const owned = state.ownedBackgrounds.includes(bg.id);
+        const equipped = state.equippedBackground === bg.id;
+        return `<div class="bg-item" style="background:${bg.css};">
+          <div style="background:rgba(255,255,255,0.85);border-radius:10px;padding:8px;">
+            <div style="font-size:12px;font-weight:700;color:#495057;">${bg.name}</div>
+            ${!owned ? `<button data-buy-bg="${bg.id}" style="margin-top:8px;width:100%;background:#FFD8A8;color:#9C6B00;border:none;border-radius:10px;padding:6px;font-weight:700;font-size:12px;cursor:pointer;">🥕 ${bg.cost}</button>`
+              : `<button data-equip-bg="${bg.id}" style="margin-top:8px;width:100%;background:${equipped?'#82c91e':'#E9ECEF'};color:${equipped?'white':'#868e96'};border:none;border-radius:10px;padding:6px;font-weight:700;font-size:12px;cursor:pointer;">${equipped?'Equipped ✓':'Equip'}</button>`}
           </div>
-        </div>
-      )}
-
-      <div style={{ background: "white", borderRadius: 14, padding: 12, marginBottom: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: "#495057", marginBottom: 8 }}>📸 Log a question you got wrong</div>
-        <select value={subject} onChange={(e) => setSubject(e.target.value)} style={{ borderRadius: 10, border: "2px solid #eee", padding: "8px", fontSize: 13, marginBottom: 8, width: "100%" }}>
-          {SUBJECTS.map((s) => (
-            <option key={s}>{s}</option>
-          ))}
-        </select>
-        <input
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          placeholder="Optional note, e.g. 'Forgot to carry the remainder'"
-          style={{ width: "100%", borderRadius: 10, border: "2px solid #eee", padding: "8px 10px", fontSize: 13, marginBottom: 8, boxSizing: "border-box" }}
-        />
-        <label style={{ display: "block", textAlign: "center", background: uploading ? "#dee2e6" : "#FFB3CB", color: "white", borderRadius: 10, padding: "10px", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
-          {uploading ? "Uploading..." : "📷 Upload Photo of Question"}
-          <input type="file" accept="image/*" capture="environment" onChange={handleFile} style={{ display: "none" }} />
-        </label>
-      </div>
-
-      <div style={{ display: "flex", gap: 6, marginBottom: 10, overflowX: "auto" }}>
-        {["All", ...SUBJECTS].map((s) => (
-          <button
-            key={s}
-            onClick={() => setFilter(s)}
-            style={{ flexShrink: 0, border: "none", background: filter === s ? "#495057" : "white", color: filter === s ? "white" : "#868e96", borderRadius: 12, padding: "6px 12px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}
-          >
-            {s}
-          </button>
-        ))}
-      </div>
-
-      {filtered.length === 0 && <EmptyState emoji="📸" text="No errors logged yet for this subject." />}
-
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-        {filtered.map((er) => {
-          const c = SUBJECT_COLORS[er.subject] || SUBJECT_COLORS.English;
-          return (
-            <div key={er.id} style={{ background: "white", borderRadius: 12, overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.04)", opacity: er.mastered ? 0.55 : 1 }}>
-              <img src={er.image} alt="error" onClick={() => setViewing(er)} style={{ width: "100%", height: 110, objectFit: "cover", cursor: "pointer" }} />
-              <div style={{ padding: 8 }}>
-                <span style={{ fontSize: 9, fontWeight: 700, color: c.text, background: c.bg, borderRadius: 8, padding: "2px 6px" }}>{er.subject}</span>
-                {er.note && <div style={{ fontSize: 11, color: "#868e96", marginTop: 4 }}>{er.note}</div>}
-                <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
-                  <button onClick={() => toggleMastered(er.id)} style={{ border: "none", background: "none", fontSize: 11, color: er.mastered ? "#82c91e" : "#adb5bd", cursor: "pointer", fontWeight: 700 }}>
-                    {er.mastered ? "✓ Mastered" : "Mark mastered"}
-                  </button>
-                  <button onClick={() => deleteError(er.id)} style={{ border: "none", background: "none", color: "#ffc9c9", cursor: "pointer" }}>
-                    ✕
-                  </button>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+        </div>`;
+      }).join("")}
     </div>
-  );
+  `;
+}
+function buyAccessory(id) {
+  const item = ACCESSORIES.find(a=>a.id===id);
+  if (!item) return;
+  if (state.carrots < item.cost) { flashToast("Not enough carrots yet! Keep completing tasks 🥕"); return; }
+  state.carrots -= item.cost;
+  state.ownedAccessories.push(id);
+  flashToast(`Bought ${item.name}!`);
+  persist(); render();
+}
+function equipAccessory(id) {
+  if (state.equippedAccessories.includes(id)) state.equippedAccessories = state.equippedAccessories.filter(a=>a!==id);
+  else state.equippedAccessories.push(id);
+  persist(); render();
+}
+function buyBackground(id) {
+  const bg = BACKGROUNDS.find(b=>b.id===id);
+  if (!bg) return;
+  if (state.carrots < bg.cost) { flashToast("Not enough carrots yet! Keep completing tasks 🥕"); return; }
+  state.carrots -= bg.cost;
+  state.ownedBackgrounds.push(id);
+  flashToast(`Unlocked ${bg.name}!`);
+  persist(); render();
+}
+function equipBackground(id) {
+  state.equippedBackground = id;
+  persist(); render();
 }
 
-// ---------- Vocab Tab ----------
-function VocabTab({ state, setState, flashToast }) {
-  const [word, setWord] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [expandedId, setExpandedId] = useState(null);
-
-  const addVocab = async () => {
-    if (!word.trim()) return;
-    setLoading(true);
-    try {
-      const system =
-        "You are a helpful PSLE English tutor for a Singapore Primary 6 student. Respond ONLY with valid JSON, no preamble, no markdown fences. The JSON object must have exactly these keys: definition (simple, student-friendly, 1 sentence), compoExample (one example sentence showing how to use the word naturally in a composition, suitable for a 12 year old), paperContext (a short explanation of how/where such a word typically appears in PSLE past year papers, e.g. comprehension or cloze passages, with a brief example phrase).";
-      const { text } = await callClaude([{ role: "user", content: `Word: "${word.trim()}"` }], system);
-      const parsed = extractJson(text);
-      if (!parsed) throw new Error("parse fail");
-      setState((s) => ({
-        ...s,
-        vocabBank: [
-          { id: uid(), word: word.trim(), definition: parsed.definition || "", compoExample: parsed.compoExample || "", paperContext: parsed.paperContext || "", createdAt: Date.now() },
-          ...s.vocabBank,
-        ],
-        carrots: s.carrots + 1,
-      }));
-      flashToast("+1 🥕 Vocab added!");
-      setWord("");
-    } catch (e) {
-      flashToast("Hmm, could not generate. Try again.");
-    }
-    setLoading(false);
-  };
-
-  const deleteVocab = (id) => setState((s) => ({ ...s, vocabBank: s.vocabBank.filter((v) => v.id !== id) }));
-  const sorted = [...state.vocabBank].sort((a, b) => a.word.localeCompare(b.word));
-
-  return (
-    <div>
-      <div style={{ background: "white", borderRadius: 14, padding: 12, marginBottom: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: "#495057", marginBottom: 8 }}>📖 Log new vocabulary</div>
-        <div style={{ display: "flex", gap: 6 }}>
-          <input
-            value={word}
-            onChange={(e) => setWord(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && addVocab()}
-            placeholder="e.g. meticulous"
-            style={{ flex: 1, borderRadius: 10, border: "2px solid #eee", padding: "8px 10px", fontSize: 13 }}
-          />
-          <button onClick={addVocab} disabled={loading} style={{ background: loading ? "#dee2e6" : "#A5D8FF", color: "#1971C2", border: "none", borderRadius: 10, padding: "0 14px", fontWeight: 700, cursor: "pointer" }}>
-            {loading ? "..." : "Add"}
-          </button>
-        </div>
+// ====================== MODALS ======================
+function renderNamePromptModal() {
+  return `<div class="modal-overlay" id="namePromptOverlay">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div style="font-size:40px;">🌱</div>
+      <div style="font-weight:800;font-size:16px;color:#D6336C;margin-top:8px;">Name your Study Buddy!</div>
+      <div style="font-size:12px;color:#868e96;margin-top:4px;">Give your little companion a cute name</div>
+      <input id="nameInput" placeholder="e.g. Mochi, Pip, Sunny..." style="width:100%;margin-top:14px;box-sizing:border-box;text-align:center;border:2px solid #FFE3EC;" />
+      <button class="btn-primary" id="saveNameBtn" style="margin-top:14px;width:100%;">Let's go! ✨</button>
+    </div>
+  </div>`;
+}
+function renderApiKeyModal() {
+  return `<div class="modal-overlay" id="apiKeyOverlay">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div style="font-size:36px;">🔑</div>
+      <div style="font-weight:800;font-size:15px;color:#D6336C;margin-top:8px;">Connect your Anthropic API key</div>
+      <div style="font-size:12px;color:#868e96;margin-top:6px;text-align:left;">
+        This standalone site has no server, so AI features (vocab definitions, paper question generation) need your own Anthropic API key.
+        It's saved only in this browser's local storage and sent directly to Anthropic — never anywhere else.
+        Get a key at <span style="color:#1971C2;">console.anthropic.com</span>.
       </div>
-
-      {sorted.length === 0 && <EmptyState emoji="📖" text="No vocab logged yet. Add a word above!" />}
-
-      {sorted.map((v) => {
-        const expanded = expandedId === v.id;
-        return (
-          <div key={v.id} style={{ background: "white", borderRadius: 12, padding: 12, marginBottom: 8, boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
-            <div onClick={() => setExpandedId(expanded ? null : v.id)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }}>
-              <div>
-                <div style={{ fontWeight: 800, fontSize: 14, color: "#D6336C" }}>{v.word}</div>
-                <div style={{ fontSize: 12, color: "#495057", marginTop: 2 }}>{v.definition}</div>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <span style={{ fontSize: 12, color: "#adb5bd" }}>{expanded ? "▲" : "▼"}</span>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteVocab(v.id);
-                  }}
-                  style={{ border: "none", background: "none", color: "#ffc9c9", cursor: "pointer" }}
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
-            {expanded && (
-              <div style={{ marginTop: 8 }}>
-                <div style={{ fontSize: 11, color: "#868e96", background: "#FFF9DB", borderRadius: 8, padding: 6 }}>✍️ Compo use: {v.compoExample}</div>
-                <div style={{ fontSize: 11, color: "#868e96", marginTop: 6, background: "#E3F0FF", borderRadius: 8, padding: 6 }}>📄 In papers: {v.paperContext}</div>
-              </div>
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-// ---------- Papers Tab ----------
-function PapersTab({ state, setState, flashToast }) {
-  const [uploading, setUploading] = useState(false);
-  const [subject, setSubject] = useState("English");
-  const [generating, setGenerating] = useState(false);
-  const [questions, setQuestions] = useState(null);
-  const [activePaper, setActivePaper] = useState(null);
-  const [errorMsg, setErrorMsg] = useState(null);
-
-  const MAX_PDF_BYTES = 30 * 1024 * 1024; // ~30MB safety cap for base64 payload
-
-  const handlePdfUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    if (file.type !== "application/pdf") {
-      flashToast("Please upload a PDF file");
-      return;
-    }
-    if (file.size > MAX_PDF_BYTES) {
-      flashToast("This PDF is quite large — try a smaller scan or fewer pages");
-      e.target.value = "";
-      return;
-    }
-    setUploading(true);
-    try {
-      const dataUrl = await readFileAsDataURL(file);
-      const paper = { id: uid(), name: file.name, subject, dataUrl, sizeKB: Math.round(file.size / 1024), createdAt: Date.now() };
-      setState((s) => ({ ...s, papers: [paper, ...s.papers] }));
-      flashToast("📄 Paper uploaded!");
-    } catch (err) {
-      flashToast("Upload failed, try again");
-    }
-    setUploading(false);
-    e.target.value = "";
-  };
-
-  const deletePaper = (id) => setState((s) => ({ ...s, papers: s.papers.filter((p) => p.id !== id) }));
-
-  const generateFromPaper = async (paper) => {
-    setGenerating(true);
-    setQuestions(null);
-    setErrorMsg(null);
-    setActivePaper(paper);
-    try {
-      const base64 = paper.dataUrl.split(",")[1];
-      const errorNotes = state.errorBank.filter((er) => er.subject === paper.subject).map((er) => er.note).filter(Boolean).slice(0, 10);
-
-      const system =
-        "You are a PSLE tutor. You will be given a PDF of a past year exam paper. It may be a scanned, image-based PDF — read it using your vision/document capability, page by page, exactly as if reading scanned photographs of paper. Even if the PDF has no selectable text layer, look at the visual content of each page. Respond ONLY with valid JSON: an array of 5 objects, each with keys: question, answer, explanation. If you genuinely cannot see any readable content in the PDF at all, respond with exactly: {\"error\": \"unreadable\"} and nothing else. " +
-        (errorNotes.length ? `The student has previously struggled with: ${errorNotes.join("; ")}. Prioritise targeting these weak areas.` : "");
-
-      const messages = [
-        {
-          role: "user",
-          content: [
-            { type: "document", source: { type: "base64", media_type: "application/pdf", data: base64 } },
-            { type: "text", text: `This is a ${paper.subject} PSLE past year paper. Generate 5 fresh practice questions in the same style, targeting the student's weak areas if provided.` },
-          ],
-        },
-      ];
-      const { text, raw } = await callClaude(messages, system);
-      const parsed = extractJson(text);
-
-      if (!parsed) {
-        setErrorMsg("Couldn't understand the response. The scan may be too blurry, rotated, or low contrast. Try rescanning with good lighting and a straight angle.");
-        setQuestions([]);
-      } else if (parsed.error === "unreadable") {
-        setErrorMsg("This PDF couldn't be read — it might be password-protected, corrupted, or the scan quality is too low. Try re-scanning at higher resolution.");
-        setQuestions([]);
-      } else if (Array.isArray(parsed)) {
-        setQuestions(parsed);
-        setState((s) => ({ ...s, carrots: s.carrots + 3 }));
-        flashToast("+3 🥕 Practice questions ready!");
-      } else {
-        setErrorMsg("Unexpected response format. Please try again.");
-        setQuestions([]);
-      }
-    } catch (err) {
-      setErrorMsg("Something went wrong reading this PDF. Check your internet connection and try again, or try a smaller file.");
-      setQuestions([]);
-    }
-    setGenerating(false);
-  };
-
-  return (
-    <div>
-      <div style={{ background: "white", borderRadius: 14, padding: 12, marginBottom: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: "#495057", marginBottom: 8 }}>📄 Upload past year paper (PDF, incl. scanned)</div>
-        <select value={subject} onChange={(e) => setSubject(e.target.value)} style={{ borderRadius: 10, border: "2px solid #eee", padding: "8px", fontSize: 13, marginBottom: 8, width: "100%" }}>
-          {SUBJECTS.map((s) => (
-            <option key={s}>{s}</option>
-          ))}
-        </select>
-        <label style={{ display: "block", textAlign: "center", background: uploading ? "#dee2e6" : "#A5D8FF", color: "#1971C2", borderRadius: 10, padding: "10px", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
-          {uploading ? "Uploading..." : "📎 Upload PDF Paper"}
-          <input type="file" accept="application/pdf" onChange={handlePdfUpload} style={{ display: "none" }} />
-        </label>
-        <div style={{ fontSize: 10, color: "#adb5bd", marginTop: 6 }}>
-          Tip: if a scanned PDF fails, try rescanning flat (not at an angle), in good lighting, at a moderate resolution (under ~15MB works best).
-        </div>
-      </div>
-
-      {state.papers.length === 0 && <EmptyState emoji="📄" text="No papers uploaded yet." />}
-
-      {state.papers.map((p) => {
-        const c = SUBJECT_COLORS[p.subject] || SUBJECT_COLORS.English;
-        return (
-          <div key={p.id} style={{ background: "white", borderRadius: 12, padding: 10, marginBottom: 8, boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <div>
-                <span style={{ fontSize: 9, fontWeight: 700, color: c.text, background: c.bg, borderRadius: 8, padding: "2px 6px" }}>{p.subject}</span>
-                <div style={{ fontSize: 12, color: "#495057", marginTop: 4, wordBreak: "break-all" }}>{p.name}</div>
-                <div style={{ fontSize: 10, color: "#ced4da", marginTop: 2 }}>{p.sizeKB ? `${p.sizeKB} KB` : ""}</div>
-              </div>
-              <button onClick={() => deletePaper(p.id)} style={{ border: "none", background: "none", color: "#ffc9c9", cursor: "pointer" }}>
-                ✕
-              </button>
-            </div>
-            <button
-              onClick={() => generateFromPaper(p)}
-              disabled={generating}
-              style={{ marginTop: 8, width: "100%", background: generating && activePaper?.id === p.id ? "#dee2e6" : "#FFE3EC", color: "#D6336C", border: "none", borderRadius: 10, padding: "8px", fontWeight: 700, fontSize: 12, cursor: "pointer" }}
-            >
-              {generating && activePaper?.id === p.id ? "Reading paper..." : "✨ Generate practice questions from errors"}
-            </button>
-          </div>
-        );
-      })}
-
-      {errorMsg && (
-        <div style={{ marginTop: 10, background: "#FFF5F5", border: "2px solid #FFC9C9", borderRadius: 12, padding: 12, fontSize: 12, color: "#C92A2A" }}>
-          ⚠️ {errorMsg}
-        </div>
-      )}
-
-      {questions && questions.length > 0 && activePaper && (
-        <div style={{ marginTop: 14 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: "#495057", marginBottom: 8 }}>Practice from "{activePaper.name}"</div>
-          {questions.map((q, i) => (
-            <QuestionCard key={i} q={q} index={i} />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-function QuestionCard({ q, index }) {
-  const [show, setShow] = useState(false);
-  return (
-    <div style={{ background: "white", borderRadius: 12, padding: 12, marginBottom: 8, boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
-      <div style={{ fontSize: 12, fontWeight: 700, color: "#D6336C", marginBottom: 4 }}>Q{index + 1}</div>
-      <div style={{ fontSize: 13, color: "#495057" }}>{q.question}</div>
-      <button onClick={() => setShow((v) => !v)} style={{ marginTop: 8, border: "none", background: "none", color: "#1971C2", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
-        {show ? "Hide answer" : "Show answer"}
-      </button>
-      {show && (
-        <div style={{ marginTop: 6, background: "#E6FCF5", borderRadius: 8, padding: 8 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: "#0CA678" }}>{q.answer}</div>
-          <div style={{ fontSize: 11, color: "#495057", marginTop: 4 }}>{q.explanation}</div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ---------- Timer Tab ----------
-function TimerTab() {
-  const [activeId, setActiveId] = useState(null);
-  const [secondsLeft, setSecondsLeft] = useState(0);
-  const [running, setRunning] = useState(false);
-  const intervalRef = useRef(null);
-
-  useEffect(() => {
-    if (running) {
-      intervalRef.current = setInterval(() => {
-        setSecondsLeft((s) => {
-          if (s <= 1) {
-            setRunning(false);
-            return 0;
-          }
-          return s - 1;
-        });
-      }, 1000);
-    } else if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
-    return () => intervalRef.current && clearInterval(intervalRef.current);
-  }, [running]);
-
-  const start = (timer) => {
-    setActiveId(timer.id);
-    setSecondsLeft(timer.mins * 60);
-    setRunning(true);
-  };
-  const pauseResume = () => setRunning((r) => !r);
-  const reset = () => {
-    setRunning(false);
-    setActiveId(null);
-    setSecondsLeft(0);
-  };
-
-  const fmt = (s) => {
-    const m = Math.floor(s / 60);
-    const sec = s % 60;
-    return `${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
-  };
-
-  const active = TIMERS.find((t) => t.id === activeId);
-
-  return (
-    <div>
-      {active ? (
-        <div style={{ background: "white", borderRadius: 18, padding: 20, textAlign: "center", boxShadow: "0 4px 14px rgba(0,0,0,0.05)" }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: "#868e96" }}>{active.label}</div>
-          <div style={{ fontSize: 40, fontWeight: 800, color: secondsLeft < 60 ? "#FA5252" : "#D6336C", margin: "8px 0", fontFamily: "monospace" }}>{fmt(secondsLeft)}</div>
-          {secondsLeft === 0 && <div style={{ fontSize: 14, fontWeight: 700, color: "#82c91e" }}>⏰ Time's up! Well done!</div>}
-          <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 8 }}>
-            <button onClick={pauseResume} disabled={secondsLeft === 0} style={{ background: "#A5D8FF", color: "#1971C2", border: "none", borderRadius: 10, padding: "8px 16px", fontWeight: 700, cursor: "pointer" }}>
-              {running ? "Pause" : "Resume"}
-            </button>
-            <button onClick={reset} style={{ background: "#FFE3EC", color: "#D6336C", border: "none", borderRadius: 10, padding: "8px 16px", fontWeight: 700, cursor: "pointer" }}>
-              Reset
-            </button>
-          </div>
-
-          <div style={{ marginTop: 14, textAlign: "left", background: "#FFF9DB", borderRadius: 12, padding: 12 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: "#846b00", marginBottom: 6 }}>💡 Tips for this paper</div>
-            {active.tips.map((tip, i) => (
-              <div key={i} style={{ fontSize: 12, color: "#846b00", marginBottom: 4, display: "flex", gap: 6 }}>
-                <span>•</span>
-                <span>{tip}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : (
-        <EmptyState emoji="⏱" text="Pick a PSLE paper below to start an exam timer." />
-      )}
-
-      <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 8 }}>
-        {TIMERS.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => start(t)}
-            style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "white", border: "none", borderRadius: 12, padding: "12px 14px", boxShadow: "0 2px 8px rgba(0,0,0,0.04)", cursor: "pointer", textAlign: "left" }}
-          >
-            <span style={{ fontSize: 13, fontWeight: 700, color: "#495057" }}>{t.label}</span>
-            <span style={{ fontSize: 12, color: "#adb5bd" }}>{t.mins} min</span>
-          </button>
-        ))}
+      <input id="apiKeyInput" placeholder="sk-ant-..." style="width:100%;margin-top:14px;box-sizing:border-box;" value="${escapeHtml(getApiKey())}" />
+      <div style="display:flex;gap:8px;margin-top:14px;">
+        <button class="btn-secondary" id="cancelApiKeyBtn" style="flex:1;">Cancel</button>
+        <button class="btn-primary" id="saveApiKeyBtn" style="flex:1;">Save</button>
       </div>
     </div>
-  );
+  </div>`;
 }
 
-// ---------- Shop Tab ----------
-function ShopTab({ state, setState, flashToast }) {
-  const buy = (item) => {
-    if (state.carrots < item.cost) {
-      flashToast("Not enough carrots yet! Keep completing tasks 🥕");
-      return;
-    }
-    setState((s) => ({ ...s, carrots: s.carrots - item.cost, ownedAccessories: [...s.ownedAccessories, item.id] }));
-    flashToast(`Bought ${item.name}!`);
-  };
-  const toggleEquip = (id) => {
-    setState((s) => ({
-      ...s,
-      equippedAccessories: s.equippedAccessories.includes(id) ? s.equippedAccessories.filter((a) => a !== id) : [...s.equippedAccessories, id],
-    }));
-  };
+// ====================== MAIN RENDER ======================
+function render() {
+  const app = document.getElementById("app");
+  let tabHtml = "";
+  if (currentTab==="home") tabHtml = renderHome();
+  else if (currentTab==="tasks") tabHtml = renderTasks();
+  else if (currentTab==="errors") tabHtml = renderErrors();
+  else if (currentTab==="vocab") tabHtml = renderVocab();
+  else if (currentTab==="papers") tabHtml = renderPapers();
+  else if (currentTab==="timer") tabHtml = renderTimer();
+  else if (currentTab==="shop") tabHtml = renderShop();
 
-  return (
-    <div>
-      <div style={{ textAlign: "center", marginBottom: 12, fontSize: 13, color: "#868e96" }}>
-        Spend your Carrots 🥕 on cute accessories! (Earn carrots from tasks, errors & vocab)
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-        {ACCESSORIES.map((item) => {
-          const owned = state.ownedAccessories.includes(item.id);
-          const equipped = state.equippedAccessories.includes(item.id);
-          return (
-            <div key={item.id} style={{ background: "white", borderRadius: 14, padding: 12, textAlign: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
-              <div style={{ fontSize: 30 }}>{item.emoji}</div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#495057", marginTop: 4 }}>{item.name}</div>
-              {!owned ? (
-                <button onClick={() => buy(item)} style={{ marginTop: 8, width: "100%", background: "#FFD8A8", color: "#9C6B00", border: "none", borderRadius: 10, padding: "6px", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
-                  🥕 {item.cost}
-                </button>
-              ) : (
-                <button
-                  onClick={() => toggleEquip(item.id)}
-                  style={{ marginTop: 8, width: "100%", background: equipped ? "#82c91e" : "#E9ECEF", color: equipped ? "white" : "#868e96", border: "none", borderRadius: 10, padding: "6px", fontWeight: 700, fontSize: 12, cursor: "pointer" }}
-                >
-                  {equipped ? "Equipped ✓" : "Equip"}
-                </button>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
+  app.innerHTML = `
+    ${renderHeader()}
+    ${renderNav()}
+    <div>${tabHtml}</div>
+    ${showNamePrompt ? renderNamePromptModal() : ""}
+    ${showJourneyModal ? renderJourneyModal() : ""}
+    ${showApiKeyModal ? renderApiKeyModal() : ""}
+    ${viewingError ? renderViewingErrorModal() : ""}
+  `;
+  attachListeners();
 }
+
+function attachListeners() {
+  document.querySelectorAll(".navbtn").forEach(btn => {
+    btn.addEventListener("click", () => { currentTab = btn.dataset.tab; render(); });
+  });
+
+  // Home
+  const shareBtn = document.getElementById("shareCardBtn");
+  if (shareBtn) shareBtn.addEventListener("click", () => flashToast("📸 Screenshot this card to share with friends!"));
+  const avatarNameClick = document.getElementById("avatarNameClick");
+  if (avatarNameClick) avatarNameClick.addEventListener("click", () => { showNamePrompt = true; render(); });
+  const avatarClick = document.getElementById("avatarClick");
+  if (avatarClick) avatarClick.addEventListener("click", () => { showJourneyModal = true; render(); });
+
+  // Journey modal
+  const journeyOverlay = document.getElementById("journeyOverlay");
+  if (journeyOverlay) journeyOverlay.addEventListener("click", () => { showJourneyModal = false; render(); });
+  const closeJourneyBtn = document.getElementById("closeJourneyBtn");
+  if (closeJourneyBtn) closeJourneyBtn.addEventListener("click", () => { showJourneyModal = false; render(); });
+
+  // Name modal
+  const saveNameBtn = document.getElementById("saveNameBtn");
+  if (saveNameBtn) saveNameBtn.addEventListener("click", () => {
+    const val = document.getElementById("nameInput").value.trim();
+    state.avatarName = val || "Buddy";
+    showNamePrompt = false;
+    persist(); render();
+  });
+
+  // API key modal
+  const vocabApiKeyLink = document.getElementById("vocabApiKeyLink");
+  if (vocabApiKeyLink) vocabApiKeyLink.addEventListener("click", () => { showApiKeyModal = true; render(); });
+  const papersApiKeyLink = document.getElementById("papersApiKeyLink");
+  if (papersApiKeyLink) papersApiKeyLink.addEventListener("click", () => { showApiKeyModal = true; render(); });
+  const apiKeyOverlay = document.getElementById("apiKeyOverlay");
+  if (apiKeyOverlay) apiKeyOverlay.addEventListener("click", () => { showApiKeyModal = false; render(); });
+  const cancelApiKeyBtn = document.getElementById("cancelApiKeyBtn");
+  if (cancelApiKeyBtn) cancelApiKeyBtn.addEventListener("click", () => { showApiKeyModal = false; render(); });
+  const saveApiKeyBtn = document.getElementById("saveApiKeyBtn");
+  if (saveApiKeyBtn) saveApiKeyBtn.addEventListener("click", () => {
+    const val = document.getElementById("apiKeyInput").value.trim();
+    setApiKey(val);
+    showApiKeyModal = false;
+    flashToast("API key saved!");
+    render();
+  });
+
+  // Tasks
+  const addTaskBtn = document.getElementById("addTaskBtn");
+  if (addTaskBtn) addTaskBtn.addEventListener("click", addTask);
+  const taskTextInput = document.getElementById("taskTextInput");
+  if (taskTextInput) taskTextInput.addEventListener("keydown", (e)=>{ if(e.key==="Enter") addTask(); });
+  document.querySelectorAll("[data-toggle-task]").forEach(el => el.addEventListener("change", ()=>toggleTask(el.dataset.toggleTask)));
+  document.querySelectorAll("[data-delete-task]").forEach(el => el.addEventListener("click", ()=>deleteTask(el.dataset.deleteTask)));
+
+  // Errors
+  document.querySelectorAll("[data-error-filter]").forEach(el => el.addEventListener("click", ()=>{ errorFilter = el.dataset.errorFilter; render(); }));
+  const errorSubjectSelect = document.getElementById("errorSubjectSelect");
+  if (errorSubjectSelect) errorSubjectSelect.addEventListener("change", (e)=>{ errorFormSubject = e.target.value; });
+  const errorNoteInput = document.getElementById("errorNoteInput");
+  if (errorNoteInput) errorNoteInput.addEventListener("input", (e)=>{ errorFormNote = e.target.value; });
+  const errorFileInput = document.getElementById("errorFileInput");
+  if (errorFileInput) errorFileInput.addEventListener("change", handleErrorFile);
+  document.querySelectorAll("[data-view-error]").forEach(el => el.addEventListener("click", ()=>{
+    viewingError = state.errorBank.find(er=>er.id===el.dataset.viewError);
+    render();
+  }));
+  document.querySelectorAll("[data-toggle-mastered]").forEach(el => el.addEventListener("click", ()=>toggleMastered(el.dataset.toggleMastered)));
+  document.querySelectorAll("[data-delete-error]").forEach(el => el.addEventListener("click", ()=>deleteError(el.dataset.deleteError)));
+  const closeViewErrorBtn = document.getElementById("closeViewErrorBtn");
+  if (closeViewErrorBtn) closeViewErrorBtn.addEventListener("click", ()=>{ viewingError=null; render(); });
+  const viewErrorOverlay = document.getElementById("viewErrorOverlay");
+  if (viewErrorOverlay) viewErrorOverlay.addEventListener("click", ()=>{ viewingError=null; render(); });
+
+  // Vocab
+  const vocabWordInputEl = document.getElementById("vocabWordInput");
+  if (vocabWordInputEl) {
+    vocabWordInputEl.addEventListener("input", (e)=>{ vocabWordInput = e.target.value; });
+    vocabWordInputEl.addEventListener("keydown", (e)=>{ if(e.key==="Enter") addVocab(); });
+  }
+  const addVocabBtn = document.getElementById("addVocabBtn");
+  if (addVocabBtn) addVocabBtn.addEventListener("click", addVocab);
+  document.querySelectorAll("[data-expand-vocab]").forEach(el => el.addEventListener("click", (e)=>{
+    if (e.target.closest("[data-delete-vocab]")) return;
+    const id = el.dataset.expandVocab;
+    expandedVocabId = expandedVocabId===id ? null : id;
+    render();
+  }));
+  document.querySelectorAll("[data-delete-vocab]").forEach(el => el.addEventListener("click", (e)=>{ e.stopPropagation(); deleteVocab(el.dataset.deleteVocab); }));
+
+  // Papers
+  const paperSubjectSelect = document.getElementById("paperSubjectSelect");
+  if (paperSubjectSelect) paperSubjectSelect.addEventListener("change", (e)=>{ papersSubject = e.target.value; });
+  const paperFileInput = document.getElementById("paperFileInput");
+  if (paperFileInput) paperFileInput.addEventListener("change", handlePaperFile);
+  document.querySelectorAll("[data-delete-paper]").forEach(el => el.addEventListener("click", ()=>deletePaper(el.dataset.deletePaper)));
+  document.querySelectorAll("[data-generate-paper]").forEach(el => el.addEventListener("click", ()=>generateFromPaper(el.dataset.generatePaper)));
+  document.querySelectorAll("[data-toggle-answer]").forEach(el => el.addEventListener("click", ()=>{
+    const idx = parseInt(el.dataset.toggleAnswer,10);
+    if (papersQuestions && papersQuestions[idx]) papersQuestions[idx]._show = !papersQuestions[idx]._show;
+    render();
+  }));
+
+  // Timer
+  document.querySelectorAll("[data-start-timer]").forEach(el => el.addEventListener("click", ()=>startTimer(el.dataset.startTimer)));
+  const timerPauseResumeBtn = document.getElementById("timerPauseResumeBtn");
+  if (timerPauseResumeBtn) timerPauseResumeBtn.addEventListener("click", timerPauseResume);
+  const timerResetBtn = document.getElementById("timerResetBtn");
+  if (timerResetBtn) timerResetBtn.addEventListener("click", timerReset);
+
+  // Shop
+  document.querySelectorAll("[data-buy-acc]").forEach(el => el.addEventListener("click", ()=>buyAccessory(el.dataset.buyAcc)));
+  document.querySelectorAll("[data-equip-acc]").forEach(el => el.addEventListener("click", ()=>equipAccessory(el.dataset.equipAcc)));
+  document.querySelectorAll("[data-buy-bg]").forEach(el => el.addEventListener("click", ()=>buyBackground(el.dataset.buyBg)));
+  document.querySelectorAll("[data-equip-bg]").forEach(el => el.addEventListener("click", ()=>equipBackground(el.dataset.equipBg)));
+}
+
+// ====================== INIT ======================
+render();
+</script>
+</body>
+</html>
