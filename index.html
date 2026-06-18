@@ -13,27 +13,117 @@
     padding: 16px;
     color: #495057;
   }
-  #app { max-width: 480px; margin: 0 auto; position: relative; }
-  .card { background: white; border-radius: 14px; padding: 12px; margin-bottom: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-  .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  #app {
+    max-width: 480px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .card {
+    background: white;
+    border-radius: 14px;
+    padding: 12px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
   .title { font-size: 18px; font-weight: 800; color: #D6336C; }
   .pills { display: flex; gap: 8px; }
-  .pill { background: white; border-radius: 20px; padding: 4px 10px; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 4px; color: #495057; }
-  .navbar { display: flex; overflow-x: auto; gap: 6px; padding-bottom: 4px; margin-bottom: 12px; }
-  .navbtn { flex-shrink: 0; border: none; background: white; color: #868e96; border-radius: 14px; padding: 8px 12px; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 56px; }
+  .pill {
+    background: white;
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #495057;
+  }
+  .navbar {
+    display: flex;
+    overflow-x: auto;
+    gap: 6px;
+    padding-bottom: 4px;
+    margin-bottom: 12px;
+  }
+  .navbtn {
+    flex-shrink: 0;
+    border: none;
+    background: white;
+    color: #868e96;
+    border-radius: 14px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-width: 56px;
+  }
   .navbtn.active { background: #FFB3CB; color: white; }
   .navbtn .emoji { font-size: 16px; }
   button { font-family: inherit; }
-  input, select, textarea { font-family: inherit; border-radius: 10px; border: 2px solid #eee; padding: 8px 10px; font-size: 13px; }
-  textarea { resize: vertical; }
+  input, select {
+    font-family: inherit;
+    border-radius: 10px;
+    border: 2px solid #eee;
+    padding: 8px 10px;
+    font-size: 13px;
+  }
   .empty { text-align: center; padding: 30px 10px; color: #adb5bd; }
   .empty .emoji { font-size: 32px; }
   .empty .text { font-size: 13px; margin-top: 6px; }
-  .toast { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); background: #fff; border: 2px solid #FFB3CB; border-radius: 14px; padding: 8px 16px; font-size: 14px; font-weight: 600; color: #D6336C; z-index: 60; box-shadow: 0 4px 14px rgba(0,0,0,0.1); transition: opacity 0.3s; }
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 70; padding: 20px; }
-  .modal-box { background: white; border-radius: 20px; padding: 24px; max-width: 340px; max-height: 85vh; overflow-y: auto; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
-  .btn-primary { background: #FFB3CB; color: white; border: none; border-radius: 12px; padding: 10px 18px; font-weight: 700; font-size: 13px; cursor: pointer; }
-  .btn-secondary { background: #FFE3EC; color: #D6336C; border: none; border-radius: 12px; padding: 10px 18px; font-weight: 700; font-size: 13px; cursor: pointer; }
+  .toast {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fff;
+    border: 2px solid #FFB3CB;
+    border-radius: 14px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #D6336C;
+    z-index: 60;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+    transition: opacity 0.3s;
+  }
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 70;
+    padding: 20px;
+  }
+  .modal-box {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    max-width: 340px;
+    max-height: 85vh;
+    overflow-y: auto;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  }
+  .btn-primary {
+    background: #FFB3CB; color: white; border: none; border-radius: 12px;
+    padding: 10px 18px; font-weight: 700; font-size: 13px; cursor: pointer;
+  }
+  .btn-secondary {
+    background: #FFE3EC; color: #D6336C; border: none; border-radius: 12px;
+    padding: 10px 18px; font-weight: 700; font-size: 13px; cursor: pointer;
+  }
   .stat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
   .stat-box { background: white; border-radius: 12px; padding: 10px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
   .stat-box .emoji { font-size: 18px; }
@@ -51,9 +141,10 @@
   .bg-item { border-radius: 14px; padding: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); position: relative; overflow: hidden; }
   .journey-stage { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 12px; margin-bottom: 6px; }
   .vocab-card { background: white; border-radius: 12px; padding: 12px; margin-bottom: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); cursor: pointer; }
-  .upload-label { display: block; text-align: center; color: white; border-radius: 10px; padding: 10px; font-weight: 700; font-size: 13px; cursor: pointer; }
-  .tab-toggle { display: flex; gap: 6px; margin-bottom: 12px; }
-  .tab-toggle button { flex: 1; border: none; border-radius: 10px; padding: 8px; font-size: 12px; font-weight: 700; cursor: pointer; }
+  .upload-label {
+    display: block; text-align: center; color: white; border-radius: 10px;
+    padding: 10px; font-weight: 700; font-size: 13px; cursor: pointer;
+  }
   ::-webkit-scrollbar { height: 4px; }
 </style>
 </head>
@@ -107,41 +198,35 @@ var TIMERS = [
   ]}
 ];
 
-// Growth is now purely a star-milestone label (no creature stages) - the
-// avatar itself is a constant blob character dressed up via the shop.
 var STAGES = [
-  { min: 0, name: "New Sprout" },
-  { min: 60, name: "Growing Strong" },
-  { min: 150, name: "Focused Learner" },
-  { min: 300, name: "Confident Scholar" },
-  { min: 520, name: "Shining Star" },
-  { min: 800, name: "PSLE Champion" }
+  { min: 0, name: "Sleepy Seedling", emoji: "🌱", desc: "Just getting started, every garden begins with a tiny seed." },
+  { min: 60, name: "Waking Sprout", emoji: "🐣", desc: "Stretching out and waking up to the world of revision." },
+  { min: 150, name: "Focused Bud", emoji: "🌷", desc: "Starting to bloom with focus and good habits." },
+  { min: 300, name: "Bright Blossom", emoji: "🌸", desc: "Flourishing! Consistent effort is really paying off." },
+  { min: 520, name: "Glowing Scholar", emoji: "✨", desc: "Radiating knowledge and confidence." },
+  { min: 800, name: "Star Sage", emoji: "🌟", desc: "The final form, a true PSLE superstar." }
 ];
 
-// Clothing/accessory shop items - cheap items first as low-hanging fruit,
-// pricier items further out so the economy doesn't feel trivial.
 var ACCESSORIES = [
-  { id: "star", name: "Star Sticker", emoji: "⭐", cost: 25, slot: "face" },
-  { id: "bow", name: "Pink Bow", emoji: "🎀", cost: 35, slot: "head" },
-  { id: "cap", name: "Baseball Cap", emoji: "🧢", cost: 35, slot: "head" },
-  { id: "glasses", name: "Smart Glasses", emoji: "🤓", cost: 55, slot: "face" },
-  { id: "scarf", name: "Cosy Scarf", emoji: "🧣", cost: 55, slot: "neck" },
-  { id: "flower", name: "Flower Crown", emoji: "💐", cost: 75, slot: "head" },
-  { id: "bag", name: "Mini Backpack", emoji: "🎒", cost: 85, slot: "body" },
-  { id: "ribbon", name: "Rainbow Ribbon", emoji: "🌈", cost: 85, slot: "body" },
-  { id: "crown", name: "Tiny Crown", emoji: "👑", cost: 140, slot: "head" },
-  { id: "wand", name: "Magic Wand", emoji: "🪄", cost: 160, slot: "hand" },
-  { id: "cape", name: "Hero Cape", emoji: "🦸", cost: 180, slot: "body" },
-  { id: "gem", name: "Sparkle Gem", emoji: "💎", cost: 240, slot: "body" }
+  { id: "bow", name: "Pink Bow", emoji: "🎀", cost: 40 },
+  { id: "star", name: "Star Sticker", emoji: "⭐", cost: 35 },
+  { id: "glasses", name: "Smart Glasses", emoji: "🤓", cost: 60 },
+  { id: "flower", name: "Flower Crown", emoji: "💐", cost: 70 },
+  { id: "ribbon", name: "Rainbow Ribbon", emoji: "🌈", cost: 80 },
+  { id: "bag", name: "Mini Backpack", emoji: "🎒", cost: 90 },
+  { id: "crown", name: "Tiny Crown", emoji: "👑", cost: 130 },
+  { id: "wand", name: "Magic Wand", emoji: "🪄", cost: 150 },
+  { id: "cape", name: "Hero Cape", emoji: "🦸", cost: 170 },
+  { id: "gem", name: "Sparkle Gem", emoji: "💎", cost: 220 }
 ];
 
 var BACKGROUNDS = [
   { id: "bg_default", name: "Soft Pastel", cost: 0, css: "linear-gradient(135deg, #FFE3EC, #E3F0FF)" },
-  { id: "bg_meadow", name: "Spring Meadow", cost: 45, css: "linear-gradient(135deg, #D8F5A2, #96F2D7)" },
-  { id: "bg_sunset", name: "Cotton Candy Sunset", cost: 95, css: "linear-gradient(135deg, #FFC9DE, #FFD8A8)" },
-  { id: "bg_galaxy", name: "Dreamy Galaxy", cost: 150, css: "linear-gradient(135deg, #D0BFFF, #A5D8FF)" },
-  { id: "bg_garden", name: "Blossom Garden", cost: 190, css: "linear-gradient(135deg, #FFB3CB, #C3FAE8)" },
-  { id: "bg_gold", name: "Golden Hour", cost: 260, css: "linear-gradient(135deg, #FFE066, #FFC078)" }
+  { id: "bg_meadow", name: "Spring Meadow", cost: 50, css: "linear-gradient(135deg, #D8F5A2, #96F2D7)" },
+  { id: "bg_sunset", name: "Cotton Candy Sunset", cost: 90, css: "linear-gradient(135deg, #FFC9DE, #FFD8A8)" },
+  { id: "bg_galaxy", name: "Dreamy Galaxy", cost: 140, css: "linear-gradient(135deg, #D0BFFF, #A5D8FF)" },
+  { id: "bg_garden", name: "Blossom Garden", cost: 180, css: "linear-gradient(135deg, #FFB3CB, #C3FAE8)" },
+  { id: "bg_gold", name: "Golden Hour", cost: 250, css: "linear-gradient(135deg, #FFE066, #FFC078)" }
 ];
 
 function uid() { return Math.random().toString(36).slice(2, 10); }
@@ -209,31 +294,63 @@ function saveState() {
   catch (e) { console.error("save failed", e); }
 }
 
-// ---- Free dictionary lookup (no key, no login needed) ----
-function lookupDictionary(word) {
-  return fetch("https://api.dictionaryapi.dev/api/v2/entries/en/" + encodeURIComponent(word.toLowerCase()))
-    .then(function(res) {
-      if (!res.ok) throw new Error("NOT_FOUND");
-      return res.json();
+function getApiKey() { return localStorage.getItem("eva-study-garden-api-key") || ""; }
+function setApiKey(key) { localStorage.setItem("eva-study-garden-api-key", key); }
+
+function callClaude(messages, system) {
+  var apiKey = getApiKey();
+  if (!apiKey) {
+    return Promise.reject(new Error("NO_API_KEY"));
+  }
+  return fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true"
+    },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-6",
+      max_tokens: 1500,
+      system: system,
+      messages: messages
     })
-    .then(function(data) {
-      var entry = data[0];
-      var definition = "";
-      var example = "";
-      var partOfSpeech = "";
-      if (entry && entry.meanings && entry.meanings.length) {
-        for (var i = 0; i < entry.meanings.length; i++) {
-          var m = entry.meanings[i];
-          if (m.definitions && m.definitions.length) {
-            partOfSpeech = m.partOfSpeech || "";
-            definition = m.definitions[0].definition || "";
-            example = m.definitions[0].example || "";
-            break;
-          }
-        }
-      }
-      return { definition: definition, example: example, partOfSpeech: partOfSpeech };
-    });
+  }).then(function(res) {
+    if (!res.ok) {
+      return res.text().then(function(errText) {
+        throw new Error("API_ERROR: " + errText);
+      });
+    }
+    return res.json();
+  }).then(function(data) {
+    var blocks = data.content || [];
+    var out = "";
+    for (var i = 0; i < blocks.length; i++) {
+      if (blocks[i].type === "text") out += blocks[i].text + "\n";
+    }
+    return out;
+  });
+}
+
+function extractJson(text) {
+  var clean = text.trim();
+  clean = clean.split("```json").join("").split("```").join("").trim();
+  try {
+    return JSON.parse(clean);
+  } catch (e) {
+    var firstObj = clean.indexOf("{");
+    var firstArr = clean.indexOf("[");
+    var first = -1;
+    if (firstObj === -1) first = firstArr;
+    else if (firstArr === -1) first = firstObj;
+    else first = Math.min(firstObj, firstArr);
+    var last = Math.max(clean.lastIndexOf("}"), clean.lastIndexOf("]"));
+    if (first !== -1 && last !== -1) {
+      try { return JSON.parse(clean.slice(first, last + 1)); } catch (e2) { return null; }
+    }
+    return null;
+  }
 }
 
 function readFileAsDataURL(file) {
@@ -249,24 +366,18 @@ var state = loadState() || JSON.parse(JSON.stringify(DEFAULT_STATE));
 var currentTab = "home";
 var showNamePrompt = !state.avatarName;
 var showJourneyModal = false;
+var showApiKeyModal = false;
 var viewingError = null;
 var expandedVocabId = null;
 var vocabLoading = false;
-var vocabWordInput = "";
-var papersSubject = "English";
-var errorFilter = "All";
-var errorFormSubject = "English";
-var errorFormNote = "";
-var errorFormAnswer = "";
-var errorUploading = false;
-var errorAnswerUploading = false;
-var pendingErrorImage = null; // staged image waiting for answer before saving
-var practiceMode = {}; // errorId -> { revealed: bool }
+var papersGenerating = false;
+var papersQuestions = null;
+var papersActivePaperId = null;
+var papersErrorMsg = null;
 var timerActiveId = null;
 var timerSecondsLeft = 0;
 var timerRunning = false;
 var timerInterval = null;
-var shopSubTab = "clothes";
 
 function persist() { saveState(); }
 
@@ -307,47 +418,30 @@ var styleTag = document.createElement("style");
 styleTag.textContent = "@keyframes fall { to { transform: translateY(110vh) rotate(360deg); opacity: 0.3; } }";
 document.head.appendChild(styleTag);
 
-// ====================== AVATAR (blob chibi, dress-up) ======================
-function avatarHtml(equipped, size, bgCss) {
-  // Base blob body as inline SVG so it's crisp and fully "paintable" by
-  // accessories layered on top via emoji positioned absolutely.
-  var bodyColor = "#FFEAF3";
-  var blobSvg =
-    '<svg width="' + size + '" height="' + size + '" viewBox="0 0 100 100" style="position:relative;z-index:1;">' +
-      '<ellipse cx="50" cy="58" rx="38" ry="34" fill="' + bodyColor + '" stroke="#FFD6E8" stroke-width="3"/>' +
-      '<circle cx="36" cy="52" r="5" fill="#495057"/>' +
-      '<circle cx="64" cy="52" r="5" fill="#495057"/>' +
-      '<path d="M 38 68 Q 50 78 62 68" stroke="#495057" stroke-width="3" fill="none" stroke-linecap="round"/>' +
-      '<ellipse cx="25" cy="62" rx="6" ry="4" fill="#FFC2D6" opacity="0.7"/>' +
-      '<ellipse cx="75" cy="62" rx="6" ry="4" fill="#FFC2D6" opacity="0.7"/>' +
-    '</svg>';
-
+function avatarHtml(stage, equipped, size, bgCss) {
   var accMap = {
-    star: '<span style="position:absolute;top:18%;left:28%;font-size:' + (size*0.16) + 'px;z-index:2;">⭐</span>',
-    bow: '<span style="position:absolute;top:-4%;left:50%;transform:translateX(-50%);font-size:' + (size*0.26) + 'px;z-index:3;">🎀</span>',
-    cap: '<span style="position:absolute;top:-10%;left:50%;transform:translateX(-50%);font-size:' + (size*0.34) + 'px;z-index:3;">🧢</span>',
-    glasses: '<span style="position:absolute;top:30%;left:50%;transform:translateX(-50%);font-size:' + (size*0.3) + 'px;z-index:2;">🤓</span>',
-    scarf: '<span style="position:absolute;top:58%;left:50%;transform:translateX(-50%);font-size:' + (size*0.28) + 'px;z-index:2;">🧣</span>',
-    flower: '<span style="position:absolute;top:-8%;left:50%;transform:translateX(-50%);font-size:' + (size*0.28) + 'px;z-index:3;">💐</span>',
-    bag: '<span style="position:absolute;bottom:6%;left:2%;font-size:' + (size*0.24) + 'px;z-index:2;">🎒</span>',
-    ribbon: '<span style="position:absolute;bottom:10%;left:50%;transform:translateX(-50%);font-size:' + (size*0.24) + 'px;z-index:2;">🌈</span>',
-    crown: '<span style="position:absolute;top:-14%;left:50%;transform:translateX(-50%);font-size:' + (size*0.3) + 'px;z-index:3;">👑</span>',
-    wand: '<span style="position:absolute;bottom:14%;right:0%;font-size:' + (size*0.26) + 'px;z-index:2;">🪄</span>',
-    cape: '<span style="position:absolute;bottom:0%;left:50%;transform:translateX(-50%);font-size:' + (size*0.36) + 'px;z-index:0;">🦸</span>',
-    gem: '<span style="position:absolute;top:55%;right:4%;font-size:' + (size*0.2) + 'px;z-index:2;">💎</span>'
+    bow: '<span style="position:absolute;top:-6px;left:50%;transform:translateX(-50%);font-size:' + (size*0.22) + 'px;">🎀</span>',
+    glasses: '<span style="position:absolute;top:32%;left:50%;transform:translateX(-50%);font-size:' + (size*0.26) + 'px;">🤓</span>',
+    crown: '<span style="position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:' + (size*0.24) + 'px;">👑</span>',
+    star: '<span style="position:absolute;bottom:-2px;right:-2px;font-size:' + (size*0.2) + 'px;">⭐</span>',
+    flower: '<span style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-size:' + (size*0.24) + 'px;">💐</span>',
+    ribbon: '<span style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);font-size:' + (size*0.22) + 'px;">🌈</span>',
+    bag: '<span style="position:absolute;bottom:-4px;left:-4px;font-size:' + (size*0.2) + 'px;">🎒</span>',
+    wand: '<span style="position:absolute;bottom:0;right:-8px;font-size:' + (size*0.22) + 'px;">🪄</span>',
+    cape: '<span style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);font-size:' + (size*0.3) + 'px;">🦸</span>',
+    gem: '<span style="position:absolute;top:50%;right:-10px;font-size:' + (size*0.2) + 'px;">💎</span>'
   };
   var accHtml = "";
   for (var i = 0; i < equipped.length; i++) { if (accMap[equipped[i]]) accHtml += accMap[equipped[i]]; }
-
   return '<div style="width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:' + bgCss + ';' +
-    'display:flex;align-items:center;justify-content:center;position:relative;' +
-    'box-shadow:0 6px 20px rgba(255,179,203,0.4);border:4px solid white;margin:0 auto;overflow:visible;">' +
-    blobSvg + accHtml + '</div>';
+    'display:flex;align-items:center;justify-content:center;font-size:' + (size*0.5) + 'px;' +
+    'position:relative;box-shadow:0 6px 20px rgba(255,179,203,0.4);border:4px solid white;margin:0 auto;">' +
+    '<span>' + stage.emoji + '</span>' + accHtml + '</div>';
 }
 
 function renderHeader() {
   return '<div class="header">' +
-    '<div class="title">🌸 Eva\\'s Study Garden</div>' +
+    '<div class="title">🌸 Eva\'s Study Garden</div>' +
     '<div class="pills">' +
     '<div class="pill" style="border:2px solid #FFD43B;"><span>⭐</span><span>' + state.stars + '</span></div>' +
     '<div class="pill" style="border:2px solid #FF922B;"><span>🥕</span><span>' + state.carrots + '</span></div>' +
@@ -359,6 +453,7 @@ var NAV_ITEMS = [
   { id: "tasks", label: "Tasks", emoji: "📋" },
   { id: "errors", label: "Errors", emoji: "📸" },
   { id: "vocab", label: "Vocab", emoji: "📖" },
+  { id: "papers", label: "Papers", emoji: "📄" },
   { id: "timer", label: "Timer", emoji: "⏱" },
   { id: "shop", label: "Shop", emoji: "🛍" }
 ];
@@ -412,10 +507,10 @@ function renderHome() {
   var html = '';
   html += '<div class="card" style="text-align:center;padding:20px;">';
   html += '<div id="avatarNameClick" style="font-size:13px;font-weight:700;color:#D6336C;margin-bottom:8px;cursor:pointer;">' + escapeHtml(state.avatarName || "Your Buddy") + ' ✏️</div>';
-  html += '<div id="avatarClick" style="cursor:pointer;">' + avatarHtml(state.equippedAccessories, 120, bg.css) + '</div>';
+  html += '<div id="avatarClick" style="cursor:pointer;">' + avatarHtml(stage, state.equippedAccessories, 120, bg.css) + '</div>';
   html += '<div style="margin-top:10px;font-weight:800;font-size:17px;color:#495057;">' + stage.name + '</div>';
-  html += '<div style="font-size:11px;color:#bdb8ce;margin-top:2px;">(Tap your buddy to see your growth journey)</div>';
-  html += '<div style="font-size:12px;color:#adb5bd;margin-top:6px;">' + (upcoming ? ((upcoming.min - state.stars) + ' ⭐ to reach ' + upcoming.name) : "Top rank reached! 🎉") + '</div>';
+  html += '<div style="font-size:11px;color:#bdb8ce;margin-top:2px;">(Tap your buddy to see the full growth journey)</div>';
+  html += '<div style="font-size:12px;color:#adb5bd;margin-top:6px;">' + (upcoming ? ((upcoming.min - state.stars) + ' ⭐ to evolve into ' + upcoming.name + ' ' + upcoming.emoji) : "Max evolution reached! 🎉") + '</div>';
   html += '<div style="background:#f1f3f5;border-radius:10px;height:10px;margin-top:10px;overflow:hidden;"><div style="width:' + progress + '%;height:100%;background:linear-gradient(90deg,#FFB3CB,#A5D8FF);border-radius:10px;"></div></div>';
   html += '<button class="btn-secondary" id="shareCardBtn" style="margin-top:16px;">📤 Share Avatar Card</button>';
   html += '</div>';
@@ -433,7 +528,7 @@ function renderHome() {
 
   html += '<div class="card" style="background:#FFF0F6;text-align:center;font-size:13px;color:#A61E4D;font-weight:600;">' + msg + '</div>';
 
-  html += '<div style="margin-top:14px;"><div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">📈 This week\\'s progress</div>';
+  html += '<div style="margin-top:14px;"><div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">📈 This week\'s progress</div>';
   html += '<div class="stat-grid">';
   html += '<div class="stat-box"><div class="emoji">✅</div><div class="value">' + tasksThisWeek + '</div><div class="label">Tasks done</div></div>';
   html += '<div class="stat-box"><div class="emoji">🎯</div><div class="value">' + masteredThisWeek + '</div><div class="label">Errors mastered</div></div>';
@@ -441,11 +536,11 @@ function renderHome() {
   html += '</div>';
   if (tasksLastWeek > 0) {
     html += '<div style="margin-top:8px;font-size:12px;text-align:center;font-weight:700;color:' + (taskDelta>=0?'#2B8A3E':'#E8590C') + ';">' +
-      (taskDelta>=0 ? ('🎉 ' + taskDelta + ' more tasks than last week!') : ('Last week you did ' + tasksLastWeek + ', let\\'s beat that!')) + '</div>';
+      (taskDelta>=0 ? ('🎉 ' + taskDelta + ' more tasks than last week!') : ('Last week you did ' + tasksLastWeek + ', let\'s beat that!')) + '</div>';
   }
   html += '</div>';
 
-  html += '<div class="card" style="margin-top:14px;background:#FFF9DB;border:2px dashed #FFE066;font-size:13px;color:#846b00;">💡 Tip: Complete tasks, log errors, and review vocab to earn Stars (for rank) and Carrots (for the shop)!</div>';
+  html += '<div class="card" style="margin-top:14px;background:#FFF9DB;border:2px dashed #FFE066;font-size:13px;color:#846b00;">💡 Tip: Complete tasks, log errors, and review vocab to earn Stars (for growth) and Carrots (for the shop)!</div>';
 
   return html;
 }
@@ -453,20 +548,20 @@ function renderHome() {
 function renderJourneyModal() {
   var stage = getStage(state.stars);
   var html = '<div class="modal-overlay" id="journeyOverlay"><div class="modal-box" onclick="event.stopPropagation()">';
-  html += '<div style="font-weight:800;font-size:16px;color:#D6336C;margin-bottom:4px;">🌱 Your Growth Journey</div>';
-  html += '<div style="font-size:12px;color:#868e96;margin-bottom:14px;">Earn stars by studying to climb the ranks!</div>';
+  html += '<div style="font-weight:800;font-size:16px;color:#D6336C;margin-bottom:4px;">🌱 The Growth Journey</div>';
+  html += '<div style="font-size:12px;color:#868e96;margin-bottom:14px;">From sleepy seedling to star sage</div>';
   for (var i = 0; i < STAGES.length; i++) {
     var s = STAGES[i];
     var reached = state.stars >= s.min;
     var isCurrent = s.name === stage.name;
     html += '<div class="journey-stage" style="background:' + (isCurrent ? '#FFE3EC' : '#F8F9FA') + ';opacity:' + (reached?1:0.45) + ';border:' + (isCurrent ? '2px solid #FFB3CB' : '2px solid transparent') + ';">';
-    html += '<div style="font-size:24px;">' + (reached ? '🌟' : '⭐') + '</div>';
+    html += '<div style="font-size:28px;">' + s.emoji + '</div>';
     html += '<div style="text-align:left;flex:1;"><div style="font-weight:700;font-size:13px;color:#495057;">' + s.name + (isCurrent ? ' · current' : '') + '</div>';
+    html += '<div style="font-size:11px;color:#adb5bd;">' + s.desc + '</div>';
     html += '<div style="font-size:10px;color:#ced4da;margin-top:2px;">' + s.min + '+ ⭐</div></div>';
     html += reached ? '<div style="font-size:16px;color:#82c91e;">✓</div>' : '';
     html += '</div>';
   }
-  html += '<div style="font-size:11px;color:#adb5bd;margin-top:10px;">Dress up your buddy with clothes and backgrounds from the Shop!</div>';
   html += '<button class="btn-primary" id="closeJourneyBtn" style="margin-top:10px;width:100%;">Close</button>';
   html += '</div></div>';
   return html;
@@ -545,7 +640,11 @@ function addTask() {
   persist(); render();
 }
 
-// ====================== ERROR BANK (with answer + re-try mode) ======================
+var errorFilter = "All";
+var errorFormSubject = "English";
+var errorFormNote = "";
+var errorUploading = false;
+
 function renderErrors() {
   var filtered = [];
   for (var i = 0; i < state.errorBank.length; i++) {
@@ -557,27 +656,8 @@ function renderErrors() {
   for (var s = 0; s < SUBJECTS.length; s++) html += '<option value="' + SUBJECTS[s] + '" ' + (SUBJECTS[s]===errorFormSubject?'selected':'') + '>' + SUBJECTS[s] + '</option>';
   html += '</select>';
   html += '<input id="errorNoteInput" placeholder="Optional note, e.g. Forgot to carry the remainder" style="width:100%;margin-bottom:8px;box-sizing:border-box;" value="' + escapeHtml(errorFormNote) + '" />';
-
-  html += '<div style="font-size:11px;font-weight:700;color:#868e96;margin-bottom:4px;">1. Question photo</div>';
-  if (pendingErrorImage) {
-    html += '<div style="position:relative;margin-bottom:8px;"><img src="' + pendingErrorImage + '" style="width:100%;max-height:140px;object-fit:contain;border-radius:10px;border:2px solid #FFE3EC;" />' +
-      '<button id="clearPendingImageBtn" style="position:absolute;top:4px;right:4px;background:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;color:#ffc9c9;">✕</button></div>';
-  } else {
-    html += '<label class="upload-label" style="background:' + (errorUploading?'#dee2e6':'#FFB3CB') + ';margin-bottom:8px;">' + (errorUploading ? "Uploading..." : "📷 Upload Photo of Question") +
-      '<input type="file" accept="image/*" capture="environment" id="errorFileInput" style="display:none;" /></label>';
-  }
-
-  html += '<div style="font-size:11px;font-weight:700;color:#868e96;margin-bottom:4px;">2. Answer photo or text (optional, but lets you self-check later)</div>';
-  html += '<textarea id="errorAnswerText" placeholder="Type the correct answer here..." style="width:100%;margin-bottom:6px;box-sizing:border-box;" rows="2">' + escapeHtml(errorFormAnswer) + '</textarea>';
-  html += '<label class="upload-label" style="background:' + (errorAnswerUploading?'#dee2e6':'#A5D8FF') + ';color:#1971C2;margin-bottom:8px;">' + (errorAnswerUploading ? "Uploading..." : "📷 Or Upload Photo of Answer") +
-    '<input type="file" accept="image/*" capture="environment" id="errorAnswerFileInput" style="display:none;" /></label>';
-  if (errorFormAnswerImage()) {
-    html += '<div style="position:relative;margin-bottom:8px;"><img src="' + errorFormAnswerImageVal + '" style="width:100%;max-height:120px;object-fit:contain;border-radius:10px;border:2px solid #E3F0FF;" />' +
-      '<button id="clearAnswerImageBtn" style="position:absolute;top:4px;right:4px;background:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;color:#ffc9c9;">✕</button></div>';
-  }
-
-  html += '<button class="btn-primary" id="saveErrorBtn" style="width:100%;margin-top:4px;" ' + (!pendingErrorImage ? 'disabled' : '') + '>💾 Save to Error Bank</button>';
-  html += '</div>';
+  html += '<label class="upload-label" style="background:' + (errorUploading?'#dee2e6':'#FFB3CB') + ';">' + (errorUploading ? "Uploading..." : "📷 Upload Photo of Question") +
+    '<input type="file" accept="image/*" capture="environment" id="errorFileInput" style="display:none;" /></label></div>';
 
   html += '<div style="display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;">';
   var filters = ["All"].concat(SUBJECTS);
@@ -597,7 +677,6 @@ function renderErrors() {
     html += '<img src="' + e.image + '" data-view-error="' + e.id + '" />';
     html += '<div class="body"><span class="subject-pill" style="color:' + c.text + ';background:' + c.bg + ';">' + e.subject + '</span>';
     if (e.note) html += '<div style="font-size:11px;color:#868e96;margin-top:4px;">' + escapeHtml(e.note) + '</div>';
-    if (e.answerText || e.answerImage) html += '<div style="font-size:10px;color:#0CA678;margin-top:4px;">✓ Answer saved — tap to try again</div>';
     html += '<div style="display:flex;justify-content:space-between;margin-top:6px;">';
     html += '<button data-toggle-mastered="' + e.id + '" style="border:none;background:none;font-size:11px;color:' + (e.mastered?'#82c91e':'#adb5bd') + ';cursor:pointer;font-weight:700;">' + (e.mastered?'✓ Mastered':'Mark mastered') + '</button>';
     html += '<button data-delete-error="' + e.id + '" style="border:none;background:none;color:#ffc9c9;cursor:pointer;">✕</button>';
@@ -606,38 +685,17 @@ function renderErrors() {
   html += '</div>';
   return html;
 }
-var errorFormAnswerImageVal = null;
-function errorFormAnswerImage() { return !!errorFormAnswerImageVal; }
 
 function renderViewingErrorModal() {
   var er = viewingError;
   if (!er) return "";
   var c = SUBJECT_COLORS[er.subject] || SUBJECT_COLORS.English;
-  var mode = practiceMode[er.id] || { revealed: false };
-  var hasAnswer = er.answerText || er.answerImage;
   var html = '<div class="modal-overlay" id="viewErrorOverlay"><div class="modal-box" style="max-width:360px;" onclick="event.stopPropagation()">';
   html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">';
   html += '<span class="subject-pill" style="color:' + c.text + ';background:' + c.bg + ';">' + er.subject + '</span>';
   html += '<button id="closeViewErrorBtn" style="border:none;background:none;font-size:16px;color:#adb5bd;cursor:pointer;">✕</button></div>';
-  html += '<div style="font-size:11px;font-weight:700;color:#868e96;margin-bottom:4px;text-align:left;">Question</div>';
   html += '<img src="' + er.image + '" style="width:100%;border-radius:10px;" />';
   if (er.note) html += '<div style="font-size:13px;color:#495057;margin-top:10px;background:#FFF9DB;border-radius:8px;padding:8px;text-align:left;">📝 ' + escapeHtml(er.note) + '</div>';
-
-  if (hasAnswer) {
-    html += '<div style="margin-top:12px;">';
-    if (!mode.revealed) {
-      html += '<div style="font-size:12px;color:#868e96;margin-bottom:8px;">Try solving it again first, then check your answer!</div>';
-      html += '<button class="btn-primary" data-reveal-answer="' + er.id + '" style="width:100%;">👀 Show Answer</button>';
-    } else {
-      html += '<div style="font-size:11px;font-weight:700;color:#0CA678;margin-bottom:4px;text-align:left;">✓ Answer</div>';
-      if (er.answerImage) html += '<img src="' + er.answerImage + '" style="width:100%;border-radius:10px;border:2px solid #C3FAE8;" />';
-      if (er.answerText) html += '<div style="font-size:13px;color:#495057;margin-top:6px;background:#E6FCF5;border-radius:8px;padding:8px;text-align:left;">' + escapeHtml(er.answerText) + '</div>';
-      html += '<button class="btn-secondary" data-hide-answer="' + er.id + '" style="width:100%;margin-top:8px;">Hide Answer</button>';
-    }
-    html += '</div>';
-  } else {
-    html += '<div style="font-size:11px;color:#ced4da;margin-top:10px;">No answer saved for this one yet.</div>';
-  }
   html += '<div style="font-size:11px;color:#adb5bd;margin-top:8px;">Logged ' + new Date(er.createdAt).toLocaleDateString() + '</div>';
   html += '</div></div>';
   return html;
@@ -662,57 +720,27 @@ function handleErrorFile(e) {
   if (!file) return;
   errorUploading = true; render();
   readFileAsDataURL(file).then(function(dataUrl) {
-    pendingErrorImage = dataUrl;
+    state.errorBank.unshift({ id: uid(), subject: errorFormSubject, image: dataUrl, note: errorFormNote, mastered: false, createdAt: Date.now() });
+    state.carrots += 1;
+    flashToast("+1 🥕 Error logged!");
+    errorFormNote = "";
     errorUploading = false;
-    render();
+    persist(); render();
   }).catch(function() {
     flashToast("Could not read image");
     errorUploading = false;
-    render();
+    persist(); render();
   });
-}
-function handleErrorAnswerFile(e) {
-  var file = e.target.files[0];
-  if (!file) return;
-  errorAnswerUploading = true; render();
-  readFileAsDataURL(file).then(function(dataUrl) {
-    errorFormAnswerImageVal = dataUrl;
-    errorAnswerUploading = false;
-    render();
-  }).catch(function() {
-    flashToast("Could not read image");
-    errorAnswerUploading = false;
-    render();
-  });
-}
-function saveErrorEntry() {
-  if (!pendingErrorImage) return;
-  state.errorBank.unshift({
-    id: uid(),
-    subject: errorFormSubject,
-    image: pendingErrorImage,
-    note: errorFormNote,
-    answerText: errorFormAnswer,
-    answerImage: errorFormAnswerImageVal,
-    mastered: false,
-    createdAt: Date.now()
-  });
-  state.carrots += errorFormAnswerImageVal || errorFormAnswer ? 2 : 1;
-  flashToast(errorFormAnswerImageVal || errorFormAnswer ? "+2 🥕 Error + answer logged!" : "+1 🥕 Error logged!");
-  pendingErrorImage = null;
-  errorFormNote = "";
-  errorFormAnswer = "";
-  errorFormAnswerImageVal = null;
-  persist(); render();
 }
 
-// ====================== VOCAB (free dictionary lookup) ======================
+var vocabWordInput = "";
+
 function renderVocab() {
   var sorted = state.vocabBank.slice().sort(function(a,b){ return a.word.localeCompare(b.word); });
   var html = '<div class="card"><div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">📖 Log new vocabulary</div>';
   html += '<div style="display:flex;gap:6px;"><input id="vocabWordInput" placeholder="e.g. meticulous" style="flex:1;" value="' + escapeHtml(vocabWordInput) + '" />';
   html += '<button id="addVocabBtn" ' + (vocabLoading?'disabled':'') + ' style="background:' + (vocabLoading?'#dee2e6':'#A5D8FF') + ';color:#1971C2;border:none;border-radius:10px;padding:0 14px;font-weight:700;cursor:pointer;">' + (vocabLoading?'...':'Add') + '</button></div>';
-  html += '<div style="font-size:10px;color:#adb5bd;margin-top:6px;">Definitions are looked up from a free online dictionary.</div>';
+  if (!getApiKey()) html += '<div style="font-size:11px;color:#e8590c;margin-top:8px;">⚠️ <span id="vocabApiKeyLink" style="text-decoration:underline;cursor:pointer;">Set your Anthropic API key</span> to use AI-generated definitions.</div>';
   html += '</div>';
 
   if (sorted.length === 0) html += '<div class="empty"><div class="emoji">📖</div><div class="text">No vocab logged yet. Add a word above!</div></div>';
@@ -722,15 +750,13 @@ function renderVocab() {
     var expanded = expandedVocabId === v.id;
     html += '<div class="vocab-card" data-expand-vocab="' + v.id + '">';
     html += '<div style="display:flex;justify-content:space-between;align-items:center;">';
-    html += '<div><div style="font-weight:800;font-size:14px;color:#D6336C;">' + escapeHtml(v.word) + (v.partOfSpeech ? ' <span style="font-size:10px;color:#adb5bd;font-weight:400;">(' + escapeHtml(v.partOfSpeech) + ')</span>' : '') + '</div>';
+    html += '<div><div style="font-weight:800;font-size:14px;color:#D6336C;">' + escapeHtml(v.word) + '</div>';
     html += '<div style="font-size:12px;color:#495057;margin-top:2px;">' + escapeHtml(v.definition) + '</div></div>';
     html += '<div style="display:flex;align-items:center;gap:6px;"><span style="font-size:12px;color:#adb5bd;">' + (expanded?'▲':'▼') + '</span>';
     html += '<button data-delete-vocab="' + v.id + '" style="border:none;background:none;color:#ffc9c9;cursor:pointer;">✕</button></div></div>';
     if (expanded) {
-      html += '<div style="margin-top:8px;">';
-      if (v.example) html += '<div style="font-size:11px;color:#868e96;background:#E3F0FF;border-radius:8px;padding:6px;">✍️ Example: ' + escapeHtml(v.example) + '</div>';
-      else html += '<div style="font-size:11px;color:#ced4da;">No example sentence found for this word.</div>';
-      html += '</div>';
+      html += '<div style="margin-top:8px;"><div style="font-size:11px;color:#868e96;background:#FFF9DB;border-radius:8px;padding:6px;">✍️ Compo use: ' + escapeHtml(v.compoExample) + '</div>';
+      html += '<div style="font-size:11px;color:#868e96;margin-top:6px;background:#E3F0FF;border-radius:8px;padding:6px;">📄 In papers: ' + escapeHtml(v.paperContext) + '</div></div>';
     }
     html += '</div>';
   }
@@ -746,28 +772,154 @@ function deleteVocab(id) {
 function addVocab() {
   var word = document.getElementById("vocabWordInput").value.trim();
   if (!word) return;
+  if (!getApiKey()) { showApiKeyModal = true; render(); return; }
   vocabLoading = true; render();
-  lookupDictionary(word).then(function(result) {
-    state.vocabBank.unshift({
-      id: uid(), word: word,
-      definition: result.definition || "No definition found.",
-      example: result.example || "",
-      partOfSpeech: result.partOfSpeech || "",
-      createdAt: Date.now()
-    });
+  var system = "You are a helpful PSLE English tutor for a Singapore Primary 6 student. Respond ONLY with valid JSON, no preamble, no markdown fences. The JSON object must have exactly these keys: definition (simple, student-friendly, 1 sentence), compoExample (one example sentence showing how to use the word naturally in a composition, suitable for a 12 year old), paperContext (a short explanation of how/where such a word typically appears in PSLE past year papers, e.g. comprehension or cloze passages, with a brief example phrase).";
+  callClaude([{ role: "user", content: 'Word: "' + word + '"' }], system).then(function(text) {
+    var parsed = extractJson(text);
+    if (!parsed) throw new Error("parse fail");
+    state.vocabBank.unshift({ id: uid(), word: word, definition: parsed.definition||"", compoExample: parsed.compoExample||"", paperContext: parsed.paperContext||"", createdAt: Date.now() });
     state.carrots += 1;
     flashToast("+1 🥕 Vocab added!");
     vocabWordInput = "";
     vocabLoading = false;
     persist(); render();
-  }).catch(function() {
-    flashToast("Couldn't find that word — check the spelling?");
+  }).catch(function(e) {
+    if (e.message === "NO_API_KEY") { showApiKeyModal = true; }
+    else flashToast("Hmm, could not generate. Check your API key and try again.");
     vocabLoading = false;
-    render();
+    persist(); render();
   });
 }
 
-// ====================== TIMER (fixed reset bug) ======================
+var papersSubject = "English";
+var papersUploading = false;
+var MAX_PDF_BYTES = 30 * 1024 * 1024;
+
+function renderPapers() {
+  var activePaper = null;
+  for (var i = 0; i < state.papers.length; i++) { if (state.papers[i].id === papersActivePaperId) activePaper = state.papers[i]; }
+  var html = '<div class="card"><div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">📄 Upload past year paper (PDF, incl. scanned)</div>';
+  html += '<select id="paperSubjectSelect" style="width:100%;margin-bottom:8px;">';
+  for (var s = 0; s < SUBJECTS.length; s++) html += '<option value="' + SUBJECTS[s] + '" ' + (SUBJECTS[s]===papersSubject?'selected':'') + '>' + SUBJECTS[s] + '</option>';
+  html += '</select>';
+  html += '<label class="upload-label" style="background:' + (papersUploading?'#dee2e6':'#A5D8FF') + ';color:#1971C2;">' + (papersUploading ? "Uploading..." : "📎 Upload PDF Paper") +
+    '<input type="file" accept="application/pdf" id="paperFileInput" style="display:none;" /></label>';
+  html += '<div style="font-size:10px;color:#adb5bd;margin-top:6px;">Tip: if a scanned PDF fails, try rescanning flat (not at an angle), in good lighting, at a moderate resolution (under ~15MB works best).</div>';
+  if (!getApiKey()) html += '<div style="font-size:11px;color:#e8590c;margin-top:8px;">⚠️ <span id="papersApiKeyLink" style="text-decoration:underline;cursor:pointer;">Set your Anthropic API key</span> to generate practice questions.</div>';
+  html += '</div>';
+
+  if (state.papers.length === 0) html += '<div class="empty"><div class="emoji">📄</div><div class="text">No papers uploaded yet.</div></div>';
+
+  for (var p = 0; p < state.papers.length; p++) {
+    var paper = state.papers[p];
+    var c = SUBJECT_COLORS[paper.subject] || SUBJECT_COLORS.English;
+    var isGenerating = papersGenerating && papersActivePaperId === paper.id;
+    html += '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;">';
+    html += '<div><span class="subject-pill" style="color:' + c.text + ';background:' + c.bg + ';">' + paper.subject + '</span>';
+    html += '<div style="font-size:12px;color:#495057;margin-top:4px;word-break:break-all;">' + escapeHtml(paper.name) + '</div>';
+    html += '<div style="font-size:10px;color:#ced4da;margin-top:2px;">' + (paper.sizeKB?paper.sizeKB+' KB':'') + '</div></div>';
+    html += '<button data-delete-paper="' + paper.id + '" style="border:none;background:none;color:#ffc9c9;cursor:pointer;">✕</button></div>';
+    html += '<button data-generate-paper="' + paper.id + '" ' + (papersGenerating?'disabled':'') + ' style="margin-top:8px;width:100%;background:' + (isGenerating?'#dee2e6':'#FFE3EC') + ';color:#D6336C;border:none;border-radius:10px;padding:8px;font-weight:700;font-size:12px;cursor:pointer;">' +
+      (isGenerating ? "Reading paper..." : "✨ Generate practice questions from errors") + '</button></div>';
+  }
+
+  if (papersErrorMsg) html += '<div class="card" style="background:#FFF5F5;border:2px solid #FFC9C9;color:#C92A2A;font-size:12px;">⚠️ ' + escapeHtml(papersErrorMsg) + '</div>';
+
+  if (papersQuestions && papersQuestions.length > 0 && activePaper) {
+    html += '<div style="margin-top:14px;"><div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">Practice from "' + escapeHtml(activePaper.name) + '"</div>';
+    for (var q = 0; q < papersQuestions.length; q++) html += questionCardHtml(papersQuestions[q], q);
+    html += '</div>';
+  }
+  return html;
+}
+function questionCardHtml(q, i) {
+  var html = '<div class="card" data-qcard="' + i + '"><div style="font-size:12px;font-weight:700;color:#D6336C;margin-bottom:4px;">Q' + (i+1) + '</div>';
+  html += '<div style="font-size:13px;color:#495057;">' + escapeHtml(q.question) + '</div>';
+  html += '<button data-toggle-answer="' + i + '" style="margin-top:8px;border:none;background:none;color:#1971C2;font-size:11px;font-weight:700;cursor:pointer;">' + (q._show?'Hide answer':'Show answer') + '</button>';
+  if (q._show) {
+    html += '<div style="margin-top:6px;background:#E6FCF5;border-radius:8px;padding:8px;"><div style="font-size:12px;font-weight:700;color:#0CA678;">' + escapeHtml(q.answer) + '</div>';
+    html += '<div style="font-size:11px;color:#495057;margin-top:4px;">' + escapeHtml(q.explanation) + '</div></div>';
+  }
+  html += '</div>';
+  return html;
+}
+
+function deletePaper(id) {
+  var arr = [];
+  for (var i = 0; i < state.papers.length; i++) { if (state.papers[i].id !== id) arr.push(state.papers[i]); }
+  state.papers = arr;
+  persist(); render();
+}
+function handlePaperFile(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  if (file.type !== "application/pdf") { flashToast("Please upload a PDF file"); return; }
+  if (file.size > MAX_PDF_BYTES) { flashToast("This PDF is quite large — try a smaller scan or fewer pages"); e.target.value = ""; return; }
+  papersUploading = true; render();
+  readFileAsDataURL(file).then(function(dataUrl) {
+    state.papers.unshift({ id: uid(), name: file.name, subject: papersSubject, dataUrl: dataUrl, sizeKB: Math.round(file.size/1024), createdAt: Date.now() });
+    flashToast("📄 Paper uploaded!");
+    papersUploading = false;
+    persist(); render();
+  }).catch(function() {
+    flashToast("Upload failed, try again");
+    papersUploading = false;
+    persist(); render();
+  });
+}
+function generateFromPaper(paperId) {
+  var paper = null;
+  for (var i = 0; i < state.papers.length; i++) { if (state.papers[i].id === paperId) paper = state.papers[i]; }
+  if (!paper) return;
+  if (!getApiKey()) { showApiKeyModal = true; render(); return; }
+  papersGenerating = true;
+  papersActivePaperId = paperId;
+  papersQuestions = null;
+  papersErrorMsg = null;
+  render();
+
+  var base64 = paper.dataUrl.split(",")[1];
+  var errorNotes = [];
+  for (var j = 0; j < state.errorBank.length; j++) {
+    var er = state.errorBank[j];
+    if (er.subject === paper.subject && er.note) errorNotes.push(er.note);
+  }
+  errorNotes = errorNotes.slice(0, 10);
+  var system = "You are a PSLE tutor. You will be given a PDF of a past year exam paper. It may be a scanned, image-based PDF, read it using your vision and document capability, page by page, exactly as if reading scanned photographs of paper. Even if the PDF has no selectable text layer, look at the visual content of each page. Respond ONLY with valid JSON: an array of 5 objects, each with keys: question, answer, explanation. If you genuinely cannot see any readable content in the PDF at all, respond with exactly this and nothing else: {\"error\": \"unreadable\"}";
+  if (errorNotes.length) system += " The student has previously struggled with: " + errorNotes.join("; ") + ". Prioritise targeting these weak areas.";
+
+  var messages = [{ role: "user", content: [
+    { type: "document", source: { type: "base64", media_type: "application/pdf", data: base64 } },
+    { type: "text", text: "This is a " + paper.subject + " PSLE past year paper. Generate 5 fresh practice questions in the same style, targeting the student's weak areas if provided." }
+  ]}];
+
+  callClaude(messages, system).then(function(text) {
+    var parsed = extractJson(text);
+    if (!parsed) {
+      papersErrorMsg = "Couldn't understand the response. The scan may be too blurry, rotated, or low contrast. Try rescanning with good lighting and a straight angle.";
+      papersQuestions = [];
+    } else if (parsed.error === "unreadable") {
+      papersErrorMsg = "This PDF couldn't be read — it might be password-protected, corrupted, or the scan quality is too low. Try re-scanning at higher resolution.";
+      papersQuestions = [];
+    } else if (Array.isArray(parsed)) {
+      papersQuestions = parsed;
+      state.carrots += 3;
+      flashToast("+3 🥕 Practice questions ready!");
+    } else {
+      papersErrorMsg = "Unexpected response format. Please try again.";
+      papersQuestions = [];
+    }
+    papersGenerating = false;
+    persist(); render();
+  }).catch(function(err) {
+    if (err.message === "NO_API_KEY") { showApiKeyModal = true; }
+    else papersErrorMsg = "Something went wrong reading this PDF. Check your internet connection / API key and try again, or try a smaller file.";
+    papersGenerating = false;
+    persist(); render();
+  });
+}
+
 function renderTimer() {
   var active = null;
   for (var i = 0; i < TIMERS.length; i++) { if (TIMERS[i].id === timerActiveId) active = TIMERS[i]; }
@@ -777,12 +929,10 @@ function renderTimer() {
     html += '<div class="card" style="text-align:center;padding:20px;">';
     html += '<div style="font-size:13px;font-weight:700;color:#868e96;">' + active.label + '</div>';
     html += '<div style="font-size:40px;font-weight:800;color:' + (timerSecondsLeft<60?'#FA5252':'#D6336C') + ';margin:8px 0;font-family:monospace;">' + fmt(timerSecondsLeft) + '</div>';
-    if (timerSecondsLeft === 0) html += '<div style="font-size:14px;font-weight:700;color:#82c91e;">⏰ Time\\'s up! Well done!</div>';
+    if (timerSecondsLeft === 0) html += '<div style="font-size:14px;font-weight:700;color:#82c91e;">⏰ Time\'s up! Well done!</div>';
     html += '<div style="display:flex;gap:8px;justify-content:center;margin-top:8px;">';
     html += '<button id="timerPauseResumeBtn" ' + (timerSecondsLeft===0?'disabled':'') + ' style="background:#A5D8FF;color:#1971C2;border:none;border-radius:10px;padding:8px 16px;font-weight:700;cursor:pointer;">' + (timerRunning?'Pause':'Resume') + '</button>';
-    html += '<button id="timerResetBtn" style="background:#FFE3EC;color:#D6336C;border:none;border-radius:10px;padding:8px 16px;font-weight:700;cursor:pointer;">Reset</button>';
-    html += '<button id="timerCloseBtn" style="background:#F1F3F5;color:#868e96;border:none;border-radius:10px;padding:8px 16px;font-weight:700;cursor:pointer;">Close</button>';
-    html += '</div>';
+    html += '<button id="timerResetBtn" style="background:#FFE3EC;color:#D6336C;border:none;border-radius:10px;padding:8px 16px;font-weight:700;cursor:pointer;">Reset</button></div>';
     html += '<div style="margin-top:14px;text-align:left;background:#FFF9DB;border-radius:12px;padding:12px;"><div style="font-size:12px;font-weight:700;color:#846b00;margin-bottom:6px;">💡 Tips for this paper</div>';
     for (var t = 0; t < active.tips.length; t++) html += '<div style="font-size:12px;color:#846b00;margin-bottom:4px;display:flex;gap:6px;"><span>•</span><span>' + active.tips[t] + '</span></div>';
     html += '</div></div>';
@@ -827,65 +977,44 @@ function timerPauseResume() {
   }
   render();
 }
-// FIX: Reset now restarts the SAME paper's countdown instead of closing
-// the timer view back to the picker list.
 function timerReset() {
-  clearInterval(timerInterval);
-  var t = null;
-  for (var i = 0; i < TIMERS.length; i++) { if (TIMERS[i].id === timerActiveId) t = TIMERS[i]; }
-  if (t) {
-    timerSecondsLeft = t.mins * 60;
-    timerRunning = false;
-  }
-  render();
-}
-function timerClose() {
   clearInterval(timerInterval);
   timerActiveId = null; timerSecondsLeft = 0; timerRunning = false;
   render();
 }
 
-// ====================== SHOP (clothes + backgrounds) ======================
 function renderShop() {
-  var html = '<div style="text-align:center;margin-bottom:12px;font-size:13px;color:#868e96;">Spend your Carrots 🥕 on clothes and backgrounds for your buddy!</div>';
-  html += '<div class="tab-toggle">';
-  html += '<button data-shop-tab="clothes" style="background:' + (shopSubTab==='clothes'?'#FFB3CB':'white') + ';color:' + (shopSubTab==='clothes'?'white':'#868e96') + ';">🎀 Clothes</button>';
-  html += '<button data-shop-tab="backgrounds" style="background:' + (shopSubTab==='backgrounds'?'#FFB3CB':'white') + ';color:' + (shopSubTab==='backgrounds'?'white':'#868e96') + ';">🎨 Backgrounds</button>';
-  html += '</div>';
-
-  if (shopSubTab === 'clothes') {
-    var sorted = ACCESSORIES.slice().sort(function(a,b){ return a.cost - b.cost; });
-    html += '<div class="shop-grid">';
-    for (var i = 0; i < sorted.length; i++) {
-      var item = sorted[i];
-      var owned = state.ownedAccessories.indexOf(item.id) !== -1;
-      var equipped = state.equippedAccessories.indexOf(item.id) !== -1;
-      html += '<div class="shop-item"><div style="font-size:30px;">' + item.emoji + '</div><div style="font-size:12px;font-weight:700;color:#495057;margin-top:4px;">' + item.name + '</div>';
-      if (!owned) {
-        html += '<button data-buy-acc="' + item.id + '" style="margin-top:8px;width:100%;background:#FFD8A8;color:#9C6B00;border:none;border-radius:10px;padding:6px;font-weight:700;font-size:12px;cursor:pointer;">🥕 ' + item.cost + '</button>';
-      } else {
-        html += '<button data-equip-acc="' + item.id + '" style="margin-top:8px;width:100%;background:' + (equipped?'#82c91e':'#E9ECEF') + ';color:' + (equipped?'white':'#868e96') + ';border:none;border-radius:10px;padding:6px;font-weight:700;font-size:12px;cursor:pointer;">' + (equipped?'Equipped ✓':'Equip') + '</button>';
-      }
-      html += '</div>';
-    }
-    html += '</div>';
-  } else {
-    html += '<div class="bg-grid" style="margin-top:0;">';
-    for (var b = 0; b < BACKGROUNDS.length; b++) {
-      var bg = BACKGROUNDS[b];
-      var ownedBg = state.ownedBackgrounds.indexOf(bg.id) !== -1;
-      var equippedBg = state.equippedBackground === bg.id;
-      html += '<div class="bg-item" style="background:' + bg.css + ';"><div style="background:rgba(255,255,255,0.85);border-radius:10px;padding:8px;">';
-      html += '<div style="font-size:12px;font-weight:700;color:#495057;">' + bg.name + '</div>';
-      if (!ownedBg) {
-        html += '<button data-buy-bg="' + bg.id + '" style="margin-top:8px;width:100%;background:#FFD8A8;color:#9C6B00;border:none;border-radius:10px;padding:6px;font-weight:700;font-size:12px;cursor:pointer;">🥕 ' + bg.cost + '</button>';
-      } else {
-        html += '<button data-equip-bg="' + bg.id + '" style="margin-top:8px;width:100%;background:' + (equippedBg?'#82c91e':'#E9ECEF') + ';color:' + (equippedBg?'white':'#868e96') + ';border:none;border-radius:10px;padding:6px;font-weight:700;font-size:12px;cursor:pointer;">' + (equippedBg?'Equipped ✓':'Equip') + '</button>';
-      }
-      html += '</div></div>';
+  var html = '<div style="text-align:center;margin-bottom:12px;font-size:13px;color:#868e96;">Spend your Carrots 🥕 on cute accessories and backgrounds! (Earn carrots from tasks, errors & vocab)</div>';
+  html += '<div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">🎀 Accessories</div><div class="shop-grid">';
+  for (var i = 0; i < ACCESSORIES.length; i++) {
+    var item = ACCESSORIES[i];
+    var owned = state.ownedAccessories.indexOf(item.id) !== -1;
+    var equipped = state.equippedAccessories.indexOf(item.id) !== -1;
+    html += '<div class="shop-item"><div style="font-size:30px;">' + item.emoji + '</div><div style="font-size:12px;font-weight:700;color:#495057;margin-top:4px;">' + item.name + '</div>';
+    if (!owned) {
+      html += '<button data-buy-acc="' + item.id + '" style="margin-top:8px;width:100%;background:#FFD8A8;color:#9C6B00;border:none;border-radius:10px;padding:6px;font-weight:700;font-size:12px;cursor:pointer;">🥕 ' + item.cost + '</button>';
+    } else {
+      html += '<button data-equip-acc="' + item.id + '" style="margin-top:8px;width:100%;background:' + (equipped?'#82c91e':'#E9ECEF') + ';color:' + (equipped?'white':'#868e96') + ';border:none;border-radius:10px;padding:6px;font-weight:700;font-size:12px;cursor:pointer;">' + (equipped?'Equipped ✓':'Equip') + '</button>';
     }
     html += '</div>';
   }
+  html += '</div>';
+
+  html += '<div style="font-size:13px;font-weight:700;color:#495057;margin:16px 0 8px;">🎨 Backgrounds</div><div class="bg-grid">';
+  for (var b = 0; b < BACKGROUNDS.length; b++) {
+    var bg = BACKGROUNDS[b];
+    var ownedBg = state.ownedBackgrounds.indexOf(bg.id) !== -1;
+    var equippedBg = state.equippedBackground === bg.id;
+    html += '<div class="bg-item" style="background:' + bg.css + ';"><div style="background:rgba(255,255,255,0.85);border-radius:10px;padding:8px;">';
+    html += '<div style="font-size:12px;font-weight:700;color:#495057;">' + bg.name + '</div>';
+    if (!ownedBg) {
+      html += '<button data-buy-bg="' + bg.id + '" style="margin-top:8px;width:100%;background:#FFD8A8;color:#9C6B00;border:none;border-radius:10px;padding:6px;font-weight:700;font-size:12px;cursor:pointer;">🥕 ' + bg.cost + '</button>';
+    } else {
+      html += '<button data-equip-bg="' + bg.id + '" style="margin-top:8px;width:100%;background:' + (equippedBg?'#82c91e':'#E9ECEF') + ';color:' + (equippedBg?'white':'#868e96') + ';border:none;border-radius:10px;padding:6px;font-weight:700;font-size:12px;cursor:pointer;">' + (equippedBg?'Equipped ✓':'Equip') + '</button>';
+    }
+    html += '</div></div>';
+  }
+  html += '</div>';
   return html;
 }
 function buyAccessory(id) {
@@ -924,7 +1053,15 @@ function renderNamePromptModal() {
   html += '<div style="font-size:40px;">🌱</div><div style="font-weight:800;font-size:16px;color:#D6336C;margin-top:8px;">Name your Study Buddy!</div>';
   html += '<div style="font-size:12px;color:#868e96;margin-top:4px;">Give your little companion a cute name</div>';
   html += '<input id="nameInput" placeholder="e.g. Mochi, Pip, Sunny..." style="width:100%;margin-top:14px;box-sizing:border-box;text-align:center;border:2px solid #FFE3EC;" />';
-  html += '<button class="btn-primary" id="saveNameBtn" style="margin-top:14px;width:100%;">Let\\'s go! ✨</button></div></div>';
+  html += '<button class="btn-primary" id="saveNameBtn" style="margin-top:14px;width:100%;">Let\'s go! ✨</button></div></div>';
+  return html;
+}
+function renderApiKeyModal() {
+  var html = '<div class="modal-overlay" id="apiKeyOverlay"><div class="modal-box" onclick="event.stopPropagation()">';
+  html += '<div style="font-size:36px;">🔑</div><div style="font-weight:800;font-size:15px;color:#D6336C;margin-top:8px;">Connect your Anthropic API key</div>';
+  html += '<div style="font-size:12px;color:#868e96;margin-top:6px;text-align:left;">This standalone site has no server, so AI features (vocab definitions, paper question generation) need your own Anthropic API key. It is saved only in this browser\'s local storage and sent directly to Anthropic, never anywhere else. Get a key at console.anthropic.com.</div>';
+  html += '<input id="apiKeyInput" placeholder="sk-ant-..." style="width:100%;margin-top:14px;box-sizing:border-box;" value="' + escapeHtml(getApiKey()) + '" />';
+  html += '<div style="display:flex;gap:8px;margin-top:14px;"><button class="btn-secondary" id="cancelApiKeyBtn" style="flex:1;">Cancel</button><button class="btn-primary" id="saveApiKeyBtn" style="flex:1;">Save</button></div></div></div>';
   return html;
 }
 
@@ -935,12 +1072,14 @@ function render() {
   else if (currentTab === "tasks") tabHtml = renderTasks();
   else if (currentTab === "errors") tabHtml = renderErrors();
   else if (currentTab === "vocab") tabHtml = renderVocab();
+  else if (currentTab === "papers") tabHtml = renderPapers();
   else if (currentTab === "timer") tabHtml = renderTimer();
   else if (currentTab === "shop") tabHtml = renderShop();
 
   app.innerHTML = renderHeader() + renderNav() + '<div>' + tabHtml + '</div>' +
     (showNamePrompt ? renderNamePromptModal() : '') +
     (showJourneyModal ? renderJourneyModal() : '') +
+    (showApiKeyModal ? renderApiKeyModal() : '') +
     (viewingError ? renderViewingErrorModal() : '');
   attachListeners();
 }
@@ -971,6 +1110,23 @@ function attachListeners() {
     persist(); render();
   });
 
+  var vocabApiKeyLink = document.getElementById("vocabApiKeyLink");
+  if (vocabApiKeyLink) vocabApiKeyLink.addEventListener("click", function() { showApiKeyModal = true; render(); });
+  var papersApiKeyLink = document.getElementById("papersApiKeyLink");
+  if (papersApiKeyLink) papersApiKeyLink.addEventListener("click", function() { showApiKeyModal = true; render(); });
+  var apiKeyOverlay = document.getElementById("apiKeyOverlay");
+  if (apiKeyOverlay) apiKeyOverlay.addEventListener("click", function() { showApiKeyModal = false; render(); });
+  var cancelApiKeyBtn = document.getElementById("cancelApiKeyBtn");
+  if (cancelApiKeyBtn) cancelApiKeyBtn.addEventListener("click", function() { showApiKeyModal = false; render(); });
+  var saveApiKeyBtn = document.getElementById("saveApiKeyBtn");
+  if (saveApiKeyBtn) saveApiKeyBtn.addEventListener("click", function() {
+    var val = document.getElementById("apiKeyInput").value.trim();
+    setApiKey(val);
+    showApiKeyModal = false;
+    flashToast("API key saved!");
+    render();
+  });
+
   var addTaskBtn = document.getElementById("addTaskBtn");
   if (addTaskBtn) addTaskBtn.addEventListener("click", addTask);
   var taskTextInput = document.getElementById("taskTextInput");
@@ -994,23 +1150,11 @@ function attachListeners() {
   if (errorNoteInput) errorNoteInput.addEventListener("input", function(e) { errorFormNote = e.target.value; });
   var errorFileInput = document.getElementById("errorFileInput");
   if (errorFileInput) errorFileInput.addEventListener("change", handleErrorFile);
-  var clearPendingImageBtn = document.getElementById("clearPendingImageBtn");
-  if (clearPendingImageBtn) clearPendingImageBtn.addEventListener("click", function() { pendingErrorImage = null; render(); });
-  var errorAnswerText = document.getElementById("errorAnswerText");
-  if (errorAnswerText) errorAnswerText.addEventListener("input", function(e) { errorFormAnswer = e.target.value; });
-  var errorAnswerFileInput = document.getElementById("errorAnswerFileInput");
-  if (errorAnswerFileInput) errorAnswerFileInput.addEventListener("change", handleErrorAnswerFile);
-  var clearAnswerImageBtn = document.getElementById("clearAnswerImageBtn");
-  if (clearAnswerImageBtn) clearAnswerImageBtn.addEventListener("click", function() { errorFormAnswerImageVal = null; render(); });
-  var saveErrorBtn = document.getElementById("saveErrorBtn");
-  if (saveErrorBtn) saveErrorBtn.addEventListener("click", saveErrorEntry);
-
   var viewErrEls = document.querySelectorAll("[data-view-error]");
   for (var i5 = 0; i5 < viewErrEls.length; i5++) {
     viewErrEls[i5].addEventListener("click", function() {
       var id = this.dataset.viewError;
       for (var j = 0; j < state.errorBank.length; j++) { if (state.errorBank[j].id === id) viewingError = state.errorBank[j]; }
-      practiceMode[id] = { revealed: false };
       render();
     });
   }
@@ -1026,22 +1170,6 @@ function attachListeners() {
   if (closeViewErrorBtn) closeViewErrorBtn.addEventListener("click", function() { viewingError = null; render(); });
   var viewErrorOverlay = document.getElementById("viewErrorOverlay");
   if (viewErrorOverlay) viewErrorOverlay.addEventListener("click", function() { viewingError = null; render(); });
-  var revealEls = document.querySelectorAll("[data-reveal-answer]");
-  for (var ir = 0; ir < revealEls.length; ir++) {
-    revealEls[ir].addEventListener("click", function() {
-      var id = this.dataset.revealAnswer;
-      practiceMode[id] = { revealed: true };
-      render();
-    });
-  }
-  var hideEls = document.querySelectorAll("[data-hide-answer]");
-  for (var ih = 0; ih < hideEls.length; ih++) {
-    hideEls[ih].addEventListener("click", function() {
-      var id = this.dataset.hideAnswer;
-      practiceMode[id] = { revealed: false };
-      render();
-    });
-  }
 
   var vocabWordInputEl = document.getElementById("vocabWordInput");
   if (vocabWordInputEl) {
@@ -1064,6 +1192,27 @@ function attachListeners() {
     delVocabEls[i9].addEventListener("click", function(e) { e.stopPropagation(); deleteVocab(this.dataset.deleteVocab); });
   }
 
+  var paperSubjectSelect = document.getElementById("paperSubjectSelect");
+  if (paperSubjectSelect) paperSubjectSelect.addEventListener("change", function(e) { papersSubject = e.target.value; });
+  var paperFileInput = document.getElementById("paperFileInput");
+  if (paperFileInput) paperFileInput.addEventListener("change", handlePaperFile);
+  var delPaperEls = document.querySelectorAll("[data-delete-paper]");
+  for (var i10 = 0; i10 < delPaperEls.length; i10++) {
+    delPaperEls[i10].addEventListener("click", function() { deletePaper(this.dataset.deletePaper); });
+  }
+  var genPaperEls = document.querySelectorAll("[data-generate-paper]");
+  for (var i11 = 0; i11 < genPaperEls.length; i11++) {
+    genPaperEls[i11].addEventListener("click", function() { generateFromPaper(this.dataset.generatePaper); });
+  }
+  var toggleAnswerEls = document.querySelectorAll("[data-toggle-answer]");
+  for (var i12 = 0; i12 < toggleAnswerEls.length; i12++) {
+    toggleAnswerEls[i12].addEventListener("click", function() {
+      var idx = parseInt(this.dataset.toggleAnswer, 10);
+      if (papersQuestions && papersQuestions[idx]) papersQuestions[idx]._show = !papersQuestions[idx]._show;
+      render();
+    });
+  }
+
   var startTimerEls = document.querySelectorAll("[data-start-timer]");
   for (var i13 = 0; i13 < startTimerEls.length; i13++) {
     startTimerEls[i13].addEventListener("click", function() { startTimer(this.dataset.startTimer); });
@@ -1072,13 +1221,7 @@ function attachListeners() {
   if (timerPauseResumeBtn) timerPauseResumeBtn.addEventListener("click", timerPauseResume);
   var timerResetBtn = document.getElementById("timerResetBtn");
   if (timerResetBtn) timerResetBtn.addEventListener("click", timerReset);
-  var timerCloseBtn = document.getElementById("timerCloseBtn");
-  if (timerCloseBtn) timerCloseBtn.addEventListener("click", timerClose);
 
-  var shopTabEls = document.querySelectorAll("[data-shop-tab]");
-  for (var ist = 0; ist < shopTabEls.length; ist++) {
-    shopTabEls[ist].addEventListener("click", function() { shopSubTab = this.dataset.shopTab; render(); });
-  }
   var buyAccEls = document.querySelectorAll("[data-buy-acc]");
   for (var i14 = 0; i14 < buyAccEls.length; i14++) {
     buyAccEls[i14].addEventListener("click", function() { buyAccessory(this.dataset.buyAcc); });
