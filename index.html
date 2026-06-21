@@ -199,32 +199,37 @@ var TIMERS = [
 ];
 
 var STAGES = [
-  { min: 0, name: "Sleepy Seedling", emoji: "🌱", desc: "Just getting started, every garden begins with a tiny seed." },
-  { min: 60, name: "Waking Sprout", emoji: "🐣", desc: "Stretching out and waking up to the world of revision." },
-  { min: 150, name: "Focused Bud", emoji: "🌷", desc: "Starting to bloom with focus and good habits." },
-  { min: 300, name: "Bright Blossom", emoji: "🌸", desc: "Flourishing! Consistent effort is really paying off." },
-  { min: 520, name: "Glowing Scholar", emoji: "✨", desc: "Radiating knowledge and confidence." },
-  { min: 800, name: "Star Sage", emoji: "🌟", desc: "The final form, a true PSLE superstar." }
+  { min: 0, name: "Sleepy Seedling", colors: { body: "#FFF4E6", cheek: "#FFD8A8", outline: "#F3D9B1" }, desc: "Just getting started, every garden begins with a tiny seed." },
+  { min: 60, name: "Waking Sprout", colors: { body: "#E6FCF5", cheek: "#96F2D7", outline: "#B2F2DD" }, desc: "Stretching out and waking up to the world of revision." },
+  { min: 150, name: "Focused Bud", colors: { body: "#FFF0F6", cheek: "#FFB3CB", outline: "#FFC9DE" }, desc: "Starting to bloom with focus and good habits." },
+  { min: 300, name: "Bright Blossom", colors: { body: "#FFE8F0", cheek: "#FF8FAB", outline: "#FFB3CB" }, desc: "Flourishing! Consistent effort is really paying off." },
+  { min: 520, name: "Glowing Scholar", colors: { body: "#F3F0FF", cheek: "#D0BFFF", outline: "#E0D9FF" }, sparkle: true, desc: "Radiating knowledge and confidence." },
+  { min: 800, name: "Star Sage", colors: { body: "#FFF9DB", cheek: "#FFE066", outline: "#FFD43B" }, sparkle: true, desc: "The final form, a true PSLE superstar." }
 ];
 
-var ACCESSORIES = [
-  { id: "bow", name: "Pink Bow", emoji: "🎀", cost: 40 },
-  { id: "star", name: "Star Sticker", emoji: "⭐", cost: 35 },
-  { id: "glasses", name: "Smart Glasses", emoji: "🤓", cost: 60 },
-  { id: "flower", name: "Flower Crown", emoji: "💐", cost: 70 },
-  { id: "ribbon", name: "Rainbow Ribbon", emoji: "🌈", cost: 80 },
-  { id: "bag", name: "Mini Backpack", emoji: "🎒", cost: 90 },
-  { id: "crown", name: "Tiny Crown", emoji: "👑", cost: 130 },
-  { id: "wand", name: "Magic Wand", emoji: "🪄", cost: 150 },
-  { id: "cape", name: "Hero Cape", emoji: "🦸", cost: 170 },
-  { id: "gem", name: "Sparkle Gem", emoji: "💎", cost: 220 }
+var CLOTHING = [
+  { id: "bow", name: "Pink Bow", slot: "head", cost: 15 },
+  { id: "stickers", name: "Star Stickers", slot: "body", cost: 15 },
+  { id: "beanie", name: "Cosy Beanie", slot: "head", cost: 25 },
+  { id: "bandana", name: "Neck Bandana", slot: "neck", cost: 25 },
+  { id: "glasses", name: "Smart Glasses", slot: "face", cost: 45 },
+  { id: "flowercrown", name: "Flower Crown", slot: "head", cost: 55 },
+  { id: "scarf", name: "Cosy Scarf", slot: "neck", cost: 65 },
+  { id: "backpack", name: "Mini Backpack", slot: "held", cost: 80 },
+  { id: "bowtie", name: "Dapper Bowtie", slot: "neck", cost: 90 },
+  { id: "shades", name: "Cool Shades", slot: "face", cost: 100 },
+  { id: "wizardhat", name: "Wizard Hat", slot: "head", cost: 140 },
+  { id: "wand", name: "Sparkle Wand", slot: "held", cost: 160 },
+  { id: "cape", name: "Hero Cape", slot: "neck", cost: 190 },
+  { id: "crown", name: "Royal Crown", slot: "head", cost: 260 },
+  { id: "wings", name: "Glimmer Wings", slot: "back", cost: 320 }
 ];
 
 var BACKGROUNDS = [
   { id: "bg_default", name: "Soft Pastel", cost: 0, css: "linear-gradient(135deg, #FFE3EC, #E3F0FF)" },
-  { id: "bg_meadow", name: "Spring Meadow", cost: 50, css: "linear-gradient(135deg, #D8F5A2, #96F2D7)" },
-  { id: "bg_sunset", name: "Cotton Candy Sunset", cost: 90, css: "linear-gradient(135deg, #FFC9DE, #FFD8A8)" },
-  { id: "bg_galaxy", name: "Dreamy Galaxy", cost: 140, css: "linear-gradient(135deg, #D0BFFF, #A5D8FF)" },
+  { id: "bg_meadow", name: "Spring Meadow", cost: 20, css: "linear-gradient(135deg, #D8F5A2, #96F2D7)" },
+  { id: "bg_sunset", name: "Cotton Candy Sunset", cost: 60, css: "linear-gradient(135deg, #FFC9DE, #FFD8A8)" },
+  { id: "bg_galaxy", name: "Dreamy Galaxy", cost: 120, css: "linear-gradient(135deg, #D0BFFF, #A5D8FF)" },
   { id: "bg_garden", name: "Blossom Garden", cost: 180, css: "linear-gradient(135deg, #FFB3CB, #C3FAE8)" },
   { id: "bg_gold", name: "Golden Hour", cost: 250, css: "linear-gradient(135deg, #FFE066, #FFC078)" }
 ];
@@ -266,8 +271,8 @@ var DEFAULT_STATE = {
   streak: 0,
   lastCompletionDate: null,
   freezeAvailable: true,
-  ownedAccessories: [],
-  equippedAccessories: [],
+  ownedClothing: [],
+  equippedClothing: [],
   ownedBackgrounds: ["bg_default"],
   equippedBackground: "bg_default",
   tasks: [],
@@ -294,65 +299,6 @@ function saveState() {
   catch (e) { console.error("save failed", e); }
 }
 
-function getApiKey() { return localStorage.getItem("eva-study-garden-api-key") || ""; }
-function setApiKey(key) { localStorage.setItem("eva-study-garden-api-key", key); }
-
-function callClaude(messages, system) {
-  var apiKey = getApiKey();
-  if (!apiKey) {
-    return Promise.reject(new Error("NO_API_KEY"));
-  }
-  return fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": apiKey,
-      "anthropic-version": "2023-06-01",
-      "anthropic-dangerous-direct-browser-access": "true"
-    },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-6",
-      max_tokens: 1500,
-      system: system,
-      messages: messages
-    })
-  }).then(function(res) {
-    if (!res.ok) {
-      return res.text().then(function(errText) {
-        throw new Error("API_ERROR: " + errText);
-      });
-    }
-    return res.json();
-  }).then(function(data) {
-    var blocks = data.content || [];
-    var out = "";
-    for (var i = 0; i < blocks.length; i++) {
-      if (blocks[i].type === "text") out += blocks[i].text + "\n";
-    }
-    return out;
-  });
-}
-
-function extractJson(text) {
-  var clean = text.trim();
-  clean = clean.split("```json").join("").split("```").join("").trim();
-  try {
-    return JSON.parse(clean);
-  } catch (e) {
-    var firstObj = clean.indexOf("{");
-    var firstArr = clean.indexOf("[");
-    var first = -1;
-    if (firstObj === -1) first = firstArr;
-    else if (firstArr === -1) first = firstObj;
-    else first = Math.min(firstObj, firstArr);
-    var last = Math.max(clean.lastIndexOf("}"), clean.lastIndexOf("]"));
-    if (first !== -1 && last !== -1) {
-      try { return JSON.parse(clean.slice(first, last + 1)); } catch (e2) { return null; }
-    }
-    return null;
-  }
-}
-
 function readFileAsDataURL(file) {
   return new Promise(function(resolve, reject) {
     var reader = new FileReader();
@@ -366,14 +312,10 @@ var state = loadState() || JSON.parse(JSON.stringify(DEFAULT_STATE));
 var currentTab = "home";
 var showNamePrompt = !state.avatarName;
 var showJourneyModal = false;
-var showApiKeyModal = false;
 var viewingError = null;
+var revealedAnswerId = null;
 var expandedVocabId = null;
 var vocabLoading = false;
-var papersGenerating = false;
-var papersQuestions = null;
-var papersActivePaperId = null;
-var papersErrorMsg = null;
 var timerActiveId = null;
 var timerSecondsLeft = 0;
 var timerRunning = false;
@@ -418,25 +360,103 @@ var styleTag = document.createElement("style");
 styleTag.textContent = "@keyframes fall { to { transform: translateY(110vh) rotate(360deg); opacity: 0.3; } }";
 document.head.appendChild(styleTag);
 
-function avatarHtml(stage, equipped, size, bgCss) {
-  var accMap = {
-    bow: '<span style="position:absolute;top:-6px;left:50%;transform:translateX(-50%);font-size:' + (size*0.22) + 'px;">🎀</span>',
-    glasses: '<span style="position:absolute;top:32%;left:50%;transform:translateX(-50%);font-size:' + (size*0.26) + 'px;">🤓</span>',
-    crown: '<span style="position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:' + (size*0.24) + 'px;">👑</span>',
-    star: '<span style="position:absolute;bottom:-2px;right:-2px;font-size:' + (size*0.2) + 'px;">⭐</span>',
-    flower: '<span style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-size:' + (size*0.24) + 'px;">💐</span>',
-    ribbon: '<span style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);font-size:' + (size*0.22) + 'px;">🌈</span>',
-    bag: '<span style="position:absolute;bottom:-4px;left:-4px;font-size:' + (size*0.2) + 'px;">🎒</span>',
-    wand: '<span style="position:absolute;bottom:0;right:-8px;font-size:' + (size*0.22) + 'px;">🪄</span>',
-    cape: '<span style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);font-size:' + (size*0.3) + 'px;">🦸</span>',
-    gem: '<span style="position:absolute;top:50%;right:-10px;font-size:' + (size*0.2) + 'px;">💎</span>'
-  };
-  var accHtml = "";
-  for (var i = 0; i < equipped.length; i++) { if (accMap[equipped[i]]) accHtml += accMap[equipped[i]]; }
+function clothingPieceSvg(id, colors) {
+  switch (id) {
+    case "bow":
+      return '<g transform="translate(100,38)">' +
+        '<path d="M-16,-6 L-2,4 L-16,14 Z" fill="#FF8FAB" stroke="#D6336C" stroke-width="2" stroke-linejoin="round"/>' +
+        '<path d="M16,-6 L2,4 L16,14 Z" fill="#FF8FAB" stroke="#D6336C" stroke-width="2" stroke-linejoin="round"/>' +
+        '<circle cx="0" cy="4" r="5" fill="#FFB3CB" stroke="#D6336C" stroke-width="2"/></g>';
+    case "stickers":
+      return '<g>' +
+        '<path d="M64,120 l3,7 7,1 -5,5 1,7 -6,-4 -6,4 1,-7 -5,-5 7,-1 Z" fill="#FFD43B" stroke="#F08C00" stroke-width="1.5"/>' +
+        '<path d="M138,128 l2.5,6 6,0.8 -4.3,4.3 1,6 -5.2,-3.4 -5.2,3.4 1,-6 -4.3,-4.3 6,-0.8 Z" fill="#74C0FC" stroke="#1971C2" stroke-width="1.5"/></g>';
+    case "beanie":
+      return '<g><path d="M62,72 Q62,18 100,18 Q138,18 138,72 L122,68 Q100,58 78,68 Z" fill="#A5D8FF" stroke="#1971C2" stroke-width="2.5" stroke-linejoin="round"/>' +
+        '<circle cx="100" cy="16" r="8" fill="#fff" stroke="#1971C2" stroke-width="2.5"/></g>';
+    case "bandana":
+      return '<g><path d="M58,108 Q100,128 142,108 L142,118 Q100,138 58,118 Z" fill="#FFA94D" stroke="#E8590C" stroke-width="2.5" stroke-linejoin="round"/></g>';
+    case "glasses":
+      return '<g fill="none" stroke="#495057" stroke-width="3">' +
+        '<circle cx="78" cy="96" r="16"/><circle cx="122" cy="96" r="16"/><line x1="94" y1="96" x2="106" y2="96"/></g>';
+    case "flowercrown":
+      return '<g>' +
+        '<circle cx="68" cy="34" r="9" fill="#FFC9DE" stroke="#D6336C" stroke-width="2"/>' +
+        '<circle cx="100" cy="24" r="10" fill="#FFE066" stroke="#F08C00" stroke-width="2"/>' +
+        '<circle cx="132" cy="34" r="9" fill="#FFC9DE" stroke="#D6336C" stroke-width="2"/>' +
+        '<circle cx="68" cy="34" r="3" fill="#F08C00"/><circle cx="100" cy="24" r="3" fill="#E8590C"/><circle cx="132" cy="34" r="3" fill="#F08C00"/>' +
+        '<path d="M58,46 Q100,30 142,46" fill="none" stroke="#74B816" stroke-width="3" stroke-linecap="round"/></g>';
+    case "scarf":
+      return '<g><path d="M56,104 Q100,126 144,104 L144,116 Q100,138 56,116 Z" fill="#FF6B6B" stroke="#C92A2A" stroke-width="2.5" stroke-linejoin="round"/>' +
+        '<rect x="92" y="116" width="16" height="28" rx="3" fill="#FF6B6B" stroke="#C92A2A" stroke-width="2.5"/></g>';
+    case "backpack":
+      return '<g transform="translate(140,108)">' +
+        '<rect x="-2" y="-18" width="26" height="34" rx="8" fill="#69DB7C" stroke="#2B8A3E" stroke-width="2.5"/>' +
+        '<rect x="6" y="-14" width="10" height="10" rx="3" fill="#B2F2BB" stroke="#2B8A3E" stroke-width="1.5"/></g>';
+    case "bowtie":
+      return '<g transform="translate(100,114)">' +
+        '<path d="M-18,-8 L-2,0 L-18,8 Z" fill="#495057" stroke="#212529" stroke-width="2" stroke-linejoin="round"/>' +
+        '<path d="M18,-8 L2,0 L18,8 Z" fill="#495057" stroke="#212529" stroke-width="2" stroke-linejoin="round"/>' +
+        '<circle cx="0" cy="0" r="5" fill="#495057" stroke="#212529" stroke-width="2"/></g>';
+    case "shades":
+      return '<g><rect x="62" y="86" width="32" height="20" rx="8" fill="#343a40" stroke="#212529" stroke-width="2"/>' +
+        '<rect x="106" y="86" width="32" height="20" rx="8" fill="#343a40" stroke="#212529" stroke-width="2"/>' +
+        '<line x1="94" y1="92" x2="106" y2="92" stroke="#212529" stroke-width="3"/></g>';
+    case "wizardhat":
+      return '<g><path d="M100,4 L132,76 Q100,68 68,76 Z" fill="#9775FA" stroke="#5F3DC4" stroke-width="2.5" stroke-linejoin="round"/>' +
+        '<ellipse cx="100" cy="76" rx="38" ry="10" fill="#9775FA" stroke="#5F3DC4" stroke-width="2.5"/>' +
+        '<path d="M92,42 l4,-8 4,8 8,2 -8,2 -4,8 -4,-8 -8,-2 Z" fill="#FFE066"/></g>';
+    case "wand":
+      return '<g transform="translate(150,118) rotate(20)">' +
+        '<rect x="-3" y="0" width="6" height="44" rx="3" fill="#FFD43B" stroke="#F08C00" stroke-width="2"/>' +
+        '<path d="M0,-12 l5,10 11,2 -8,8 2,11 -10,-5 -10,5 2,-11 -8,-8 11,-2 Z" fill="#FFE066" stroke="#F08C00" stroke-width="1.5"/></g>';
+    case "cape":
+      return '<g><path d="M54,98 Q60,150 78,168 Q100,158 122,168 Q140,150 146,98 Q124,112 100,108 Q76,112 54,98 Z" fill="#FF6B6B" stroke="#C92A2A" stroke-width="2.5" stroke-linejoin="round"/></g>';
+    case "crown":
+      return '<g><path d="M64,40 L74,16 L88,32 L100,12 L112,32 L126,16 L136,40 Z" fill="#FFD43B" stroke="#F08C00" stroke-width="2.5" stroke-linejoin="round"/>' +
+        '<circle cx="100" cy="20" r="4" fill="#FF6B6B"/><circle cx="78" cy="30" r="3" fill="#74C0FC"/><circle cx="122" cy="30" r="3" fill="#74C0FC"/></g>';
+    case "wings":
+      return '<g><path d="M56,90 Q24,80 18,110 Q40,108 58,116 Z" fill="#E0D9FF" stroke="#9775FA" stroke-width="2" stroke-linejoin="round" opacity="0.9"/>' +
+        '<path d="M144,90 Q176,80 182,110 Q160,108 142,116 Z" fill="#E0D9FF" stroke="#9775FA" stroke-width="2" stroke-linejoin="round" opacity="0.9"/></g>';
+    default:
+      return "";
+  }
+}
+
+function avatarSvg(stage, equipped, size, bgCss) {
+  var c = stage.colors;
+  var bySlot = { head: [], face: [], neck: [], held: [], body: [], back: [] };
+  for (var i = 0; i < CLOTHING.length; i++) {
+    var item = CLOTHING[i];
+    if (equipped.indexOf(item.id) !== -1) bySlot[item.slot].push(item.id);
+  }
+  var layers = "";
+  for (var b = 0; b < bySlot.back.length; b++) layers += clothingPieceSvg(bySlot.back[b], c);
+
+  var blob = '<g>' +
+    '<ellipse cx="100" cy="110" rx="58" ry="64" fill="' + c.body + '" stroke="' + c.outline + '" stroke-width="4"/>' +
+    (stage.sparkle ? '<path d="M40,50 l4,-10 4,10 10,4 -10,4 -4,10 -4,-10 -10,-4 Z" fill="#FFE066" opacity="0.9"/><path d="M158,160 l3,-7 3,7 7,3 -7,3 -3,7 -3,-7 -7,-3 Z" fill="#FFE066" opacity="0.85"/>' : '') +
+    '<circle cx="76" cy="104" r="7" fill="#495057"/><circle cx="124" cy="104" r="7" fill="#495057"/>' +
+    '<circle cx="78" cy="101" r="2" fill="#fff"/><circle cx="126" cy="101" r="2" fill="#fff"/>' +
+    '<ellipse cx="68" cy="124" rx="9" ry="6" fill="' + c.cheek + '" opacity="0.7"/>' +
+    '<ellipse cx="132" cy="124" rx="9" ry="6" fill="' + c.cheek + '" opacity="0.7"/>' +
+    '<path d="M88,128 Q100,138 112,128" fill="none" stroke="#495057" stroke-width="3" stroke-linecap="round"/>' +
+    '</g>';
+
+  var midLayers = "";
+  for (var bi = 0; bi < bySlot.body.length; bi++) midLayers += clothingPieceSvg(bySlot.body[bi], c);
+  for (var ni = 0; ni < bySlot.neck.length; ni++) midLayers += clothingPieceSvg(bySlot.neck[ni], c);
+  for (var hi = 0; hi < bySlot.held.length; hi++) midLayers += clothingPieceSvg(bySlot.held[hi], c);
+  for (var fi = 0; fi < bySlot.face.length; fi++) midLayers += clothingPieceSvg(bySlot.face[fi], c);
+  for (var hdi = 0; hdi < bySlot.head.length; hdi++) midLayers += clothingPieceSvg(bySlot.head[hdi], c);
+
+  var svg = '<svg viewBox="0 0 200 200" width="' + size + '" height="' + size + '" style="display:block;">' +
+    layers + blob + midLayers + '</svg>';
+
   return '<div style="width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:' + bgCss + ';' +
-    'display:flex;align-items:center;justify-content:center;font-size:' + (size*0.5) + 'px;' +
-    'position:relative;box-shadow:0 6px 20px rgba(255,179,203,0.4);border:4px solid white;margin:0 auto;">' +
-    '<span>' + stage.emoji + '</span>' + accHtml + '</div>';
+    'display:flex;align-items:center;justify-content:center;' +
+    'position:relative;box-shadow:0 6px 20px rgba(255,179,203,0.4);border:4px solid white;margin:0 auto;overflow:visible;">' +
+    svg + '</div>';
 }
 
 function renderHeader() {
@@ -507,10 +527,10 @@ function renderHome() {
   var html = '';
   html += '<div class="card" style="text-align:center;padding:20px;">';
   html += '<div id="avatarNameClick" style="font-size:13px;font-weight:700;color:#D6336C;margin-bottom:8px;cursor:pointer;">' + escapeHtml(state.avatarName || "Your Buddy") + ' ✏️</div>';
-  html += '<div id="avatarClick" style="cursor:pointer;">' + avatarHtml(stage, state.equippedAccessories, 120, bg.css) + '</div>';
+  html += '<div id="avatarClick" style="cursor:pointer;">' + avatarSvg(stage, state.equippedClothing, 120, bg.css) + '</div>';
   html += '<div style="margin-top:10px;font-weight:800;font-size:17px;color:#495057;">' + stage.name + '</div>';
   html += '<div style="font-size:11px;color:#bdb8ce;margin-top:2px;">(Tap your buddy to see the full growth journey)</div>';
-  html += '<div style="font-size:12px;color:#adb5bd;margin-top:6px;">' + (upcoming ? ((upcoming.min - state.stars) + ' ⭐ to evolve into ' + upcoming.name + ' ' + upcoming.emoji) : "Max evolution reached! 🎉") + '</div>';
+  html += '<div style="font-size:12px;color:#adb5bd;margin-top:6px;">' + (upcoming ? ((upcoming.min - state.stars) + ' ⭐ to evolve into ' + upcoming.name) : "Max evolution reached! 🎉") + '</div>';
   html += '<div style="background:#f1f3f5;border-radius:10px;height:10px;margin-top:10px;overflow:hidden;"><div style="width:' + progress + '%;height:100%;background:linear-gradient(90deg,#FFB3CB,#A5D8FF);border-radius:10px;"></div></div>';
   html += '<button class="btn-secondary" id="shareCardBtn" style="margin-top:16px;">📤 Share Avatar Card</button>';
   html += '</div>';
@@ -555,7 +575,7 @@ function renderJourneyModal() {
     var reached = state.stars >= s.min;
     var isCurrent = s.name === stage.name;
     html += '<div class="journey-stage" style="background:' + (isCurrent ? '#FFE3EC' : '#F8F9FA') + ';opacity:' + (reached?1:0.45) + ';border:' + (isCurrent ? '2px solid #FFB3CB' : '2px solid transparent') + ';">';
-    html += '<div style="font-size:28px;">' + s.emoji + '</div>';
+    html += avatarSvg(s, [], 44, "transparent");
     html += '<div style="text-align:left;flex:1;"><div style="font-weight:700;font-size:13px;color:#495057;">' + s.name + (isCurrent ? ' · current' : '') + '</div>';
     html += '<div style="font-size:11px;color:#adb5bd;">' + s.desc + '</div>';
     html += '<div style="font-size:10px;color:#ced4da;margin-top:2px;">' + s.min + '+ ⭐</div></div>';
@@ -643,7 +663,10 @@ function addTask() {
 var errorFilter = "All";
 var errorFormSubject = "English";
 var errorFormNote = "";
-var errorUploading = false;
+var errorQuestionImage = null;
+var errorAnswerText = "";
+var errorAnswerImage = null;
+var errorUploadingField = null;
 
 function renderErrors() {
   var filtered = [];
@@ -651,13 +674,25 @@ function renderErrors() {
     var er = state.errorBank[i];
     if (errorFilter === "All" || er.subject === errorFilter) filtered.push(er);
   }
+  var canSubmit = (errorFormNote.trim() || errorQuestionImage) && (errorAnswerText.trim() || errorAnswerImage);
   var html = '<div class="card"><div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">📸 Log a question you got wrong</div>';
   html += '<select id="errorSubjectSelect" style="width:100%;margin-bottom:8px;">';
   for (var s = 0; s < SUBJECTS.length; s++) html += '<option value="' + SUBJECTS[s] + '" ' + (SUBJECTS[s]===errorFormSubject?'selected':'') + '>' + SUBJECTS[s] + '</option>';
   html += '</select>';
-  html += '<input id="errorNoteInput" placeholder="Optional note, e.g. Forgot to carry the remainder" style="width:100%;margin-bottom:8px;box-sizing:border-box;" value="' + escapeHtml(errorFormNote) + '" />';
-  html += '<label class="upload-label" style="background:' + (errorUploading?'#dee2e6':'#FFB3CB') + ';">' + (errorUploading ? "Uploading..." : "📷 Upload Photo of Question") +
-    '<input type="file" accept="image/*" capture="environment" id="errorFileInput" style="display:none;" /></label></div>';
+
+  html += '<div style="font-size:11px;font-weight:700;color:#868e96;margin-bottom:4px;">Question</div>';
+  html += '<input id="errorNoteInput" placeholder="Type the question, e.g. 24 \u00f7 5 = ?" style="width:100%;margin-bottom:6px;box-sizing:border-box;" value="' + escapeHtml(errorFormNote) + '" />';
+  html += '<label class="upload-label" style="background:' + (errorUploadingField==='question'?'#dee2e6':'#FFE3EC') + ';color:#D6336C;margin-bottom:10px;">' + (errorUploadingField==='question' ? "Uploading..." : (errorQuestionImage ? "📷 Question photo added ✓ (tap to replace)" : "📷 Or snap a photo of the question")) +
+    '<input type="file" accept="image/*" capture="environment" id="errorQuestionFileInput" style="display:none;" /></label>';
+
+  html += '<div style="font-size:11px;font-weight:700;color:#868e96;margin-bottom:4px;">Answer (required)</div>';
+  html += '<input id="errorAnswerInput" placeholder="Type the correct answer" style="width:100%;margin-bottom:6px;box-sizing:border-box;" value="' + escapeHtml(errorAnswerText) + '" />';
+  html += '<label class="upload-label" style="background:' + (errorUploadingField==='answer'?'#dee2e6':'#E3F0FF') + ';color:#1971C2;margin-bottom:10px;">' + (errorUploadingField==='answer' ? "Uploading..." : (errorAnswerImage ? "📷 Answer photo added ✓ (tap to replace)" : "📷 Or snap a photo of the answer")) +
+    '<input type="file" accept="image/*" capture="environment" id="errorAnswerFileInput" style="display:none;" /></label>';
+
+  html += '<button id="submitErrorBtn" style="width:100%;background:#FFB3CB;color:white;border:none;border-radius:10px;padding:10px;font-weight:700;font-size:13px;cursor:pointer;">+ Add to error bank</button>';
+  html += '<div style="font-size:10px;color:#adb5bd;margin-top:6px;">Add a question (type or photo) and an answer (type or photo) to submit.</div>';
+  html += '</div>';
 
   html += '<div style="display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;">';
   var filters = ["All"].concat(SUBJECTS);
@@ -674,9 +709,9 @@ function renderErrors() {
     var e = filtered[k];
     var c = SUBJECT_COLORS[e.subject] || SUBJECT_COLORS.English;
     html += '<div class="err-card" style="opacity:' + (e.mastered?0.55:1) + ';">';
-    html += '<img src="' + e.image + '" data-view-error="' + e.id + '" />';
+    if (e.questionImage) html += '<img src="' + e.questionImage + '" data-view-error="' + e.id + '" />';
+    else html += '<div data-view-error="' + e.id + '" style="height:90px;display:flex;align-items:center;justify-content:center;padding:8px;background:#F8F9FA;font-size:12px;color:#495057;text-align:center;cursor:pointer;">' + escapeHtml(e.note) + '</div>';
     html += '<div class="body"><span class="subject-pill" style="color:' + c.text + ';background:' + c.bg + ';">' + e.subject + '</span>';
-    if (e.note) html += '<div style="font-size:11px;color:#868e96;margin-top:4px;">' + escapeHtml(e.note) + '</div>';
     html += '<div style="display:flex;justify-content:space-between;margin-top:6px;">';
     html += '<button data-toggle-mastered="' + e.id + '" style="border:none;background:none;font-size:11px;color:' + (e.mastered?'#82c91e':'#adb5bd') + ';cursor:pointer;font-weight:700;">' + (e.mastered?'✓ Mastered':'Mark mastered') + '</button>';
     html += '<button data-delete-error="' + e.id + '" style="border:none;background:none;color:#ffc9c9;cursor:pointer;">✕</button>';
@@ -694,8 +729,20 @@ function renderViewingErrorModal() {
   html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">';
   html += '<span class="subject-pill" style="color:' + c.text + ';background:' + c.bg + ';">' + er.subject + '</span>';
   html += '<button id="closeViewErrorBtn" style="border:none;background:none;font-size:16px;color:#adb5bd;cursor:pointer;">✕</button></div>';
-  html += '<img src="' + er.image + '" style="width:100%;border-radius:10px;" />';
-  if (er.note) html += '<div style="font-size:13px;color:#495057;margin-top:10px;background:#FFF9DB;border-radius:8px;padding:8px;text-align:left;">📝 ' + escapeHtml(er.note) + '</div>';
+  html += '<div style="font-size:11px;font-weight:700;color:#868e96;text-align:left;margin-bottom:6px;">QUESTION</div>';
+  if (er.questionImage) html += '<img src="' + er.questionImage + '" style="width:100%;border-radius:10px;" />';
+  if (er.note) html += '<div style="font-size:13px;color:#495057;margin-top:' + (er.questionImage?'8px':'0') + ';background:#FFF9DB;border-radius:8px;padding:8px;text-align:left;">' + escapeHtml(er.note) + '</div>';
+
+  html += '<div style="margin-top:14px;">';
+  if (!revealedAnswerId || revealedAnswerId !== er.id) {
+    html += '<button id="revealAnswerBtn" data-reveal-answer="' + er.id + '" class="btn-primary" style="width:100%;">👁️ Reveal answer</button>';
+  } else {
+    html += '<div style="font-size:11px;font-weight:700;color:#0CA678;text-align:left;margin-bottom:6px;">ANSWER</div>';
+    if (er.answerImage) html += '<img src="' + er.answerImage + '" style="width:100%;border-radius:10px;" />';
+    if (er.answerText) html += '<div style="font-size:13px;font-weight:700;color:#0CA678;margin-top:' + (er.answerImage?'8px':'0') + ';background:#E6FCF5;border-radius:8px;padding:8px;text-align:left;">' + escapeHtml(er.answerText) + '</div>';
+  }
+  html += '</div>';
+
   html += '<div style="font-size:11px;color:#adb5bd;margin-top:8px;">Logged ' + new Date(er.createdAt).toLocaleDateString() + '</div>';
   html += '</div></div>';
   return html;
@@ -715,33 +762,73 @@ function deleteError(id) {
   state.errorBank = arr;
   persist(); render();
 }
-function handleErrorFile(e) {
+function handleErrorQuestionFile(e) {
   var file = e.target.files[0];
   if (!file) return;
-  errorUploading = true; render();
+  errorUploadingField = "question"; render();
   readFileAsDataURL(file).then(function(dataUrl) {
-    state.errorBank.unshift({ id: uid(), subject: errorFormSubject, image: dataUrl, note: errorFormNote, mastered: false, createdAt: Date.now() });
-    state.carrots += 1;
-    flashToast("+1 🥕 Error logged!");
-    errorFormNote = "";
-    errorUploading = false;
-    persist(); render();
+    errorQuestionImage = dataUrl;
+    errorUploadingField = null;
+    render();
   }).catch(function() {
     flashToast("Could not read image");
-    errorUploading = false;
-    persist(); render();
+    errorUploadingField = null;
+    render();
   });
+}
+function handleErrorAnswerFile(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  errorUploadingField = "answer"; render();
+  readFileAsDataURL(file).then(function(dataUrl) {
+    errorAnswerImage = dataUrl;
+    errorUploadingField = null;
+    render();
+  }).catch(function() {
+    flashToast("Could not read image");
+    errorUploadingField = null;
+    render();
+  });
+}
+function submitError() {
+  var noteInput = document.getElementById("errorNoteInput");
+  var answerInput = document.getElementById("errorAnswerInput");
+  if (noteInput) errorFormNote = noteInput.value;
+  if (answerInput) errorAnswerText = answerInput.value;
+  var hasQuestion = errorFormNote.trim() || errorQuestionImage;
+  var hasAnswer = errorAnswerText.trim() || errorAnswerImage;
+  if (!hasQuestion || !hasAnswer) { flashToast("Please add a question and an answer first"); return; }
+  state.errorBank.unshift({
+    id: uid(),
+    subject: errorFormSubject,
+    note: errorFormNote.trim(),
+    questionImage: errorQuestionImage,
+    answerText: errorAnswerText.trim(),
+    answerImage: errorAnswerImage,
+    mastered: false,
+    createdAt: Date.now()
+  });
+  state.carrots += 1;
+  flashToast("+1 🥕 Error logged!");
+  errorFormNote = "";
+  errorQuestionImage = null;
+  errorAnswerText = "";
+  errorAnswerImage = null;
+  persist(); render();
 }
 
 var vocabWordInput = "";
+var vocabErrorMsg = null;
 
 function renderVocab() {
   var sorted = state.vocabBank.slice().sort(function(a,b){ return a.word.localeCompare(b.word); });
   var html = '<div class="card"><div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">📖 Log new vocabulary</div>';
   html += '<div style="display:flex;gap:6px;"><input id="vocabWordInput" placeholder="e.g. meticulous" style="flex:1;" value="' + escapeHtml(vocabWordInput) + '" />';
   html += '<button id="addVocabBtn" ' + (vocabLoading?'disabled':'') + ' style="background:' + (vocabLoading?'#dee2e6':'#A5D8FF') + ';color:#1971C2;border:none;border-radius:10px;padding:0 14px;font-weight:700;cursor:pointer;">' + (vocabLoading?'...':'Add') + '</button></div>';
-  if (!getApiKey()) html += '<div style="font-size:11px;color:#e8590c;margin-top:8px;">⚠️ <span id="vocabApiKeyLink" style="text-decoration:underline;cursor:pointer;">Set your Anthropic API key</span> to use AI-generated definitions.</div>';
+  html += '<div style="font-size:10px;color:#adb5bd;margin-top:6px;">Definitions & examples are looked up from the free dictionaryapi.dev — no key needed.</div>';
   html += '</div>';
+
+  if (vocabErrorMsg) html += '<div class="card" style="background:#FFF5F5;border:2px solid #FFC9C9;color:#C92A2A;font-size:12px;">⚠️ ' + escapeHtml(vocabErrorMsg) + '</div>';
 
   if (sorted.length === 0) html += '<div class="empty"><div class="emoji">📖</div><div class="text">No vocab logged yet. Add a word above!</div></div>';
 
@@ -750,13 +837,15 @@ function renderVocab() {
     var expanded = expandedVocabId === v.id;
     html += '<div class="vocab-card" data-expand-vocab="' + v.id + '">';
     html += '<div style="display:flex;justify-content:space-between;align-items:center;">';
-    html += '<div><div style="font-weight:800;font-size:14px;color:#D6336C;">' + escapeHtml(v.word) + '</div>';
+    html += '<div><div style="font-weight:800;font-size:14px;color:#D6336C;">' + escapeHtml(v.word) + (v.partOfSpeech ? ' <span style="font-size:11px;font-weight:600;color:#adb5bd;">(' + escapeHtml(v.partOfSpeech) + ')</span>' : '') + '</div>';
     html += '<div style="font-size:12px;color:#495057;margin-top:2px;">' + escapeHtml(v.definition) + '</div></div>';
     html += '<div style="display:flex;align-items:center;gap:6px;"><span style="font-size:12px;color:#adb5bd;">' + (expanded?'▲':'▼') + '</span>';
     html += '<button data-delete-vocab="' + v.id + '" style="border:none;background:none;color:#ffc9c9;cursor:pointer;">✕</button></div></div>';
     if (expanded) {
-      html += '<div style="margin-top:8px;"><div style="font-size:11px;color:#868e96;background:#FFF9DB;border-radius:8px;padding:6px;">✍️ Compo use: ' + escapeHtml(v.compoExample) + '</div>';
-      html += '<div style="font-size:11px;color:#868e96;margin-top:6px;background:#E3F0FF;border-radius:8px;padding:6px;">📄 In papers: ' + escapeHtml(v.paperContext) + '</div></div>';
+      html += '<div style="margin-top:8px;">';
+      if (v.example) html += '<div style="font-size:11px;color:#868e96;background:#FFF9DB;border-radius:8px;padding:6px;">✍️ Example: ' + escapeHtml(v.example) + '</div>';
+      else html += '<div style="font-size:11px;color:#adb5bd;background:#F8F9FA;border-radius:8px;padding:6px;">No example sentence available for this word.</div>';
+      html += '</div>';
     }
     html += '</div>';
   }
@@ -769,77 +858,118 @@ function deleteVocab(id) {
   state.vocabBank = arr;
   persist(); render();
 }
+function fetchWithTimeout(url, ms) {
+  var controller = (typeof AbortController !== "undefined") ? new AbortController() : null;
+  var timeoutId = controller ? setTimeout(function() { controller.abort(); }, ms) : null;
+  return fetch(url, controller ? { signal: controller.signal } : {}).finally(function() {
+    if (timeoutId) clearTimeout(timeoutId);
+  });
+}
+
 function addVocab() {
   var word = document.getElementById("vocabWordInput").value.trim();
   if (!word) return;
-  if (!getApiKey()) { showApiKeyModal = true; render(); return; }
-  vocabLoading = true; render();
-  var system = "You are a helpful PSLE English tutor for a Singapore Primary 6 student. Respond ONLY with valid JSON, no preamble, no markdown fences. The JSON object must have exactly these keys: definition (simple, student-friendly, 1 sentence), compoExample (one example sentence showing how to use the word naturally in a composition, suitable for a 12 year old), paperContext (a short explanation of how/where such a word typically appears in PSLE past year papers, e.g. comprehension or cloze passages, with a brief example phrase).";
-  callClaude([{ role: "user", content: 'Word: "' + word + '"' }], system).then(function(text) {
-    var parsed = extractJson(text);
-    if (!parsed) throw new Error("parse fail");
-    state.vocabBank.unshift({ id: uid(), word: word, definition: parsed.definition||"", compoExample: parsed.compoExample||"", paperContext: parsed.paperContext||"", createdAt: Date.now() });
-    state.carrots += 1;
-    flashToast("+1 🥕 Vocab added!");
-    vocabWordInput = "";
-    vocabLoading = false;
-    persist(); render();
-  }).catch(function(e) {
-    if (e.message === "NO_API_KEY") { showApiKeyModal = true; }
-    else flashToast("Hmm, could not generate. Check your API key and try again.");
-    vocabLoading = false;
-    persist(); render();
-  });
+  vocabLoading = true; vocabErrorMsg = null; render();
+  fetchWithTimeout("https://api.dictionaryapi.dev/api/v2/entries/en/" + encodeURIComponent(word.toLowerCase()), 8000)
+    .then(function(res) {
+      if (res.status === 404) throw new Error("NOT_FOUND");
+      if (!res.ok) throw new Error("SERVER_ERROR");
+      return res.json();
+    })
+    .then(function(data) {
+      var entry = data && data[0];
+      var partOfSpeech = "", definition = "", example = "";
+      if (entry && entry.meanings && entry.meanings.length) {
+        var meaning = entry.meanings[0];
+        partOfSpeech = meaning.partOfSpeech || "";
+        if (meaning.definitions && meaning.definitions.length) {
+          definition = meaning.definitions[0].definition || "";
+          example = meaning.definitions[0].example || "";
+          if (!example) {
+            for (var d = 0; d < meaning.definitions.length; d++) {
+              if (meaning.definitions[d].example) { example = meaning.definitions[d].example; break; }
+            }
+          }
+        }
+      }
+      if (!definition) throw new Error("NO_DEFINITION");
+      state.vocabBank.unshift({ id: uid(), word: word, partOfSpeech: partOfSpeech, definition: definition, example: example, createdAt: Date.now() });
+      state.carrots += 1;
+      flashToast("+1 🥕 Vocab added!");
+      vocabWordInput = "";
+      vocabLoading = false;
+      persist(); render();
+    })
+    .catch(function(err) {
+      if (err && (err.name === "AbortError")) {
+        vocabErrorMsg = 'The dictionary took too long to respond. Check your internet connection and try again.';
+      } else if (err && (err.message === "NOT_FOUND" || err.message === "NO_DEFINITION")) {
+        vocabErrorMsg = 'Could not find a dictionary entry for "' + word + '". Check the spelling and try again.';
+      } else if (err instanceof TypeError) {
+        vocabErrorMsg = 'Could not reach the dictionary service. If you opened this file directly (file://), try running it through a local web server or hosting it online instead — browsers often block this kind of request from local files.';
+      } else {
+        vocabErrorMsg = 'Something went wrong looking up "' + word + '". Please try again.';
+      }
+      vocabLoading = false;
+      render();
+    });
 }
 
 var papersSubject = "English";
 var papersUploading = false;
 var MAX_PDF_BYTES = 30 * 1024 * 1024;
+var papersExpandedPaperId = null;
+var papersQDraft = "";
+var papersADraft = "";
 
 function renderPapers() {
-  var activePaper = null;
-  for (var i = 0; i < state.papers.length; i++) { if (state.papers[i].id === papersActivePaperId) activePaper = state.papers[i]; }
-  var html = '<div class="card"><div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">📄 Upload past year paper (PDF, incl. scanned)</div>';
+  var html = '<div class="card"><div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">📄 Upload past year paper (PDF, optional)</div>';
   html += '<select id="paperSubjectSelect" style="width:100%;margin-bottom:8px;">';
   for (var s = 0; s < SUBJECTS.length; s++) html += '<option value="' + SUBJECTS[s] + '" ' + (SUBJECTS[s]===papersSubject?'selected':'') + '>' + SUBJECTS[s] + '</option>';
   html += '</select>';
   html += '<label class="upload-label" style="background:' + (papersUploading?'#dee2e6':'#A5D8FF') + ';color:#1971C2;">' + (papersUploading ? "Uploading..." : "📎 Upload PDF Paper") +
     '<input type="file" accept="application/pdf" id="paperFileInput" style="display:none;" /></label>';
-  html += '<div style="font-size:10px;color:#adb5bd;margin-top:6px;">Tip: if a scanned PDF fails, try rescanning flat (not at an angle), in good lighting, at a moderate resolution (under ~15MB works best).</div>';
-  if (!getApiKey()) html += '<div style="font-size:11px;color:#e8590c;margin-top:8px;">⚠️ <span id="papersApiKeyLink" style="text-decoration:underline;cursor:pointer;">Set your Anthropic API key</span> to generate practice questions.</div>';
+  html += '<div style="font-size:10px;color:#adb5bd;margin-top:6px;">The PDF is just for reference — type your own practice questions and answers below for each paper.</div>';
   html += '</div>';
 
-  if (state.papers.length === 0) html += '<div class="empty"><div class="emoji">📄</div><div class="text">No papers uploaded yet.</div></div>';
+  if (state.papers.length === 0) html += '<div class="empty"><div class="emoji">📄</div><div class="text">No papers yet. Upload a paper above, then add your own questions to it.</div></div>';
 
   for (var p = 0; p < state.papers.length; p++) {
     var paper = state.papers[p];
     var c = SUBJECT_COLORS[paper.subject] || SUBJECT_COLORS.English;
-    var isGenerating = papersGenerating && papersActivePaperId === paper.id;
+    var isExpanded = papersExpandedPaperId === paper.id;
+    var qs = paper.questions || [];
     html += '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;">';
     html += '<div><span class="subject-pill" style="color:' + c.text + ';background:' + c.bg + ';">' + paper.subject + '</span>';
     html += '<div style="font-size:12px;color:#495057;margin-top:4px;word-break:break-all;">' + escapeHtml(paper.name) + '</div>';
-    html += '<div style="font-size:10px;color:#ced4da;margin-top:2px;">' + (paper.sizeKB?paper.sizeKB+' KB':'') + '</div></div>';
+    html += '<div style="font-size:10px;color:#ced4da;margin-top:2px;">' + (paper.sizeKB?paper.sizeKB+' KB · ':'') + qs.length + (qs.length===1?' question':' questions') + '</div></div>';
     html += '<button data-delete-paper="' + paper.id + '" style="border:none;background:none;color:#ffc9c9;cursor:pointer;">✕</button></div>';
-    html += '<button data-generate-paper="' + paper.id + '" ' + (papersGenerating?'disabled':'') + ' style="margin-top:8px;width:100%;background:' + (isGenerating?'#dee2e6':'#FFE3EC') + ';color:#D6336C;border:none;border-radius:10px;padding:8px;font-weight:700;font-size:12px;cursor:pointer;">' +
-      (isGenerating ? "Reading paper..." : "✨ Generate practice questions from errors") + '</button></div>';
-  }
+    html += '<button data-toggle-paper="' + paper.id + '" style="margin-top:8px;width:100%;background:' + (isExpanded?'#495057':'#FFE3EC') + ';color:' + (isExpanded?'white':'#D6336C') + ';border:none;border-radius:10px;padding:8px;font-weight:700;font-size:12px;cursor:pointer;">' +
+      (isExpanded ? "Hide questions" : "📝 Manage practice questions") + '</button>';
 
-  if (papersErrorMsg) html += '<div class="card" style="background:#FFF5F5;border:2px solid #FFC9C9;color:#C92A2A;font-size:12px;">⚠️ ' + escapeHtml(papersErrorMsg) + '</div>';
-
-  if (papersQuestions && papersQuestions.length > 0 && activePaper) {
-    html += '<div style="margin-top:14px;"><div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">Practice from "' + escapeHtml(activePaper.name) + '"</div>';
-    for (var q = 0; q < papersQuestions.length; q++) html += questionCardHtml(papersQuestions[q], q);
+    if (isExpanded) {
+      html += '<div style="margin-top:10px;">';
+      for (var q = 0; q < qs.length; q++) html += paperQuestionCardHtml(qs[q], q, paper.id);
+      html += '<div style="background:#F8F9FA;border-radius:10px;padding:10px;margin-top:8px;">';
+      html += '<div style="font-size:11px;font-weight:700;color:#495057;margin-bottom:6px;">Add a new question</div>';
+      html += '<input id="paperQInput_' + paper.id + '" data-paper-q-for="' + paper.id + '" placeholder="Type the question" style="width:100%;margin-bottom:6px;box-sizing:border-box;" value="' + escapeHtml(papersQDraft) + '" />';
+      html += '<input id="paperAInput_' + paper.id + '" data-paper-a-for="' + paper.id + '" placeholder="Type the answer" style="width:100%;margin-bottom:6px;box-sizing:border-box;" value="' + escapeHtml(papersADraft) + '" />';
+      html += '<button data-add-paper-question="' + paper.id + '" class="btn-primary" style="width:100%;">+ Add question</button>';
+      html += '</div></div>';
+    }
     html += '</div>';
   }
   return html;
 }
-function questionCardHtml(q, i) {
+function paperQuestionCardHtml(q, i, paperId) {
   var html = '<div class="card" data-qcard="' + i + '"><div style="font-size:12px;font-weight:700;color:#D6336C;margin-bottom:4px;">Q' + (i+1) + '</div>';
   html += '<div style="font-size:13px;color:#495057;">' + escapeHtml(q.question) + '</div>';
-  html += '<button data-toggle-answer="' + i + '" style="margin-top:8px;border:none;background:none;color:#1971C2;font-size:11px;font-weight:700;cursor:pointer;">' + (q._show?'Hide answer':'Show answer') + '</button>';
+  html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">';
+  html += '<button data-toggle-answer="' + paperId + '|' + i + '" style="border:none;background:none;color:#1971C2;font-size:11px;font-weight:700;cursor:pointer;">' + (q._show?'Hide answer':'Show answer') + '</button>';
+  html += '<button data-delete-paper-question="' + paperId + '|' + i + '" style="border:none;background:none;color:#ffc9c9;cursor:pointer;">✕</button>';
+  html += '</div>';
   if (q._show) {
-    html += '<div style="margin-top:6px;background:#E6FCF5;border-radius:8px;padding:8px;"><div style="font-size:12px;font-weight:700;color:#0CA678;">' + escapeHtml(q.answer) + '</div>';
-    html += '<div style="font-size:11px;color:#495057;margin-top:4px;">' + escapeHtml(q.explanation) + '</div></div>';
+    html += '<div style="margin-top:6px;background:#E6FCF5;border-radius:8px;padding:8px;"><div style="font-size:12px;font-weight:700;color:#0CA678;">' + escapeHtml(q.answer) + '</div></div>';
   }
   html += '</div>';
   return html;
@@ -849,6 +979,7 @@ function deletePaper(id) {
   var arr = [];
   for (var i = 0; i < state.papers.length; i++) { if (state.papers[i].id !== id) arr.push(state.papers[i]); }
   state.papers = arr;
+  if (papersExpandedPaperId === id) papersExpandedPaperId = null;
   persist(); render();
 }
 function handlePaperFile(e) {
@@ -858,7 +989,7 @@ function handlePaperFile(e) {
   if (file.size > MAX_PDF_BYTES) { flashToast("This PDF is quite large — try a smaller scan or fewer pages"); e.target.value = ""; return; }
   papersUploading = true; render();
   readFileAsDataURL(file).then(function(dataUrl) {
-    state.papers.unshift({ id: uid(), name: file.name, subject: papersSubject, dataUrl: dataUrl, sizeKB: Math.round(file.size/1024), createdAt: Date.now() });
+    state.papers.unshift({ id: uid(), name: file.name, subject: papersSubject, dataUrl: dataUrl, sizeKB: Math.round(file.size/1024), questions: [], createdAt: Date.now() });
     flashToast("📄 Paper uploaded!");
     papersUploading = false;
     persist(); render();
@@ -868,56 +999,33 @@ function handlePaperFile(e) {
     persist(); render();
   });
 }
-function generateFromPaper(paperId) {
+function togglePaperExpanded(id) {
+  papersExpandedPaperId = papersExpandedPaperId === id ? null : id;
+  papersQDraft = ""; papersADraft = "";
+  render();
+}
+function addPaperQuestion(paperId) {
   var paper = null;
   for (var i = 0; i < state.papers.length; i++) { if (state.papers[i].id === paperId) paper = state.papers[i]; }
   if (!paper) return;
-  if (!getApiKey()) { showApiKeyModal = true; render(); return; }
-  papersGenerating = true;
-  papersActivePaperId = paperId;
-  papersQuestions = null;
-  papersErrorMsg = null;
-  render();
-
-  var base64 = paper.dataUrl.split(",")[1];
-  var errorNotes = [];
-  for (var j = 0; j < state.errorBank.length; j++) {
-    var er = state.errorBank[j];
-    if (er.subject === paper.subject && er.note) errorNotes.push(er.note);
-  }
-  errorNotes = errorNotes.slice(0, 10);
-  var system = "You are a PSLE tutor. You will be given a PDF of a past year exam paper. It may be a scanned, image-based PDF, read it using your vision and document capability, page by page, exactly as if reading scanned photographs of paper. Even if the PDF has no selectable text layer, look at the visual content of each page. Respond ONLY with valid JSON: an array of 5 objects, each with keys: question, answer, explanation. If you genuinely cannot see any readable content in the PDF at all, respond with exactly this and nothing else: {\"error\": \"unreadable\"}";
-  if (errorNotes.length) system += " The student has previously struggled with: " + errorNotes.join("; ") + ". Prioritise targeting these weak areas.";
-
-  var messages = [{ role: "user", content: [
-    { type: "document", source: { type: "base64", media_type: "application/pdf", data: base64 } },
-    { type: "text", text: "This is a " + paper.subject + " PSLE past year paper. Generate 5 fresh practice questions in the same style, targeting the student's weak areas if provided." }
-  ]}];
-
-  callClaude(messages, system).then(function(text) {
-    var parsed = extractJson(text);
-    if (!parsed) {
-      papersErrorMsg = "Couldn't understand the response. The scan may be too blurry, rotated, or low contrast. Try rescanning with good lighting and a straight angle.";
-      papersQuestions = [];
-    } else if (parsed.error === "unreadable") {
-      papersErrorMsg = "This PDF couldn't be read — it might be password-protected, corrupted, or the scan quality is too low. Try re-scanning at higher resolution.";
-      papersQuestions = [];
-    } else if (Array.isArray(parsed)) {
-      papersQuestions = parsed;
-      state.carrots += 3;
-      flashToast("+3 🥕 Practice questions ready!");
-    } else {
-      papersErrorMsg = "Unexpected response format. Please try again.";
-      papersQuestions = [];
-    }
-    papersGenerating = false;
-    persist(); render();
-  }).catch(function(err) {
-    if (err.message === "NO_API_KEY") { showApiKeyModal = true; }
-    else papersErrorMsg = "Something went wrong reading this PDF. Check your internet connection / API key and try again, or try a smaller file.";
-    papersGenerating = false;
-    persist(); render();
-  });
+  var qInput = document.getElementById("paperQInput_" + paperId);
+  var aInput = document.getElementById("paperAInput_" + paperId);
+  var qText = qInput ? qInput.value.trim() : "";
+  var aText = aInput ? aInput.value.trim() : "";
+  if (!qText || !aText) { flashToast("Please fill in both the question and the answer"); return; }
+  if (!paper.questions) paper.questions = [];
+  paper.questions.push({ question: qText, answer: aText, _show: false });
+  state.carrots += 1;
+  flashToast("+1 🥕 Question added!");
+  papersQDraft = ""; papersADraft = "";
+  persist(); render();
+}
+function deletePaperQuestion(paperId, idx) {
+  var paper = null;
+  for (var i = 0; i < state.papers.length; i++) { if (state.papers[i].id === paperId) paper = state.papers[i]; }
+  if (!paper || !paper.questions) return;
+  paper.questions.splice(idx, 1);
+  persist(); render();
 }
 
 function renderTimer() {
@@ -927,7 +1035,10 @@ function renderTimer() {
   var html = '';
   if (active) {
     html += '<div class="card" style="text-align:center;padding:20px;">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;">';
     html += '<div style="font-size:13px;font-weight:700;color:#868e96;">' + active.label + '</div>';
+    html += '<button id="timerSwitchBtn" style="border:none;background:none;color:#1971C2;font-size:11px;font-weight:700;cursor:pointer;">Switch paper</button>';
+    html += '</div>';
     html += '<div style="font-size:40px;font-weight:800;color:' + (timerSecondsLeft<60?'#FA5252':'#D6336C') + ';margin:8px 0;font-family:monospace;">' + fmt(timerSecondsLeft) + '</div>';
     if (timerSecondsLeft === 0) html += '<div style="font-size:14px;font-weight:700;color:#82c91e;">⏰ Time\'s up! Well done!</div>';
     html += '<div style="display:flex;gap:8px;justify-content:center;margin-top:8px;">';
@@ -979,22 +1090,41 @@ function timerPauseResume() {
 }
 function timerReset() {
   clearInterval(timerInterval);
+  var t = null;
+  for (var i = 0; i < TIMERS.length; i++) { if (TIMERS[i].id === timerActiveId) t = TIMERS[i]; }
+  timerSecondsLeft = t ? t.mins * 60 : 0;
+  timerRunning = false;
+  render();
+}
+function timerSwitchPaper() {
+  clearInterval(timerInterval);
   timerActiveId = null; timerSecondsLeft = 0; timerRunning = false;
   render();
 }
 
+var SLOT_LABELS = { head: "Headwear", face: "Face", neck: "Neck", held: "Held", body: "Body", back: "Back" };
+
 function renderShop() {
-  var html = '<div style="text-align:center;margin-bottom:12px;font-size:13px;color:#868e96;">Spend your Carrots 🥕 on cute accessories and backgrounds! (Earn carrots from tasks, errors & vocab)</div>';
-  html += '<div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">🎀 Accessories</div><div class="shop-grid">';
-  for (var i = 0; i < ACCESSORIES.length; i++) {
-    var item = ACCESSORIES[i];
-    var owned = state.ownedAccessories.indexOf(item.id) !== -1;
-    var equipped = state.equippedAccessories.indexOf(item.id) !== -1;
-    html += '<div class="shop-item"><div style="font-size:30px;">' + item.emoji + '</div><div style="font-size:12px;font-weight:700;color:#495057;margin-top:4px;">' + item.name + '</div>';
+  var stage = getStage(state.stars);
+  var bg = null;
+  for (var bgi = 0; bgi < BACKGROUNDS.length; bgi++) { if (BACKGROUNDS[bgi].id === state.equippedBackground) bg = BACKGROUNDS[bgi]; }
+  if (!bg) bg = BACKGROUNDS[0];
+
+  var html = '<div class="card" style="text-align:center;padding:16px;">' + avatarSvg(stage, state.equippedClothing, 100, bg.css) + '</div>';
+  html += '<div style="text-align:center;margin-bottom:12px;font-size:13px;color:#868e96;">Spend your Carrots 🥕 dressing up your buddy! (Earn carrots from tasks, errors & vocab)</div>';
+  html += '<div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">👕 Clothes</div><div class="shop-grid">';
+  for (var i = 0; i < CLOTHING.length; i++) {
+    var item = CLOTHING[i];
+    var owned = state.ownedClothing.indexOf(item.id) !== -1;
+    var equipped = state.equippedClothing.indexOf(item.id) !== -1;
+    html += '<div class="shop-item">';
+    html += '<svg viewBox="0 0 200 200" width="56" height="56" style="display:block;margin:0 auto;"><circle cx="100" cy="110" r="0" fill="none"/>' + clothingPieceSvg(item.id, stage.colors) + '</svg>';
+    html += '<div style="font-size:12px;font-weight:700;color:#495057;margin-top:4px;">' + item.name + '</div>';
+    html += '<div style="font-size:9px;color:#adb5bd;">' + SLOT_LABELS[item.slot] + '</div>';
     if (!owned) {
-      html += '<button data-buy-acc="' + item.id + '" style="margin-top:8px;width:100%;background:#FFD8A8;color:#9C6B00;border:none;border-radius:10px;padding:6px;font-weight:700;font-size:12px;cursor:pointer;">🥕 ' + item.cost + '</button>';
+      html += '<button data-buy-clothing="' + item.id + '" style="margin-top:8px;width:100%;background:#FFD8A8;color:#9C6B00;border:none;border-radius:10px;padding:6px;font-weight:700;font-size:12px;cursor:pointer;">🥕 ' + item.cost + '</button>';
     } else {
-      html += '<button data-equip-acc="' + item.id + '" style="margin-top:8px;width:100%;background:' + (equipped?'#82c91e':'#E9ECEF') + ';color:' + (equipped?'white':'#868e96') + ';border:none;border-radius:10px;padding:6px;font-weight:700;font-size:12px;cursor:pointer;">' + (equipped?'Equipped ✓':'Equip') + '</button>';
+      html += '<button data-equip-clothing="' + item.id + '" style="margin-top:8px;width:100%;background:' + (equipped?'#82c91e':'#E9ECEF') + ';color:' + (equipped?'white':'#868e96') + ';border:none;border-radius:10px;padding:6px;font-weight:700;font-size:12px;cursor:pointer;">' + (equipped?'Equipped ✓':'Equip') + '</button>';
     }
     html += '</div>';
   }
@@ -1002,35 +1132,46 @@ function renderShop() {
 
   html += '<div style="font-size:13px;font-weight:700;color:#495057;margin:16px 0 8px;">🎨 Backgrounds</div><div class="bg-grid">';
   for (var b = 0; b < BACKGROUNDS.length; b++) {
-    var bg = BACKGROUNDS[b];
-    var ownedBg = state.ownedBackgrounds.indexOf(bg.id) !== -1;
-    var equippedBg = state.equippedBackground === bg.id;
-    html += '<div class="bg-item" style="background:' + bg.css + ';"><div style="background:rgba(255,255,255,0.85);border-radius:10px;padding:8px;">';
-    html += '<div style="font-size:12px;font-weight:700;color:#495057;">' + bg.name + '</div>';
+    var bgItem = BACKGROUNDS[b];
+    var ownedBg = state.ownedBackgrounds.indexOf(bgItem.id) !== -1;
+    var equippedBg = state.equippedBackground === bgItem.id;
+    html += '<div class="bg-item" style="background:' + bgItem.css + ';"><div style="background:rgba(255,255,255,0.85);border-radius:10px;padding:8px;">';
+    html += '<div style="font-size:12px;font-weight:700;color:#495057;">' + bgItem.name + '</div>';
     if (!ownedBg) {
-      html += '<button data-buy-bg="' + bg.id + '" style="margin-top:8px;width:100%;background:#FFD8A8;color:#9C6B00;border:none;border-radius:10px;padding:6px;font-weight:700;font-size:12px;cursor:pointer;">🥕 ' + bg.cost + '</button>';
+      html += '<button data-buy-bg="' + bgItem.id + '" style="margin-top:8px;width:100%;background:#FFD8A8;color:#9C6B00;border:none;border-radius:10px;padding:6px;font-weight:700;font-size:12px;cursor:pointer;">🥕 ' + bgItem.cost + '</button>';
     } else {
-      html += '<button data-equip-bg="' + bg.id + '" style="margin-top:8px;width:100%;background:' + (equippedBg?'#82c91e':'#E9ECEF') + ';color:' + (equippedBg?'white':'#868e96') + ';border:none;border-radius:10px;padding:6px;font-weight:700;font-size:12px;cursor:pointer;">' + (equippedBg?'Equipped ✓':'Equip') + '</button>';
+      html += '<button data-equip-bg="' + bgItem.id + '" style="margin-top:8px;width:100%;background:' + (equippedBg?'#82c91e':'#E9ECEF') + ';color:' + (equippedBg?'white':'#868e96') + ';border:none;border-radius:10px;padding:6px;font-weight:700;font-size:12px;cursor:pointer;">' + (equippedBg?'Equipped ✓':'Equip') + '</button>';
     }
     html += '</div></div>';
   }
   html += '</div>';
   return html;
 }
-function buyAccessory(id) {
+function buyClothing(id) {
   var item = null;
-  for (var i = 0; i < ACCESSORIES.length; i++) { if (ACCESSORIES[i].id === id) item = ACCESSORIES[i]; }
+  for (var i = 0; i < CLOTHING.length; i++) { if (CLOTHING[i].id === id) item = CLOTHING[i]; }
   if (!item) return;
   if (state.carrots < item.cost) { flashToast("Not enough carrots yet! Keep completing tasks 🥕"); return; }
   state.carrots -= item.cost;
-  state.ownedAccessories.push(id);
+  state.ownedClothing.push(id);
   flashToast("Bought " + item.name + "!");
   persist(); render();
 }
-function equipAccessory(id) {
-  var idx = state.equippedAccessories.indexOf(id);
-  if (idx !== -1) state.equippedAccessories.splice(idx, 1);
-  else state.equippedAccessories.push(id);
+function equipClothing(id) {
+  var item = null;
+  for (var i = 0; i < CLOTHING.length; i++) { if (CLOTHING[i].id === id) item = CLOTHING[i]; }
+  if (!item) return;
+  var idx = state.equippedClothing.indexOf(id);
+  if (idx !== -1) {
+    state.equippedClothing.splice(idx, 1);
+  } else {
+    var sameSlot = [];
+    for (var i2 = 0; i2 < CLOTHING.length; i2++) { if (CLOTHING[i2].slot === item.slot) sameSlot.push(CLOTHING[i2].id); }
+    var kept = [];
+    for (var i3 = 0; i3 < state.equippedClothing.length; i3++) { if (sameSlot.indexOf(state.equippedClothing[i3]) === -1) kept.push(state.equippedClothing[i3]); }
+    kept.push(id);
+    state.equippedClothing = kept;
+  }
   persist(); render();
 }
 function buyBackground(id) {
@@ -1056,14 +1197,6 @@ function renderNamePromptModal() {
   html += '<button class="btn-primary" id="saveNameBtn" style="margin-top:14px;width:100%;">Let\'s go! ✨</button></div></div>';
   return html;
 }
-function renderApiKeyModal() {
-  var html = '<div class="modal-overlay" id="apiKeyOverlay"><div class="modal-box" onclick="event.stopPropagation()">';
-  html += '<div style="font-size:36px;">🔑</div><div style="font-weight:800;font-size:15px;color:#D6336C;margin-top:8px;">Connect your Anthropic API key</div>';
-  html += '<div style="font-size:12px;color:#868e96;margin-top:6px;text-align:left;">This standalone site has no server, so AI features (vocab definitions, paper question generation) need your own Anthropic API key. It is saved only in this browser\'s local storage and sent directly to Anthropic, never anywhere else. Get a key at console.anthropic.com.</div>';
-  html += '<input id="apiKeyInput" placeholder="sk-ant-..." style="width:100%;margin-top:14px;box-sizing:border-box;" value="' + escapeHtml(getApiKey()) + '" />';
-  html += '<div style="display:flex;gap:8px;margin-top:14px;"><button class="btn-secondary" id="cancelApiKeyBtn" style="flex:1;">Cancel</button><button class="btn-primary" id="saveApiKeyBtn" style="flex:1;">Save</button></div></div></div>';
-  return html;
-}
 
 function render() {
   var app = document.getElementById("app");
@@ -1079,7 +1212,6 @@ function render() {
   app.innerHTML = renderHeader() + renderNav() + '<div>' + tabHtml + '</div>' +
     (showNamePrompt ? renderNamePromptModal() : '') +
     (showJourneyModal ? renderJourneyModal() : '') +
-    (showApiKeyModal ? renderApiKeyModal() : '') +
     (viewingError ? renderViewingErrorModal() : '');
   attachListeners();
 }
@@ -1110,23 +1242,6 @@ function attachListeners() {
     persist(); render();
   });
 
-  var vocabApiKeyLink = document.getElementById("vocabApiKeyLink");
-  if (vocabApiKeyLink) vocabApiKeyLink.addEventListener("click", function() { showApiKeyModal = true; render(); });
-  var papersApiKeyLink = document.getElementById("papersApiKeyLink");
-  if (papersApiKeyLink) papersApiKeyLink.addEventListener("click", function() { showApiKeyModal = true; render(); });
-  var apiKeyOverlay = document.getElementById("apiKeyOverlay");
-  if (apiKeyOverlay) apiKeyOverlay.addEventListener("click", function() { showApiKeyModal = false; render(); });
-  var cancelApiKeyBtn = document.getElementById("cancelApiKeyBtn");
-  if (cancelApiKeyBtn) cancelApiKeyBtn.addEventListener("click", function() { showApiKeyModal = false; render(); });
-  var saveApiKeyBtn = document.getElementById("saveApiKeyBtn");
-  if (saveApiKeyBtn) saveApiKeyBtn.addEventListener("click", function() {
-    var val = document.getElementById("apiKeyInput").value.trim();
-    setApiKey(val);
-    showApiKeyModal = false;
-    flashToast("API key saved!");
-    render();
-  });
-
   var addTaskBtn = document.getElementById("addTaskBtn");
   if (addTaskBtn) addTaskBtn.addEventListener("click", addTask);
   var taskTextInput = document.getElementById("taskTextInput");
@@ -1148,13 +1263,20 @@ function attachListeners() {
   if (errorSubjectSelect) errorSubjectSelect.addEventListener("change", function(e) { errorFormSubject = e.target.value; });
   var errorNoteInput = document.getElementById("errorNoteInput");
   if (errorNoteInput) errorNoteInput.addEventListener("input", function(e) { errorFormNote = e.target.value; });
-  var errorFileInput = document.getElementById("errorFileInput");
-  if (errorFileInput) errorFileInput.addEventListener("change", handleErrorFile);
+  var errorAnswerInput = document.getElementById("errorAnswerInput");
+  if (errorAnswerInput) errorAnswerInput.addEventListener("input", function(e) { errorAnswerText = e.target.value; });
+  var errorQuestionFileInput = document.getElementById("errorQuestionFileInput");
+  if (errorQuestionFileInput) errorQuestionFileInput.addEventListener("change", handleErrorQuestionFile);
+  var errorAnswerFileInput = document.getElementById("errorAnswerFileInput");
+  if (errorAnswerFileInput) errorAnswerFileInput.addEventListener("change", handleErrorAnswerFile);
+  var submitErrorBtn = document.getElementById("submitErrorBtn");
+  if (submitErrorBtn) submitErrorBtn.addEventListener("click", submitError);
   var viewErrEls = document.querySelectorAll("[data-view-error]");
   for (var i5 = 0; i5 < viewErrEls.length; i5++) {
     viewErrEls[i5].addEventListener("click", function() {
       var id = this.dataset.viewError;
       for (var j = 0; j < state.errorBank.length; j++) { if (state.errorBank[j].id === id) viewingError = state.errorBank[j]; }
+      revealedAnswerId = null;
       render();
     });
   }
@@ -1166,10 +1288,12 @@ function attachListeners() {
   for (var i7 = 0; i7 < delErrEls.length; i7++) {
     delErrEls[i7].addEventListener("click", function() { deleteError(this.dataset.deleteError); });
   }
+  var revealAnswerBtn = document.getElementById("revealAnswerBtn");
+  if (revealAnswerBtn) revealAnswerBtn.addEventListener("click", function() { revealedAnswerId = this.dataset.revealAnswer; render(); });
   var closeViewErrorBtn = document.getElementById("closeViewErrorBtn");
-  if (closeViewErrorBtn) closeViewErrorBtn.addEventListener("click", function() { viewingError = null; render(); });
+  if (closeViewErrorBtn) closeViewErrorBtn.addEventListener("click", function() { viewingError = null; revealedAnswerId = null; render(); });
   var viewErrorOverlay = document.getElementById("viewErrorOverlay");
-  if (viewErrorOverlay) viewErrorOverlay.addEventListener("click", function() { viewingError = null; render(); });
+  if (viewErrorOverlay) viewErrorOverlay.addEventListener("click", function() { viewingError = null; revealedAnswerId = null; render(); });
 
   var vocabWordInputEl = document.getElementById("vocabWordInput");
   if (vocabWordInputEl) {
@@ -1200,15 +1324,37 @@ function attachListeners() {
   for (var i10 = 0; i10 < delPaperEls.length; i10++) {
     delPaperEls[i10].addEventListener("click", function() { deletePaper(this.dataset.deletePaper); });
   }
-  var genPaperEls = document.querySelectorAll("[data-generate-paper]");
-  for (var i11 = 0; i11 < genPaperEls.length; i11++) {
-    genPaperEls[i11].addEventListener("click", function() { generateFromPaper(this.dataset.generatePaper); });
+  var togglePaperEls = document.querySelectorAll("[data-toggle-paper]");
+  for (var i11 = 0; i11 < togglePaperEls.length; i11++) {
+    togglePaperEls[i11].addEventListener("click", function() { togglePaperExpanded(this.dataset.togglePaper); });
+  }
+  var paperQInputEls = document.querySelectorAll("[data-paper-q-for]");
+  for (var i11d = 0; i11d < paperQInputEls.length; i11d++) {
+    paperQInputEls[i11d].addEventListener("input", function(e) { papersQDraft = e.target.value; });
+  }
+  var paperAInputEls = document.querySelectorAll("[data-paper-a-for]");
+  for (var i11e = 0; i11e < paperAInputEls.length; i11e++) {
+    paperAInputEls[i11e].addEventListener("input", function(e) { papersADraft = e.target.value; });
+  }
+  var addPaperQEls = document.querySelectorAll("[data-add-paper-question]");
+  for (var i11b = 0; i11b < addPaperQEls.length; i11b++) {
+    addPaperQEls[i11b].addEventListener("click", function() { addPaperQuestion(this.dataset.addPaperQuestion); });
+  }
+  var delPaperQEls = document.querySelectorAll("[data-delete-paper-question]");
+  for (var i11c = 0; i11c < delPaperQEls.length; i11c++) {
+    delPaperQEls[i11c].addEventListener("click", function() {
+      var parts = this.dataset.deletePaperQuestion.split("|");
+      deletePaperQuestion(parts[0], parseInt(parts[1], 10));
+    });
   }
   var toggleAnswerEls = document.querySelectorAll("[data-toggle-answer]");
   for (var i12 = 0; i12 < toggleAnswerEls.length; i12++) {
     toggleAnswerEls[i12].addEventListener("click", function() {
-      var idx = parseInt(this.dataset.toggleAnswer, 10);
-      if (papersQuestions && papersQuestions[idx]) papersQuestions[idx]._show = !papersQuestions[idx]._show;
+      var parts = this.dataset.toggleAnswer.split("|");
+      var paper = null;
+      for (var pi = 0; pi < state.papers.length; pi++) { if (state.papers[pi].id === parts[0]) paper = state.papers[pi]; }
+      var idx = parseInt(parts[1], 10);
+      if (paper && paper.questions && paper.questions[idx]) paper.questions[idx]._show = !paper.questions[idx]._show;
       render();
     });
   }
@@ -1221,14 +1367,16 @@ function attachListeners() {
   if (timerPauseResumeBtn) timerPauseResumeBtn.addEventListener("click", timerPauseResume);
   var timerResetBtn = document.getElementById("timerResetBtn");
   if (timerResetBtn) timerResetBtn.addEventListener("click", timerReset);
+  var timerSwitchBtn = document.getElementById("timerSwitchBtn");
+  if (timerSwitchBtn) timerSwitchBtn.addEventListener("click", timerSwitchPaper);
 
-  var buyAccEls = document.querySelectorAll("[data-buy-acc]");
-  for (var i14 = 0; i14 < buyAccEls.length; i14++) {
-    buyAccEls[i14].addEventListener("click", function() { buyAccessory(this.dataset.buyAcc); });
+  var buyClothingEls = document.querySelectorAll("[data-buy-clothing]");
+  for (var i14 = 0; i14 < buyClothingEls.length; i14++) {
+    buyClothingEls[i14].addEventListener("click", function() { buyClothing(this.dataset.buyClothing); });
   }
-  var equipAccEls = document.querySelectorAll("[data-equip-acc]");
-  for (var i15 = 0; i15 < equipAccEls.length; i15++) {
-    equipAccEls[i15].addEventListener("click", function() { equipAccessory(this.dataset.equipAcc); });
+  var equipClothingEls = document.querySelectorAll("[data-equip-clothing]");
+  for (var i15 = 0; i15 < equipClothingEls.length; i15++) {
+    equipClothingEls[i15].addEventListener("click", function() { equipClothing(this.dataset.equipClothing); });
   }
   var buyBgEls = document.querySelectorAll("[data-buy-bg]");
   for (var i16 = 0; i16 < buyBgEls.length; i16++) {
