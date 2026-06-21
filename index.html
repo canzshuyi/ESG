@@ -6,17 +6,29 @@
 <title>Eva's Study Garden</title>
 <style>
   * { box-sizing: border-box; }
+  html, body { width: 100%; overflow-x: hidden; }
   body {
     font-family: 'Segoe UI', system-ui, sans-serif;
     background: linear-gradient(180deg, #FFF7FB 0%, #F3F8FF 100%);
     margin: 0;
-    padding: 16px;
+    padding: clamp(10px, 3vw, 24px);
     color: #495057;
+    min-height: 100vh;
   }
   #app {
+    width: 100%;
     max-width: 480px;
     margin: 0 auto;
     position: relative;
+  }
+  @media (min-width: 700px) {
+    #app { max-width: 600px; }
+  }
+  @media (min-width: 1000px) {
+    #app { max-width: 760px; }
+  }
+  @media (min-width: 1300px) {
+    #app { max-width: 900px; }
   }
   .card {
     background: white;
@@ -30,9 +42,11 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 8px;
+    flex-wrap: wrap;
+    gap: 6px;
   }
-  .title { font-size: 18px; font-weight: 800; color: #D6336C; }
-  .pills { display: flex; gap: 8px; }
+  .title { font-size: clamp(16px, 4vw, 20px); font-weight: 800; color: #D6336C; }
+  .pills { display: flex; gap: 8px; flex-wrap: wrap; }
   .pill {
     background: white;
     border-radius: 20px;
@@ -50,6 +64,9 @@
     gap: 6px;
     padding-bottom: 4px;
     margin-bottom: 12px;
+  }
+  @media (min-width: 700px) {
+    .navbar { justify-content: center; flex-wrap: wrap; overflow-x: visible; }
   }
   .navbtn {
     flex-shrink: 0;
@@ -110,7 +127,7 @@
     background: white;
     border-radius: 20px;
     padding: 24px;
-    max-width: 340px;
+    width: min(340px, 100%);
     max-height: 85vh;
     overflow-y: auto;
     text-align: center;
@@ -124,20 +141,32 @@
     background: #FFE3EC; color: #D6336C; border: none; border-radius: 12px;
     padding: 10px 18px; font-weight: 700; font-size: 13px; cursor: pointer;
   }
-  .stat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  @media (min-width: 700px) {
+    .stat-grid { grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); }
+  }
   .stat-box { background: white; border-radius: 12px; padding: 10px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
   .stat-box .emoji { font-size: 18px; }
   .stat-box .value { font-weight: 800; font-size: 16px; color: #495057; }
   .stat-box .label { font-size: 10px; color: #adb5bd; }
   .subject-pill { font-size: 9px; font-weight: 700; border-radius: 8px; padding: 2px 6px; }
-  .err-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .err-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  @media (min-width: 700px) {
+    .err-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+  }
   .err-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-  .err-card img { width: 100%; height: 110px; object-fit: cover; cursor: pointer; display: block; }
+  .err-card img { width: 100%; height: clamp(100px, 22vw, 150px); object-fit: cover; cursor: pointer; display: block; }
   .err-card .body { padding: 8px; }
   .task-row { display: flex; align-items: center; gap: 8px; background: white; border-radius: 12px; padding: 10px; margin-bottom: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
-  .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .shop-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  @media (min-width: 700px) {
+    .shop-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  }
   .shop-item { background: white; border-radius: 14px; padding: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-  .bg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+  .bg-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 14px; }
+  @media (min-width: 700px) {
+    .bg-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  }
   .bg-item { border-radius: 14px; padding: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); position: relative; overflow: hidden; }
   .journey-stage { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 12px; margin-bottom: 6px; }
   .vocab-card { background: white; border-radius: 12px; padding: 12px; margin-bottom: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); cursor: pointer; }
@@ -277,8 +306,7 @@ var DEFAULT_STATE = {
   equippedBackground: "bg_default",
   tasks: [],
   errorBank: [],
-  vocabBank: [],
-  papers: []
+  vocabBank: []
 };
 
 function loadState() {
@@ -473,7 +501,6 @@ var NAV_ITEMS = [
   { id: "tasks", label: "Tasks", emoji: "📋" },
   { id: "errors", label: "Errors", emoji: "📸" },
   { id: "vocab", label: "Vocab", emoji: "📖" },
-  { id: "papers", label: "Papers", emoji: "📄" },
   { id: "timer", label: "Timer", emoji: "⏱" },
   { id: "shop", label: "Shop", emoji: "🛍" }
 ];
@@ -543,7 +570,7 @@ function renderHome() {
 
   html += '<div class="card" style="display:flex;align-items:center;gap:12px;">';
   html += '<div style="font-size:30px;">🔥</div>';
-  html += '<div style="flex:1;"><div style="font-weight:800;font-size:16px;color:#495057;">' + state.streak + ' day streak</div>';
+  html += '<div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:16px;color:#495057;">' + state.streak + ' day streak</div>';
   html += '<div style="font-size:11px;color:#adb5bd;">' + (state.freezeAvailable ? "🧊 1 streak freeze available — miss a day without losing your streak!" : "No freeze available — complete tasks to earn one back.") + '</div></div></div>';
 
   html += '<div class="card" style="background:#FFF0F6;text-align:center;font-size:13px;color:#A61E4D;font-weight:600;">' + msg + '</div>';
@@ -591,11 +618,11 @@ function renderTasks() {
   var pending = [], done = [];
   for (var i = 0; i < state.tasks.length; i++) { (state.tasks[i].done ? done : pending).push(state.tasks[i]); }
   var html = '<div class="card" style="display:flex;gap:6px;">';
-  html += '<select id="taskSubjectSelect">';
+  html += '<select id="taskSubjectSelect" style="flex-shrink:0;max-width:34%;">';
   for (var s = 0; s < SUBJECTS.length; s++) html += '<option value="' + SUBJECTS[s] + '">' + SUBJECTS[s] + '</option>';
   html += '</select>';
-  html += '<input id="taskTextInput" placeholder="e.g. Complete 10 Maths questions" style="flex:1;" />';
-  html += '<button class="btn-primary" id="addTaskBtn" style="padding:0 14px;">+</button></div>';
+  html += '<input id="taskTextInput" placeholder="e.g. Complete 10 Maths questions" style="flex:1;min-width:0;" />';
+  html += '<button class="btn-primary" id="addTaskBtn" style="padding:0 14px;flex-shrink:0;">+</button></div>';
   if (pending.length === 0 && done.length === 0) {
     html += '<div class="empty"><div class="emoji">📋</div><div class="text">No tasks yet. Add your first revision task above!</div></div>';
   }
@@ -609,7 +636,7 @@ function taskRowHtml(t) {
   return '<div class="task-row" style="opacity:' + (t.done?0.6:1) + ';">' +
     '<input type="checkbox" data-toggle-task="' + t.id + '" ' + (t.done?'checked':'') + ' style="width:18px;height:18px;accent-color:#FFB3CB;" />' +
     '<span class="subject-pill" style="color:' + c.text + ';background:' + c.bg + ';">' + t.subject + '</span>' +
-    '<span style="flex:1;font-size:13px;text-decoration:' + (t.done?'line-through':'none') + ';color:#495057;">' + escapeHtml(t.text) + '</span>' +
+    '<span style="flex:1;min-width:0;font-size:13px;text-decoration:' + (t.done?'line-through':'none') + ';color:#495057;word-break:break-word;">' + escapeHtml(t.text) + '</span>' +
     '<button data-delete-task="' + t.id + '" style="border:none;background:none;color:#dee2e6;cursor:pointer;font-size:14px;">✕</button></div>';
 }
 
@@ -710,7 +737,7 @@ function renderErrors() {
     var c = SUBJECT_COLORS[e.subject] || SUBJECT_COLORS.English;
     html += '<div class="err-card" style="opacity:' + (e.mastered?0.55:1) + ';">';
     if (e.questionImage) html += '<img src="' + e.questionImage + '" data-view-error="' + e.id + '" />';
-    else html += '<div data-view-error="' + e.id + '" style="height:90px;display:flex;align-items:center;justify-content:center;padding:8px;background:#F8F9FA;font-size:12px;color:#495057;text-align:center;cursor:pointer;">' + escapeHtml(e.note) + '</div>';
+    else html += '<div data-view-error="' + e.id + '" style="height:clamp(100px, 22vw, 150px);display:flex;align-items:center;justify-content:center;padding:8px;background:#F8F9FA;font-size:12px;color:#495057;text-align:center;cursor:pointer;">' + escapeHtml(e.note) + '</div>';
     html += '<div class="body"><span class="subject-pill" style="color:' + c.text + ';background:' + c.bg + ';">' + e.subject + '</span>';
     html += '<div style="display:flex;justify-content:space-between;margin-top:6px;">';
     html += '<button data-toggle-mastered="' + e.id + '" style="border:none;background:none;font-size:11px;color:' + (e.mastered?'#82c91e':'#adb5bd') + ';cursor:pointer;font-weight:700;">' + (e.mastered?'✓ Mastered':'Mark mastered') + '</button>';
@@ -725,7 +752,7 @@ function renderViewingErrorModal() {
   var er = viewingError;
   if (!er) return "";
   var c = SUBJECT_COLORS[er.subject] || SUBJECT_COLORS.English;
-  var html = '<div class="modal-overlay" id="viewErrorOverlay"><div class="modal-box" style="max-width:360px;" onclick="event.stopPropagation()">';
+  var html = '<div class="modal-overlay" id="viewErrorOverlay"><div class="modal-box" style="width:min(360px, 100%);" onclick="event.stopPropagation()">';
   html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">';
   html += '<span class="subject-pill" style="color:' + c.text + ';background:' + c.bg + ';">' + er.subject + '</span>';
   html += '<button id="closeViewErrorBtn" style="border:none;background:none;font-size:16px;color:#adb5bd;cursor:pointer;">✕</button></div>';
@@ -823,8 +850,8 @@ var vocabErrorMsg = null;
 function renderVocab() {
   var sorted = state.vocabBank.slice().sort(function(a,b){ return a.word.localeCompare(b.word); });
   var html = '<div class="card"><div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">📖 Log new vocabulary</div>';
-  html += '<div style="display:flex;gap:6px;"><input id="vocabWordInput" placeholder="e.g. meticulous" style="flex:1;" value="' + escapeHtml(vocabWordInput) + '" />';
-  html += '<button id="addVocabBtn" ' + (vocabLoading?'disabled':'') + ' style="background:' + (vocabLoading?'#dee2e6':'#A5D8FF') + ';color:#1971C2;border:none;border-radius:10px;padding:0 14px;font-weight:700;cursor:pointer;">' + (vocabLoading?'...':'Add') + '</button></div>';
+  html += '<div style="display:flex;gap:6px;"><input id="vocabWordInput" placeholder="e.g. meticulous" style="flex:1;min-width:0;" value="' + escapeHtml(vocabWordInput) + '" />';
+  html += '<button id="addVocabBtn" ' + (vocabLoading?'disabled':'') + ' style="background:' + (vocabLoading?'#dee2e6':'#A5D8FF') + ';color:#1971C2;border:none;border-radius:10px;padding:0 14px;font-weight:700;cursor:pointer;flex-shrink:0;">' + (vocabLoading?'...':'Add') + '</button></div>';
   html += '<div style="font-size:10px;color:#adb5bd;margin-top:6px;">Definitions & examples are looked up from the free dictionaryapi.dev — no key needed.</div>';
   html += '</div>';
 
@@ -913,119 +940,6 @@ function addVocab() {
       vocabLoading = false;
       render();
     });
-}
-
-var papersSubject = "English";
-var papersUploading = false;
-var MAX_PDF_BYTES = 30 * 1024 * 1024;
-var papersExpandedPaperId = null;
-var papersQDraft = "";
-var papersADraft = "";
-
-function renderPapers() {
-  var html = '<div class="card"><div style="font-size:13px;font-weight:700;color:#495057;margin-bottom:8px;">📄 Upload past year paper (PDF, optional)</div>';
-  html += '<select id="paperSubjectSelect" style="width:100%;margin-bottom:8px;">';
-  for (var s = 0; s < SUBJECTS.length; s++) html += '<option value="' + SUBJECTS[s] + '" ' + (SUBJECTS[s]===papersSubject?'selected':'') + '>' + SUBJECTS[s] + '</option>';
-  html += '</select>';
-  html += '<label class="upload-label" style="background:' + (papersUploading?'#dee2e6':'#A5D8FF') + ';color:#1971C2;">' + (papersUploading ? "Uploading..." : "📎 Upload PDF Paper") +
-    '<input type="file" accept="application/pdf" id="paperFileInput" style="display:none;" /></label>';
-  html += '<div style="font-size:10px;color:#adb5bd;margin-top:6px;">The PDF is just for reference — type your own practice questions and answers below for each paper.</div>';
-  html += '</div>';
-
-  if (state.papers.length === 0) html += '<div class="empty"><div class="emoji">📄</div><div class="text">No papers yet. Upload a paper above, then add your own questions to it.</div></div>';
-
-  for (var p = 0; p < state.papers.length; p++) {
-    var paper = state.papers[p];
-    var c = SUBJECT_COLORS[paper.subject] || SUBJECT_COLORS.English;
-    var isExpanded = papersExpandedPaperId === paper.id;
-    var qs = paper.questions || [];
-    html += '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;">';
-    html += '<div><span class="subject-pill" style="color:' + c.text + ';background:' + c.bg + ';">' + paper.subject + '</span>';
-    html += '<div style="font-size:12px;color:#495057;margin-top:4px;word-break:break-all;">' + escapeHtml(paper.name) + '</div>';
-    html += '<div style="font-size:10px;color:#ced4da;margin-top:2px;">' + (paper.sizeKB?paper.sizeKB+' KB · ':'') + qs.length + (qs.length===1?' question':' questions') + '</div></div>';
-    html += '<button data-delete-paper="' + paper.id + '" style="border:none;background:none;color:#ffc9c9;cursor:pointer;">✕</button></div>';
-    html += '<button data-toggle-paper="' + paper.id + '" style="margin-top:8px;width:100%;background:' + (isExpanded?'#495057':'#FFE3EC') + ';color:' + (isExpanded?'white':'#D6336C') + ';border:none;border-radius:10px;padding:8px;font-weight:700;font-size:12px;cursor:pointer;">' +
-      (isExpanded ? "Hide questions" : "📝 Manage practice questions") + '</button>';
-
-    if (isExpanded) {
-      html += '<div style="margin-top:10px;">';
-      for (var q = 0; q < qs.length; q++) html += paperQuestionCardHtml(qs[q], q, paper.id);
-      html += '<div style="background:#F8F9FA;border-radius:10px;padding:10px;margin-top:8px;">';
-      html += '<div style="font-size:11px;font-weight:700;color:#495057;margin-bottom:6px;">Add a new question</div>';
-      html += '<input id="paperQInput_' + paper.id + '" data-paper-q-for="' + paper.id + '" placeholder="Type the question" style="width:100%;margin-bottom:6px;box-sizing:border-box;" value="' + escapeHtml(papersQDraft) + '" />';
-      html += '<input id="paperAInput_' + paper.id + '" data-paper-a-for="' + paper.id + '" placeholder="Type the answer" style="width:100%;margin-bottom:6px;box-sizing:border-box;" value="' + escapeHtml(papersADraft) + '" />';
-      html += '<button data-add-paper-question="' + paper.id + '" class="btn-primary" style="width:100%;">+ Add question</button>';
-      html += '</div></div>';
-    }
-    html += '</div>';
-  }
-  return html;
-}
-function paperQuestionCardHtml(q, i, paperId) {
-  var html = '<div class="card" data-qcard="' + i + '"><div style="font-size:12px;font-weight:700;color:#D6336C;margin-bottom:4px;">Q' + (i+1) + '</div>';
-  html += '<div style="font-size:13px;color:#495057;">' + escapeHtml(q.question) + '</div>';
-  html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">';
-  html += '<button data-toggle-answer="' + paperId + '|' + i + '" style="border:none;background:none;color:#1971C2;font-size:11px;font-weight:700;cursor:pointer;">' + (q._show?'Hide answer':'Show answer') + '</button>';
-  html += '<button data-delete-paper-question="' + paperId + '|' + i + '" style="border:none;background:none;color:#ffc9c9;cursor:pointer;">✕</button>';
-  html += '</div>';
-  if (q._show) {
-    html += '<div style="margin-top:6px;background:#E6FCF5;border-radius:8px;padding:8px;"><div style="font-size:12px;font-weight:700;color:#0CA678;">' + escapeHtml(q.answer) + '</div></div>';
-  }
-  html += '</div>';
-  return html;
-}
-
-function deletePaper(id) {
-  var arr = [];
-  for (var i = 0; i < state.papers.length; i++) { if (state.papers[i].id !== id) arr.push(state.papers[i]); }
-  state.papers = arr;
-  if (papersExpandedPaperId === id) papersExpandedPaperId = null;
-  persist(); render();
-}
-function handlePaperFile(e) {
-  var file = e.target.files[0];
-  if (!file) return;
-  if (file.type !== "application/pdf") { flashToast("Please upload a PDF file"); return; }
-  if (file.size > MAX_PDF_BYTES) { flashToast("This PDF is quite large — try a smaller scan or fewer pages"); e.target.value = ""; return; }
-  papersUploading = true; render();
-  readFileAsDataURL(file).then(function(dataUrl) {
-    state.papers.unshift({ id: uid(), name: file.name, subject: papersSubject, dataUrl: dataUrl, sizeKB: Math.round(file.size/1024), questions: [], createdAt: Date.now() });
-    flashToast("📄 Paper uploaded!");
-    papersUploading = false;
-    persist(); render();
-  }).catch(function() {
-    flashToast("Upload failed, try again");
-    papersUploading = false;
-    persist(); render();
-  });
-}
-function togglePaperExpanded(id) {
-  papersExpandedPaperId = papersExpandedPaperId === id ? null : id;
-  papersQDraft = ""; papersADraft = "";
-  render();
-}
-function addPaperQuestion(paperId) {
-  var paper = null;
-  for (var i = 0; i < state.papers.length; i++) { if (state.papers[i].id === paperId) paper = state.papers[i]; }
-  if (!paper) return;
-  var qInput = document.getElementById("paperQInput_" + paperId);
-  var aInput = document.getElementById("paperAInput_" + paperId);
-  var qText = qInput ? qInput.value.trim() : "";
-  var aText = aInput ? aInput.value.trim() : "";
-  if (!qText || !aText) { flashToast("Please fill in both the question and the answer"); return; }
-  if (!paper.questions) paper.questions = [];
-  paper.questions.push({ question: qText, answer: aText, _show: false });
-  state.carrots += 1;
-  flashToast("+1 🥕 Question added!");
-  papersQDraft = ""; papersADraft = "";
-  persist(); render();
-}
-function deletePaperQuestion(paperId, idx) {
-  var paper = null;
-  for (var i = 0; i < state.papers.length; i++) { if (state.papers[i].id === paperId) paper = state.papers[i]; }
-  if (!paper || !paper.questions) return;
-  paper.questions.splice(idx, 1);
-  persist(); render();
 }
 
 function renderTimer() {
@@ -1205,7 +1119,6 @@ function render() {
   else if (currentTab === "tasks") tabHtml = renderTasks();
   else if (currentTab === "errors") tabHtml = renderErrors();
   else if (currentTab === "vocab") tabHtml = renderVocab();
-  else if (currentTab === "papers") tabHtml = renderPapers();
   else if (currentTab === "timer") tabHtml = renderTimer();
   else if (currentTab === "shop") tabHtml = renderShop();
 
@@ -1314,49 +1227,6 @@ function attachListeners() {
   var delVocabEls = document.querySelectorAll("[data-delete-vocab]");
   for (var i9 = 0; i9 < delVocabEls.length; i9++) {
     delVocabEls[i9].addEventListener("click", function(e) { e.stopPropagation(); deleteVocab(this.dataset.deleteVocab); });
-  }
-
-  var paperSubjectSelect = document.getElementById("paperSubjectSelect");
-  if (paperSubjectSelect) paperSubjectSelect.addEventListener("change", function(e) { papersSubject = e.target.value; });
-  var paperFileInput = document.getElementById("paperFileInput");
-  if (paperFileInput) paperFileInput.addEventListener("change", handlePaperFile);
-  var delPaperEls = document.querySelectorAll("[data-delete-paper]");
-  for (var i10 = 0; i10 < delPaperEls.length; i10++) {
-    delPaperEls[i10].addEventListener("click", function() { deletePaper(this.dataset.deletePaper); });
-  }
-  var togglePaperEls = document.querySelectorAll("[data-toggle-paper]");
-  for (var i11 = 0; i11 < togglePaperEls.length; i11++) {
-    togglePaperEls[i11].addEventListener("click", function() { togglePaperExpanded(this.dataset.togglePaper); });
-  }
-  var paperQInputEls = document.querySelectorAll("[data-paper-q-for]");
-  for (var i11d = 0; i11d < paperQInputEls.length; i11d++) {
-    paperQInputEls[i11d].addEventListener("input", function(e) { papersQDraft = e.target.value; });
-  }
-  var paperAInputEls = document.querySelectorAll("[data-paper-a-for]");
-  for (var i11e = 0; i11e < paperAInputEls.length; i11e++) {
-    paperAInputEls[i11e].addEventListener("input", function(e) { papersADraft = e.target.value; });
-  }
-  var addPaperQEls = document.querySelectorAll("[data-add-paper-question]");
-  for (var i11b = 0; i11b < addPaperQEls.length; i11b++) {
-    addPaperQEls[i11b].addEventListener("click", function() { addPaperQuestion(this.dataset.addPaperQuestion); });
-  }
-  var delPaperQEls = document.querySelectorAll("[data-delete-paper-question]");
-  for (var i11c = 0; i11c < delPaperQEls.length; i11c++) {
-    delPaperQEls[i11c].addEventListener("click", function() {
-      var parts = this.dataset.deletePaperQuestion.split("|");
-      deletePaperQuestion(parts[0], parseInt(parts[1], 10));
-    });
-  }
-  var toggleAnswerEls = document.querySelectorAll("[data-toggle-answer]");
-  for (var i12 = 0; i12 < toggleAnswerEls.length; i12++) {
-    toggleAnswerEls[i12].addEventListener("click", function() {
-      var parts = this.dataset.toggleAnswer.split("|");
-      var paper = null;
-      for (var pi = 0; pi < state.papers.length; pi++) { if (state.papers[pi].id === parts[0]) paper = state.papers[pi]; }
-      var idx = parseInt(parts[1], 10);
-      if (paper && paper.questions && paper.questions[idx]) paper.questions[idx]._show = !paper.questions[idx]._show;
-      render();
-    });
   }
 
   var startTimerEls = document.querySelectorAll("[data-start-timer]");
